@@ -257,7 +257,7 @@ openvpn_instance: 'user'
 openvpn_client:
 - {
 name: '{{ openvpn_instance_name }}',
-remote: 'vpn.e2e4online.ru 1197',
+remote: 'openvpnserver.com 1197',
 proto: 'udp',
 dev: 'tap0',
 user: '{{ openvpn_instance_user }}',
@@ -281,4 +281,61 @@ cert: '{{ openvpn_instance_name }}.crt',
 key: '{{ openvpn_instance_name }}.key',
 persist_key: 'true'
 }
+```
+
+Example playbooks
+----------------------------------------------------
+
+```
+---
+- name: Deploy OpenVPN Client Instance
+  sudo: true
+  gather_facts: true
+  user: ansible
+  roles:
+  - { role: packages, packages_list: ['openvpn', 'openssl'] }
+  - openvpn_ldap
+  hosts: target-client
+```
+
+```
+---
+- name: Deploy Certificate Revocation List
+  sudo: true
+  gather_facts: true
+  user: ansible
+  roles:
+  - openvpn_ldap
+  vars_prompt:
+   - name: 'openvpn_revoke_target'
+     prompt: 'What instance name should be revoked?'
+     private: no
+  hosts: target-sever
+```
+
+```
+---
+- name: Deploy OpenVPN Server Instance [Support ArchLinux & RedHat & Debian]
+  sudo: true
+  gather_facts: true
+  user: ansible
+  roles:
+  - { role: packages, packages_list: ['openvpn', 'openssl'] }
+  - openvpn_ldap
+  hosts: target-server
+```
+
+```
+---
+- name: Deploy OpenVPN User Instance
+  hosts: 127.0.0.1
+  sudo: true
+  gather_facts: true
+  user: ansible
+  roles:
+  - openvpn_ldap
+  vars_prompt:
+   - name: 'openvpn_target_user'
+     prompt: 'What user name?'
+     private: no
 ```
