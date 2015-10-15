@@ -4,9 +4,11 @@ ansible-role-openvpn-ldap
 Role for deploy openvpn server/client/user with LDAP auth and Certificate relocation support 
 
 
-Example configuration on server with 4 tunnels
+Example configuration of server with 4 tunnels
 -------------------------------------------------
 
+```
+---
 openvpn_default_routes:
   - '5.128.220.1 255.255.255.255'
   - '5.128.220.21 255.255.255.255'
@@ -177,3 +179,106 @@ persist_key: 'true',
 client_config_dir: 'true',
 plugin: 'false'
 }
+```
+
+Example configuration of client with 2 tunnels
+-------------------------------------------------
+
+
+```
+---
+openvpn_dest: '/etc/openvpn/'
+openvpn_tls_dest: '{{ openvpn_dest }}tls/'
+openvpn_log_dest: '/var/log/openvpn/'
+openvpn_pool_dest: '/var/lib/openvpn/'
+openvpn_instance: 'client'
+openvpn_client:
+- {
+name: 'openvpn1195',
+remote: '10.15.0.1 1195',
+proto: 'udp',
+dev: 'tap0',
+tls_auth: '{{ openvpn_takey_file }}',
+tls_client: 'true',
+tls_version_min: '1.2',
+ca: '{{ openvpn_ca_file }}',
+cert: '{{ openvpn_instance_name }}.crt',
+key: '{{ openvpn_instance_name }}.key',
+user: '{{ openvpn_instance_user }}',
+group: '{{ openvpn_instance_group }}',
+resolv_retry: 'infinite',
+nobind: 'true',
+persist_tun: 'true',
+persist_key: 'true',
+remote_random: 'false',
+reneg_sec: '0',
+comp_lzo: 'adaptive',
+verbosity: '4',
+mute: '5',
+mute_replay_warnings: 'true'
+}
+- {
+name: 'openvpn1196',
+remote: '10.16.0.1 1196',
+proto: 'udp',
+dev: 'tap1',
+tls_auth: '{{ openvpn_takey_file }}',
+tls_client: 'true',
+tls_version_min: '1.2',
+ca: '{{ openvpn_ca_file }}',
+cert: '{{ openvpn_instance_name }}.crt',
+key: '{{ openvpn_instance_name }}.key',
+user: '{{ openvpn_instance_user }}',
+group: '{{ openvpn_instance_group }}',
+resolv_retry: 'infinite',
+nobind: 'true',
+persist_tun: 'true',
+persist_key: 'true',
+remote_random: 'false',
+reneg_sec: '0',
+comp_lzo: 'adaptive',
+verbosity: '4',
+mute: '5',
+mute_replay_warnings: 'true'
+}
+
+```
+
+Example configuration of user with auth-login-pass
+----------------------------------------------------
+
+
+```
+---
+openvpn_dest: ''
+openvpn_tls_dest: ''
+openvpn_log_dest: ''
+openvpn_instance: 'user'
+openvpn_client:
+- {
+name: '{{ openvpn_instance_name }}',
+remote: 'vpn.e2e4online.ru 1197',
+proto: 'udp',
+dev: 'tap0',
+user: '{{ openvpn_instance_user }}',
+group: '{{ openvpn_instance_group }}',
+resolv_retry: 'infinite',
+explicit-exit-notify: '2',
+nobind: 'true',
+persist_tun: 'true',
+remote_random: 'false',
+auth_nocache: 'true',
+reneg_sec: '0',
+comp_lzo: 'adaptive',
+verbosity: '4',
+mute: '5',
+mute_replay_warnings: 'true',
+tls_client: 'true',
+tls_version_min: '1.2',
+tls_auth: '{{ openvpn_takey_file }}',
+ca: '{{ openvpn_ca_file }}',
+cert: '{{ openvpn_instance_name }}.crt',
+key: '{{ openvpn_instance_name }}.key',
+persist_key: 'true'
+}
+```

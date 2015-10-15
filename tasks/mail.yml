@@ -7,9 +7,9 @@
   local_action: mail
                 host='localhost'
                 port='25'
-                subject='e2e4 OpenVPN access'
-                from='noc@e2e4online.ru'
-                headers='Reply-To=noc@e2e4online.ru'
+                subject='OpenVPN access'
+                from='noc@host'
+                headers='Reply-To=noc@host'
                 charset='utf8'
                 body='Phoney smile and fake hello'
                 to='{{ openvpn_ldap_result.stdout }}'
