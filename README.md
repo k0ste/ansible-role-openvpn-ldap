@@ -1,7 +1,7 @@
 ansible-role-openvpn-ldap
 ===========================
 
-Role for deploy openvpn server/client/user with LDAP auth and Certificate relocation support 
+Role for deploy openvpn server/client/user with LDAP auth and Certificate Revocation List support.
 
 Attention
 -------------
@@ -11,7 +11,7 @@ Requirements
 ---------------
 
 AD/OpenLDAP, SMTP server for send to end-users configuration.
-For auth with LDAP need plugin. SRPM for EL7 you can found [here](https://github.com/k0ste/openvpn-auth-ldap-rfc2307)
+For auth with LDAP need plugin. SRPM for EL7 you can found [here](https://github.com/k0ste/openvpn-auth-ldap-rfc2307).
 
 Example configuration of server with 4 tunnels
 -------------------------------------------------
