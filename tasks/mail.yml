@@ -1,0 +1,19 @@
+---
+- name: Make archive
+  local_action: shell 7z a {{ fetch_dir }}{{ openvpn_instance_name }}/{{ openvpn_instance_name }}.7z {{ fetch_dir }}{{ openvpn_instance_name }}
+  register: 'openvpn_archive_result'
+  notify: 'Delete fetched files'
+- name: Send mail
+  local_action: mail
+                host='localhost'
+                port='25'
+                subject='e2e4 OpenVPN access'
+                from='noc@e2e4online.ru'
+                headers='Reply-To=noc@e2e4online.ru'
+                charset='utf8'
+                body='Phoney smile and fake hello'
+                to='{{ openvpn_ldap_result.stdout }}'
+                attach='{{ fetch_dir }}{{ openvpn_instance_name }}/{{ openvpn_instance_name }}.7z'
+  when: 'openvpn_archive_result|success'
+  register: 'openvpn_mail_result'
+  

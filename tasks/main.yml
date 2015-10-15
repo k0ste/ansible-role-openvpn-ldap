@@ -1,0 +1,21 @@
+---
+- name: Add the OS specific varibles
+  include_vars: '{{ ansible_os_family }}.yml'
+- name: User is not defined
+  fail: msg="User is not defined"
+  when: "openvpn_instance == 'user' and openvpn_target_user == ''"
+- name: Set facts about client/server instance
+  set_fact:
+    openvpn_instance_name: '{{ facter_fqdn }}'
+  when: "openvpn_instance == 'server' or openvpn_instance == 'client'"
+- include: master.yml
+  when: "openvpn_instance is defined and openvpn_revoke_target is not defined and (openvpn_instance == 'client' or openvpn_instance == 'server')"
+- name: Set facts about end-user instance
+  set_fact:
+    openvpn_instance_name: '{{ openvpn_target_user }}'
+  when: "openvpn_instance is defined and openvpn_instance == 'user'"
+- include: userfind.yml
+  when: "openvpn_instance is defined and openvpn_instance == 'user'"
+- include: crl.yml
+  when: "openvpn_revoke_target is defined and openvpn_instance == 'server'"
+  

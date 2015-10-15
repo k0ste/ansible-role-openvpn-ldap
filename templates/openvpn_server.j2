@@ -1,0 +1,147 @@
+## openvpn@{{ item.name }}.conf
+# {{ ansible_managed }}
+# Do not edit manually
+
+port {{ item.port }}
+proto {{ item.proto }}
+dev {{ item.dev }}
+server {{ item.server }}
+dh {{ openvpn_tls_dest}}{{ item.dh }}
+ca {{ openvpn_tls_dest }}{{ item.ca }}
+cert {{ openvpn_tls_dest }}{{ item.cert }}
+key {{ openvpn_tls_dest }}{{ item.key }}
+{% if item.tls_auth is defined %}
+tls-auth {{ openvpn_tls_dest }}{{ item.tls_auth }} 0
+{% endif %}
+{% if item.crl_verify is defined %}
+crl-verify {{ openvpn_tls_dest}}{{ item.crl_verify }}
+{% endif %}
+{% if item.route is defined %}
+route {{ item.route }}
+{% endif %}
+{% if item.user is defined %}
+user {{ item.user }}
+{% endif %}
+{% if item.group is defined %}
+group {{ item.group }}
+{% endif %}
+{% if item.client_cert_not_required == 'true' %}
+client-cert-not-required
+{% endif %}
+{% if item.duplicate_cn is defined and item.duplicate_cn == 'true' %}
+duplicate-cn
+{% endif %}
+{% if item.multihome is defined and item.multihome == 'true' %}
+multihome
+{% endif %}
+{% if item.username_as_common_name == 'true' %}
+username-as-common-name
+{% endif %}
+{% if item.persist_key == 'true' %}
+persist-key
+{% endif %}
+{% if item.persist_tun == 'true' %}
+persist-tun
+{% endif %}
+keepalive {{ item.keepalive }}
+max-clients {{ item.max_clients }}
+{% if item.reneg_sec is defined %}
+reneg-sec {{ item.reneg_sec }}
+{% endif %}
+{% if item.replay_window is defined %}
+replay-window {{ item.replay_window }}
+{% endif %}
+{% if item.client_to_client == 'true' %}
+client-to-client
+{% endif %}
+{% if item.comp_lzo is defined %}
+comp-lzo {{ item.comp_lzo }}
+{% endif %}
+{% if item.verbosity is defined %}
+verb {{ item.verbosity }}
+{% endif %}
+{% if item.mute is defined %}
+mute {{ item.mute }}
+{% endif %}
+{% if item.mute_replay_warnings is defined %}
+mute-replay-warnings
+{% endif %}
+{% if item.ifconfig_pool_persist is defined %}
+ifconfig-pool-persist {{ openvpn_pool_dest }}{{ item.ifconfig_pool_persist }}
+{% endif %}
+{% if item.status is defined %}
+status {{ openvpn_pool_dest }}{{ item.status }}
+{% endif %}
+{% if item.log is defined %}
+{% if item.log_append == 'true' %}
+log-append {{ openvpn_log_dest }}{{ item.log }}
+{% else %}
+log {{ item.log }}
+{% endif %}
+{% endif %}
+{% if item.push == 'true' %}
+{% if item.push_route is defined %}
+push "route {{ item.push_route }}"
+{% endif %}
+{% if item.push_route_geteway is defined %}
+push "route-gateway {{ item.push_route_gateway }}"
+{% endif %}
+{% if item.push_route_delay is defined %}
+push "route-delay {{ item.push_route_delay }}"
+{% endif %}
+{% if item.push_redirect_gateway is defined %}
+push "redirect-gateway {{ item.push_redirect_gateway }}"
+{% endif %}
+{% if item_push_inactive is defined %}
+push "inactive {{ item.push_inactive }}"
+{% endif %}
+{% if item.push_persist_key == 'true' %}
+push "persist-key"
+{% endif %}
+{% if item.push_persist_tun == 'true' %}
+push "persist-tun"
+{% endif %}
+{% if item.push_comp_lzo is defined %}
+push "comp-lzo {{ item.push_comp_lzo }}"
+{% endif %}
+{% if item.push_ping is defined %}
+push "ping {{ item.push_ping }}"
+{% endif %}
+{% if item.push_ping_exit is defined %}
+push "ping-exit {{ item.push_ping_exit }}"
+{% endif %}
+{% if item.push_ping_restart is defined %}
+push "ping-restart {{ item.push_ping_restart }}"
+{% endif %}
+{% if item.push_ip_win32 is defined %}
+push "ip-win32 {{ item.push_ip_win32 }}"
+{% endif %}
+{% if item.push_dhcp_option is defined %}
+push "dhcp-option {{ item.push_dhcp_option }}"
+{% endif %}
+{% endif %}
+{% if item.tls_server is defined %}
+tls-server
+{% if item.tls_version_min is defined %}
+tls-version-min {{ item.tls_version_min }}
+{% endif %}
+{% if item.cipher is defined %}
+cipher {{ item.cipher }}
+{% endif %}
+{% if item.keysize is defined %}
+keysize {{ item.keysize }}
+{% endif %}
+{% if item.auth is defined %}
+auth {{ item.auth }}
+{% endif %}
+{% endif %}
+{% if openvpn_client_config_dir is defined and item.client_config_dir is defined %}
+{% if item.client_config_dir == 'true' %}
+client-config-dir {{ openvpn_client_config_dir }}
+{% endif %}
+{% endif %}
+{% if item.plugin is defined %}
+{% if item.plugin == 'true' %}
+plugin {{ openvpn_plugin_path }}{{ item.plugin_name }} {{ openvpn_dest }}{{ item.plugin_conf }}
+{% endif %}
+{% endif %}

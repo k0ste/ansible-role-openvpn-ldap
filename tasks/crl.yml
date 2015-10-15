@@ -1,0 +1,34 @@
+---
+- name: Check availability key on master
+  stat: path='{{ ca_path }}{{ openvpn_revoke_target }}.crt'
+  register: 'stat_result'
+  delegate_to: '{{ ca_master }}'
+- name: Cert {{ openvpn_revoke_target }} not found
+  fail: msg='Cert for {{ openvpn_revoke_target }} not found'
+  when: stat_result.stat.exists == False
+- name: Revoke cert
+  shell: '{{ item }}'
+  with_items:
+   - 'openssl ca -keyfile {{ ca_path }}{{ ca_rootkey }} -cert {{ ca_path }}{{ ca_rootcrt }} -revoke {{ ca_path }}{{ openvpn_revoke_target }}.crt'
+   - 'openssl ca -keyfile {{ ca_path }}{{ ca_rootkey }} -cert {{ ca_path }}{{ ca_rootcrt }} -gencrl -out {{ ca_crl_path }}{{ openvpn_crl_file }}'
+  when: stat_result.stat.exists == True
+  delegate_to: '{{ ca_master }}'
+  register: 'openvpn_revoke_result'
+- name: Delete revoked cert
+  file: path='{{ ca_path }}{{ openvpn_revoke_target }}.{{ item }}' state='absent'
+  with_items:
+   - 'csr'
+   - 'crt'
+   - 'key'
+  when: "openvpn_revoke_result|success"
+  delegate_to: '{{ ca_master }}'
+- name: Fetch CRL from master
+  fetch: src='{{ ca_crl_path }}{{ openvpn_crl_file }}' dest='{{ fetch_dir }}{{ openvpn_instance_name }}/' flat='yes' validate_checksum='yes' fail_on_missing='no'
+  delegate_to: '{{ ca_master }}'
+  register: 'openvpn_fetched_result'
+  when: "openvpn_revoke_result|success"
+- name: Update CRL
+  copy: src='{{ fetch_dir }}{{ openvpn_instance_name }}/{{ openvpn_crl_file }}' dest='{{ openvpn_tls_dest }}' group='{{ openvpn_instance_group }}' owner='{{ openvpn_instance_user }}' mode='0400'
+  register: 'openvpn_crl_result'
+  notify: 'Delete fetched files'
+  

@@ -1,0 +1,55 @@
+openvpn_src: '{{ ca_path }}openvpn/'
+openvpn_dest: '/etc/openvpn/'
+openvpn_tls_dest: '{{ openvpn_dest }}tls/'
+openvpn_log_dest: '/var/log/openvpn/'
+openvpn_client_config_dir: '{{ openvpn_dest }}main/'
+openvpn_pool_dest: '/var/lib/openvpn/'
+openvpn_crl_file: 'crl.pem'
+openvpn_dhparam_file: 'dhparam.pem'
+openvpn_takey_file: 'ta.key'
+openvpn_ca_file: '{{ ca_rootcrt }}'
+openvpn_cert_file: '{{ openvpn_instance_name }}.crt'
+openvpn_key_file: '{{ openvpn_instance_name }}.key'
+openvpn_files_server: ['{{ openvpn_cert_file }}', '{{ openvpn_key_file }}', '{{ openvpn_ca_file }}', '{{ openvpn_takey_file }}', '{{ openvpn_dhparam_file }}', '{{ openvpn_crl_file }}']
+openvpn_files_client: ['{{ openvpn_cert_file }}', '{{ openvpn_key_file }}', '{{ openvpn_ca_file }}', '{{ openvpn_takey_file }}']
+openvpn_dirs: ['{{ openvpn_dest }}', '{{ openvpn_tls_dest }}', '{{ openvpn_log_dest }}', '{{ openvpn_pool_dest }}', '{{ openvpn_client_config_dir }}']
+openvpn_instance_group: 'nobody'
+openvpn_instance_user: 'nobody'
+openvpn_default_routes:
+ - '192.168.5.3 255.255.255.255'
+ - '192.168.6.3 255.255.255.255'
+
+openvpn_ldap_host: '{{ ldap_query_host }}'
+openvpn_ldap_binddn: '{{ ldap_query_binddn }}'
+openvpn_ldap_password: '{{ ldap_query_password }}'
+openvpn_ldap_timeout: '10'
+openvpn_ldap_follow_referals: 'no'
+openvpn_ldap_tls_enable: 'no'
+openvpn_ldap_basedn: '{{ ldap_basedn }}'
+openvpn_ldap_filter: '(uid=%u)'
+openvpn_ldap_require_group: 'true'
+openvpn_ldap_rfc2307: 'false'
+openvpn_ldap_group_basedn: '{{ ldap_groups_root }}'
+openvpn_ldap_group_filter: '(cn=vpn_users)'
+openvpn_ldap_group_attr: 'memberUid'
+
+openvpn_ldap_user_filter: '(uid={{ openvpn_target_user }})'
+openvpn_ldap_mail_filter: 'mail'
+
+ldap_files: ['db_config.ldif', 'monitor.ldif', 'replica.ldif', 'cn=config', 'index.ldif']
+ldap_add_schema: ['core.ldif', 'cosine.ldif', 'nis.ldif', 'inetorgperson.ldif', 'misc.ldif']
+ldap_add_src: ['db_config.ldif', 'index.ldif', 'monitor.ldif', 'ssl.ldif', 'replica.ldif']
+ldap_binddn: 'cn=config'
+ldap_root: 'dc=domain,dc=local'
+ldap_basedn: 'ou=people,{{ ldap_root }}'
+ldap_groups_root: 'ou=groups,{{ ldap_root }}'
+ldap_src_path: '/root/LDAP/'
+ldap_schema_path: '/etc/openldap/schema/'
+ldap_pwd: 'reader'
+ldap_targetcn: 'mail=mail@host.com'
+ldap_targetexpect: 'mail'
+
+#for query
+ldap_query_host: 'ldap://ldap.localdomain:389'
+ldap_query_binddn: 'cn=reader,{{ ldap_basedn }}'
+ldap_query_password: 'reader'

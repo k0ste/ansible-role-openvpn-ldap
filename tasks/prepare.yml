@@ -1,0 +1,14 @@
+---
+- name: Delete that should not be
+  file: name='{{ item }}' state='absent'
+  with_flattened: 'openvpn_dirs'
+- name: Create catalogs
+  file: path='{{ item }}' state='directory' group='root' owner='root' mode='0755' recurse='yes'
+  with_flattened: 'openvpn_dirs'
+- name: Copy TLS files
+  copy: src='{{ fetch_dir }}{{ openvpn_instance_name }}/{{ item }}' dest='{{ openvpn_tls_dest }}' group='{{ openvpn_instance_group }}' owner='{{ openvpn_instance_user }}' mode='0400'
+  with_flattened: 'openvpn_files_{{ openvpn_instance }}'
+  register: 'openvpn_copy_result'
+- include: worker.yml
+  when: 'openvpn_copy_result|success'
+  

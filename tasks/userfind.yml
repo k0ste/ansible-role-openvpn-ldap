@@ -1,0 +1,9 @@
+---
+- name: Check user is present on LDAP
+  local_action: >
+    shell ldapsearch -x -LLL -H '{{ openvpn_ldap_host }}' -D '{{ openvpn_ldap_binddn }}' -w '{{ openvpn_ldap_password }}' -b '{{ openvpn_ldap_basedn }}' '{{ openvpn_ldap_user_filter }}' '{{ openvpn_ldap_mail_filter }}'|grep '{{ openvpn_ldap_mail_filter }}:'|awk '{print $2}'
+  register: 'openvpn_ldap_result'
+  failed_when: "openvpn_ldap_result.stdout is defined and openvpn_ldap_result.stdout == ''"
+- include: master.yml
+  when: "openvpn_ldap_result|success"
+  

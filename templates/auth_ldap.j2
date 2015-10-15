@@ -1,0 +1,29 @@
+## auth-ldap.conf
+# {{ ansible_managed }}
+# Do not edit manually
+
+<LDAP>
+  URL {{ openvpn_ldap_host }}
+  BindDN {{ openvpn_ldap_binddn }}
+  Password {{ openvpn_ldap_password }}
+  Timeout {{ openvpn_ldap_timeout }}
+  FollowReferrals {{ openvpn_ldap_follow_referals }}
+  TLSEnable {{ openvpn_ldap_tls_enable }}
+  TLSCACertFile /usr/local/etc/ssl/ca.pem
+  TLSCACertDir /etc/ssl/certs
+  TLSCertFile /usr/local/etc/ssl/client-cert.pem
+  TLSKeyFile /usr/local/etc/ssl/client-key.pem
+  TLSCipherSuite	ALL:!ADH:@STRENGTH
+</LDAP>
+
+<Authorization>
+  BaseDN "{{ openvpn_ldap_basedn }}"
+  SearchFilter "{{ openvpn_ldap_filter }}"
+  RequireGroup {{ openvpn_ldap_require_group }}
+  <Group>
+    RFC2307bis {{ openvpn_ldap_rfc2307 }}
+    BaseDN "{{ openvpn_ldap_group_basedn }}"
+    SearchFilter "{{ openvpn_ldap_group_filter }}"
+    MemberAttribute {{ openvpn_ldap_group_attr }}
+  </Group>
+</Authorization>

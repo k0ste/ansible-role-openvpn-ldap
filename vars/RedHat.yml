@@ -1,0 +1,3 @@
+---
+openvpn_service: 'openvpn@'
+openvpn_plugin_path: '/usr/lib64/openvpn/plugins/'

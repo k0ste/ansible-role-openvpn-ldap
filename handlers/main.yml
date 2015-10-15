@@ -1,0 +1,19 @@
+---
+- name: Delete fetched files
+  local_action: file path='{{ fetch_dir }}{{ openvpn_instance_name }}' state='absent'
+  when: "openvpn_mail_result|success or openvpn_crl_result|success"
+- name: Deploy server configuration
+  local_action: shell echo Try deploy plugin configuration and DEFAULT configuration
+  when: "openvpn_instance == 'server'"
+  notify: 
+   - 'Deploy plugin configuration'
+   - 'Deploy DEFAULT configuration'
+- name: Deploy plugin configuration
+  template: src='auth_ldap.j2' dest='{{ openvpn_dest }}{{ item.plugin_conf }}' group='{{ item.group }}' owner='{{ item.user }}' mode='0644'
+  with_items: 'openvpn_server'
+  when: "'{{ item.plugin }}' is defined and '{{ item.plugin }}' == 'true'"
+- name: Deploy DEFAULT configuration
+  template: src='DEFAULT.j2' dest='{{ openvpn_client_config_dir }}DEFAULT' group='{{ item.group }}' owner='{{ item.user }}' mode='0644'
+  with_items: 'openvpn_server'
+  when: "'{{ item.client_config_dir }}' is defined and '{{ item.client_config_dir }}' == 'true'"
+ 

@@ -1,0 +1,22 @@
+---
+galaxy_info:
+  author: "Konstantin Shalygin"
+  company: YASB
+  license: GPL
+  min_ansible_version: 1.8
+  platforms:
+   - name: EL
+     versions:
+      - any
+   - name: Fedora
+     versions:
+      - any
+   - name: Ubuntu
+     versions:
+      - any
+   - name: Archlinux
+      - any
+  categories:
+   - system
+   - networking
+dependencies: []
