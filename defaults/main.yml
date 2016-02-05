@@ -14,7 +14,7 @@ openvpn_files_server: ['{{ openvpn_cert_file }}', '{{ openvpn_key_file }}', '{{ 
 openvpn_files_client: ['{{ openvpn_cert_file }}', '{{ openvpn_key_file }}', '{{ openvpn_ca_file }}', '{{ openvpn_takey_file }}']
 openvpn_dirs: ['{{ openvpn_dest }}', '{{ openvpn_tls_dest }}', '{{ openvpn_log_dest }}', '{{ openvpn_pool_dest }}', '{{ openvpn_client_config_dir }}']
 openvpn_instance_group: 'nobody'
-openvpn_instance_user: 'nobody'
+openvpn_instance_user: 'nogroup'
 openvpn_default_routes:
  - '192.168.5.3 255.255.255.255'
  - '192.168.6.3 255.255.255.255'
@@ -53,3 +53,14 @@ ldap_targetexpect: 'mail'
 ldap_query_host: 'ldap://ldap.localdomain:389'
 ldap_query_binddn: 'cn=reader,{{ ldap_basedn }}'
 ldap_query_password: 'reader'
+
+#Mail
+openvpn_mail_host: 'localhost'
+openvpn_mail_port: '25'
+openvpn_mail_username: ''
+openvpn_mail_password: ''
+openvpn_mail_from: 'noc@localhost'
+openvpn_mail_subject: 'OpenVPN access'
+openvpn_mail_headers: 'Reply-To=noc@localhost'
+openvpn_mail_charset: 'utf8'
+openvpn_mail_body: 'Phoney smile and fake hello'

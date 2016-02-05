@@ -6,4 +6,3 @@
   failed_when: "openvpn_ldap_result.stdout is defined and openvpn_ldap_result.stdout == ''"
 - include: master.yml
   when: "openvpn_ldap_result|success"
-  

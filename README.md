@@ -5,7 +5,12 @@ Role for deploy openvpn server/client/user with LDAP auth and Certificate Revoca
 
 Attention
 -------------
-The role released as is, for common understanding how to "OpenVPN with Ansible". If someone have questions and/or interest - write to me.
+The role released as is, for common understanding how to "OpenVPN with Ansible". This role support most common options, also support
+'client config dir' for dynamic work with push routes to client.
+
+Ansible versions
+-----------------
+Role is adapted for Ansible 2.0, should work on 1.9.
 
 Requirements
 ---------------
@@ -16,7 +21,7 @@ For auth with LDAP need plugin. SRPM for EL7 you can found [here](https://github
 Example configuration of server with 4 tunnels
 -------------------------------------------------
 
-```
+```yaml
 ---
 openvpn_default_routes:
   - '5.128.220.1 255.255.255.255'
@@ -193,7 +198,7 @@ Example configuration of client with 2 tunnels
 -------------------------------------------------
 
 
-```
+```yaml
 ---
 openvpn_dest: '/etc/openvpn/'
 openvpn_tls_dest: '{{ openvpn_dest }}tls/'
@@ -256,7 +261,7 @@ Example configuration of user with auth-login-pass
 ----------------------------------------------------
 
 
-```
+```yaml
 ---
 openvpn_dest: ''
 openvpn_tls_dest: ''
@@ -294,24 +299,27 @@ persist_key: 'true'
 Example playbooks
 ----------------------------------------------------
 
-```
+```yaml
 ---
 - name: Deploy OpenVPN Client Instance
-  sudo: true
+  become: true
   gather_facts: true
-  user: ansible
+  remote_user: ansible
+  no_log: false
+  strategy: free
   roles:
-  - { role: packages, packages_list: ['openvpn', 'openssl'] }
   - openvpn_ldap
   hosts: target-client
 ```
 
-```
+```yaml
 ---
 - name: Deploy Certificate Revocation List
-  sudo: true
+  become: true
   gather_facts: true
-  user: ansible
+  remote_user: ansible
+  no_log: false
+  strategy: free
   roles:
   - openvpn_ldap
   vars_prompt:
@@ -321,25 +329,26 @@ Example playbooks
   hosts: target-sever
 ```
 
-```
+```yaml
 ---
 - name: Deploy OpenVPN Server Instance
-  sudo: true
+  become: true
   gather_facts: true
   user: ansible
   roles:
-  - { role: packages, packages_list: ['openvpn', 'openssl'] }
   - openvpn_ldap
   hosts: target-server
 ```
 
-```
+```yaml
 ---
 - name: Deploy OpenVPN User Instance
   hosts: 127.0.0.1
-  sudo: true
+  become: true
   gather_facts: true
-  user: ansible
+  remote_user: ansible
+  no_log: false
+  strategy: free
   roles:
   - openvpn_ldap
   vars_prompt:

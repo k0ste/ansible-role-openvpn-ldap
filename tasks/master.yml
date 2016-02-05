@@ -34,4 +34,3 @@
   when: "openvpn_fetched_result_0|success and openvpn_instance == 'client'"
 - include: worker.yml
   when: "openvpn_fetched_result_0|success and openvpn_instance == 'user'"
-  

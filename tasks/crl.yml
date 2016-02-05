@@ -31,4 +31,3 @@
   copy: src='{{ fetch_dir }}{{ openvpn_instance_name }}/{{ openvpn_crl_file }}' dest='{{ openvpn_tls_dest }}' group='{{ openvpn_instance_group }}' owner='{{ openvpn_instance_user }}' mode='0400'
   register: 'openvpn_crl_result'
   notify: 'Delete fetched files'
-  
