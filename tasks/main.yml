@@ -4,6 +4,9 @@
 - name: User is not defined
   fail: msg='User is not defined'
   when: "openvpn_instance == 'user' and openvpn_target_user == ''"
+- name: Set local facts
+  set_fact:
+    local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] + '_' + lookup('env', 'USER') }}"
 - name: Set facts about client/server instance
   set_fact:
     openvpn_instance_name: '{{ facter_fqdn }}'

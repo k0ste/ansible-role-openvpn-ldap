@@ -1,6 +1,6 @@
 ---
 - name: Make archive
-  local_action: shell 7z a {{ fetch_dir }}{{ openvpn_instance_name }}/{{ openvpn_instance_name }}.7z {{ fetch_dir }}{{ openvpn_instance_name }}
+  local_action: command {{ '7z a' + ' ' + vars['local_fetch_dir'] + '/' + hostvars[inventory_hostname]['openvpn_instance_name'] + '/' + hostvars[inventory_hostname]['openvpn_instance_name'] + '.7z' + ' ' + vars['local_fetch_dir'] + '/' + hostvars[inventory_hostname]['openvpn_instance_name'] }}
   register: 'openvpn_archive_result'
   notify: 'Delete fetched files'
 - name: Send mail
@@ -15,6 +15,6 @@
                 charset='{{ openvpn_mail_charset }}'
                 body='{{ openvpn_mail_body }}'
                 to='{{ openvpn_ldap_result.stdout }}'
-                attach='{{ fetch_dir }}{{ openvpn_instance_name }}/{{ openvpn_instance_name }}.7z'
-  when: 'openvpn_archive_result|success'
+                attach="{{ vars['local_fetch_dir'] + '/' + hostvars[inventory_hostname]['openvpn_instance_name'] + '/' + hostvars[inventory_hostname]['openvpn_instance_name'] + '.7z' }}"
+  when: "openvpn_archive_result|success"
   register: 'openvpn_mail_result'

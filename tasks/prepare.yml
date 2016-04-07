@@ -6,7 +6,7 @@
   file: path='{{ item }}' state='directory' group='root' owner='root' mode='0755' recurse='yes'
   with_flattened: '{{ openvpn_dirs }}'
 - name: Copy TLS files
-  copy: src='{{ fetch_dir }}{{ openvpn_instance_name }}/{{ item }}' dest='{{ openvpn_tls_dest }}' group='{{ openvpn_instance_group }}' owner='{{ openvpn_instance_user }}' mode='0400'
+  copy: src="{{ vars['local_fetch_dir'] + '/' + hostvars[inventory_hostname]['openvpn_instance_name'] + '/' + item }}" dest='{{ openvpn_tls_dest }}' group='{{ openvpn_instance_group }}' owner='{{ openvpn_instance_user }}' mode='0400'
   with_flattened: "{{ hostvars[inventory_hostname]['openvpn_files_' + openvpn_instance] }}"
   register: 'openvpn_copy_result'
 - include: worker.yml

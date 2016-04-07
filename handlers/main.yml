@@ -1,11 +1,11 @@
 ---
 - name: Delete fetched files
-  local_action: file path='{{ fetch_dir }}{{ openvpn_instance_name }}' state='absent'
+  local_action: file path="{{ vars['local_fetch_dir'] }}" state='absent'
   when: "openvpn_mail_result|success or openvpn_crl_result|success"
 - name: Deploy server configuration
   debug: msg="Try deploy plugin configuration and DEFAULT configuration"
   changed_when: 'true'
-  when: "openvpn_instance == 'server'"
+  when: "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
   notify:
     - 'Deploy DEFAULT configuration'
     - 'Deploy plugin configuration'
@@ -17,4 +17,3 @@
   template: src='DEFAULT.j2' dest='{{ openvpn_client_config_dir }}DEFAULT' group='{{ item.group }}' owner='{{ item.user }}' mode='0644'
   with_items: '{{ openvpn_server }}'
   when: "'{{ item.client_config_dir }}' is defined and '{{ item.client_config_dir }}' == 'true'"
-  
