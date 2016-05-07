@@ -9,7 +9,7 @@
     local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] + '_' + lookup('env', 'USER') }}"
 - name: Set facts about client/server instance
   set_fact:
-    openvpn_instance_name: '{{ facter_fqdn }}'
+    openvpn_instance_name: "{{ hostvars[inventory_hostname]['facter_networking']['fqdn'] }}"
   when: "openvpn_instance == 'server' or openvpn_instance == 'client'"
 - include: master.yml
   when: "openvpn_instance is defined and openvpn_revoke_target is not defined and (openvpn_instance == 'client' or openvpn_instance == 'server')"

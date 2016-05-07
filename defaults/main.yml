@@ -8,10 +8,6 @@ openvpn_crl_file: 'crl.pem'
 openvpn_dhparam_file: 'dhparam.pem'
 openvpn_takey_file: 'ta.key'
 openvpn_ca_file: '{{ ca_rootcrt }}'
-openvpn_cert_file: '{{ openvpn_instance_name }}.crt'
-openvpn_key_file: '{{ openvpn_instance_name }}.key'
-openvpn_files_server: ['{{ openvpn_cert_file }}', '{{ openvpn_key_file }}', '{{ openvpn_ca_file }}', '{{ openvpn_takey_file }}', '{{ openvpn_dhparam_file }}', '{{ openvpn_crl_file }}']
-openvpn_files_client: ['{{ openvpn_cert_file }}', '{{ openvpn_key_file }}', '{{ openvpn_ca_file }}', '{{ openvpn_takey_file }}']
 openvpn_dirs: ['{{ openvpn_dest }}', '{{ openvpn_tls_dest }}', '{{ openvpn_log_dest }}', '{{ openvpn_pool_dest }}', '{{ openvpn_client_config_dir }}']
 openvpn_instance_group: 'nobody'
 openvpn_instance_user: 'nogroup'

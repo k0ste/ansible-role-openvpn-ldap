@@ -12,12 +12,12 @@
   when: stat_result.stat.exists == False
   delegate_to: '{{ ca_master }}'
 - name: Fetch cert from master
-  fetch: src='{{ item.src }}' dest="{{ vars['local_fetch_dir'] + '/' + hostvars[inventory_hostname]['openvpn_instance_name'] + '/' }}" flat='yes' validate_checksum='yes' fail_on_missing='no'
+  fetch: src='{{ item }}' dest="{{ vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' }}" flat='yes' validate_checksum='yes' fail_on_missing='no'
   with_items:
-   - { src: '{{ ca_path }}{{ openvpn_instance_name }}.key' }
-   - { src: '{{ ca_path }}{{ openvpn_instance_name }}.crt' }
-   - { src: '{{ ca_path }}{{ openvpn_ca_file }}' }
-   - { src: '{{ openvpn_src }}{{ openvpn_takey_file }}' }
+   - "{{ ca_path + vars['openvpn_instance_name'] + '.key' }}"
+   - "{{ ca_path + vars['openvpn_instance_name'] + '.crt' }}"
+   - "{{ ca_path }}{{ openvpn_ca_file }}"
+   - "{{ openvpn_src }}{{ openvpn_takey_file }}"
   delegate_to: '{{ ca_master }}'
   register: 'openvpn_fetched_result_0'
 - name: Fetch CRL and DHPARAM from master
