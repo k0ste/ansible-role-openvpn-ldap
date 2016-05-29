@@ -6,17 +6,22 @@ Role for deploy openvpn server/client/user with LDAP auth and Certificate Revoca
 Attention
 -------------
 The role released as is, for common understanding how to "OpenVPN with Ansible". This role support most common options, also support
-'client config dir' for dynamic work with push routes to client.
+'client config dir' for dynamic work with push routes to client. Role tested only with OpenLDAP.
 
 Ansible versions
------------------
+--------------------
 Role is adapted for Ansible 2.0, should work on 1.9.
 
-Requirements
----------------
+Requirements for usage with LDAP
+-----------------------------------
 
-AD/OpenLDAP, SMTP server for send to end-users configuration.
-For auth with LDAP need plugin. SRPM for EL7 you can found [here](https://github.com/k0ste/openvpn-auth-ldap-rfc2307).
+* LDAP User Directory;
+* SMTP server for send to end-users configuration;
+* OpenLDAP (ldapsearch binary) on instance which execute Role, for queries;
+* 7zip for compress all end-user files to one archive;
+* openvpn-auth-ldap plugin with RFC2307 patch:
+  * SRPM for EL7 you can found [here](https://github.com/k0ste/openvpn-auth-ldap-rfc2307).
+  * PKGBUILD for ArchLinux in [AUR](https://aur.archlinux.org/packages/openvpn-auth-ldap).
 
 Example configuration of server with 4 tunnels
 -------------------------------------------------

@@ -1,9 +1,15 @@
 ---
 - name: Add the OS specific varibles
   include_vars: '{{ ansible_os_family }}.yml'
-- name: User is not defined
+- name: Raise user is not defined
   fail: msg='User is not defined'
-  when: "openvpn_instance == 'user' and openvpn_target_user == ''"
+  when: "hostvars[inventory_hostname]['openvpn_instance'] == 'user' and vars['openvpn_target_user'] == ''"
+- name: Check for ldapsearch binary
+  local_action: command ldapsearch -VV
+  register: 'ldapsearch_rc'
+- name: Raise OpenLDAP is not installed
+  fail: msg='OpenLDAP is not installed'
+  when: "hostvars[inventory_hostname]['openvpn_instance'] == 'user' and ldapsearch_rc.rc == 1"
 - name: Set local facts
   set_fact:
     local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] + '_' + lookup('env', 'USER') }}"

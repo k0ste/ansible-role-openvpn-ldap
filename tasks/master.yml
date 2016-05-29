@@ -21,7 +21,7 @@
   delegate_to: '{{ ca_master }}'
   register: 'openvpn_fetched_result_0'
 - name: Fetch CRL and DHPARAM from master
-  fetch: src='{{ item.src }}' dest="{{ vars['local_fetch_dir'] + hostvars[inventory_hostname]['openvpn_instance_name'] + '/' }}" flat='yes' validate_checksum='yes' fail_on_missing='no'
+  fetch: src='{{ item.src }}' dest="{{ vars['local_fetch_dir'] + '/' + hostvars[inventory_hostname]['openvpn_instance_name'] + '/' }}" flat='yes' validate_checksum='yes' fail_on_missing='no'
   with_items:
    - { src: '{{ openvpn_src }}{{ openvpn_dhparam_file }}' }
    - { src: '{{ ca_crl_path }}{{ openvpn_crl_file }}' }

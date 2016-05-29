@@ -2,7 +2,7 @@
 - name: Delete fetched files
   local_action: file path="{{ vars['local_fetch_dir'] }}" state='absent'
   when: "openvpn_mail_result|success or openvpn_crl_result|success"
-- name: Deploy server configuration
+- name: Try deploy plugin configuration and DEFAULT configuration
   debug: msg="Try deploy plugin configuration and DEFAULT configuration"
   changed_when: 'true'
   when: "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
@@ -10,10 +10,10 @@
     - 'Deploy DEFAULT configuration'
     - 'Deploy plugin configuration'
 - name: Deploy plugin configuration
-  template: src='auth_ldap.j2' dest='{{ openvpn_dest }}{{ item.plugin_conf }}' group='{{ item.group }}' owner='{{ item.user }}' mode='0644'
+  template: src='auth_ldap.j2' dest='{{ openvpn_dest }}{{ item.plugin_conf }}' group='{{ item.group }}' owner='{{ item.user }}' mode='0400'
   with_items: '{{ openvpn_server }}'
   when: "'{{ item.plugin }}' is defined and '{{ item.plugin }}' == 'true'"
 - name: Deploy DEFAULT configuration
-  template: src='DEFAULT.j2' dest='{{ openvpn_client_config_dir }}DEFAULT' group='{{ item.group }}' owner='{{ item.user }}' mode='0644'
+  template: src='DEFAULT.j2' dest='{{ openvpn_client_config_dir }}DEFAULT' group='{{ item.group }}' owner='{{ item.user }}' mode='0400'
   with_items: '{{ openvpn_server }}'
   when: "'{{ item.client_config_dir }}' is defined and '{{ item.client_config_dir }}' == 'true'"
