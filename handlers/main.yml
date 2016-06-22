@@ -1,6 +1,6 @@
 ---
 - name: Delete fetched files
-  local_action: file path="{{ vars['local_fetch_dir'] }}" state='absent'
+  local_action: file path="{{ vars['local_fetch_dir'] }}" state="absent"
   when: "openvpn_mail_result|success or openvpn_crl_result|success"
 - name: Try deploy plugin configuration and DEFAULT configuration
   debug: msg="Try deploy plugin configuration and DEFAULT configuration"
