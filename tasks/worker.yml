@@ -3,29 +3,32 @@
   template:
     src: "openvpn_client.j2"
     dest: "{{ hostvars[inventory_hostname]['openvpn_dest'] + item.name + '.conf' }}"
-    group: 'root'
-    owner: 'root'
-    mode: '0400'
+    group: "root"
+    owner: "root"
+    mode: "0400"
   with_items: "{{ hostvars[inventory_hostname]['openvpn_client'] }}"
-  register: 'openvpn_deploy_result'
+  register: "openvpn_deploy_result"
   when: "hostvars[inventory_hostname]['openvpn_instance'] == 'client'"
 - name: Deploy server configuration
   template:
     src: "openvpn_server.j2"
     dest: "{{ hostvars[inventory_hostname]['openvpn_dest'] + item.name + '.conf' }}"
-    group: 'root'
-    owner: 'root'
-    mode: '0400'
+    group: "root"
+    owner: "root"
+    mode: "0400"
   with_items: "{{ hostvars[inventory_hostname]['openvpn_server'] }}"
-  register: 'openvpn_deploy_result'
+  register: "openvpn_deploy_result"
   when: "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
-  notify: 'Deploy server configuration'
+  notify:
+    - "Deploy plugin configuration"
+    - "Deploy clients configuration"
 - name: Deploy user configuration
-  local_action: template src='openvpn_client.j2'
-    dest="{{ vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' + vars['openvpn_instance_name'] + '.conf' }}"
-    mode='0400'
+  local_action: template
+                src='openvpn_client.j2'
+                dest="{{ vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' + vars['openvpn_instance_name'] + '.conf' }}"
+                mode='0400'
   with_items: "hostvars[inventory_hostname]['openvpn_client']"
-  register: 'openvpn_local_result'
+  register: "openvpn_local_result"
   when: "hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
 - include: mail.yml
   when: "hostvars[inventory_hostname]['openvpn_instance'] == 'user' and openvpn_local_result|success"

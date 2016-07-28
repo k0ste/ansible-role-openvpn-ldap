@@ -135,10 +135,11 @@ keysize {{ item.keysize }}
 auth {{ item.auth }}
 {% endif %}
 {% endif %}
-{% if openvpn_client_config_dir is defined and item.client_config_dir is defined %}
-{% if item.client_config_dir == 'true' %}
-client-config-dir {{ openvpn_client_config_dir }}
+{% if item.client_config_dir is defined and item.client_config_dir != '' %}
+{{ 'client-config-dir ' + item.client_config_dir }}
 {% endif %}
+{% if item.ccd_exclusive is defined and item.ccd_exclusive == 'true' %}
+{{ 'ccd-exclusive' }}
 {% endif %}
 {% if item.plugin is defined %}
 {% if item.plugin == 'true' %}

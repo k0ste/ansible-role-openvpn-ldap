@@ -1,36 +1,47 @@
 ---
 - name: Check availability key on master
-  stat: path='{{ ca_path }}{{ openvpn_instance_name }}.crt'
-  register: 'stat_result'
-  delegate_to: '{{ ca_master }}'
+  stat:
+    path: "{{ hostvars[inventory_hostname]['ca_path'] + vars['openvpn_instance_name'] + '.crt' }}"
+  register: "stat_result"
+  delegate_to: "{{ hostvars[inventory_hostname]['ca_master'] }}"
 - name: Generate cert on master
-  shell: '{{ item }}'
+  shell: "{{ item }}"
   with_items:
-   - 'openssl genrsa -out {{ ca_path }}{{ openvpn_instance_name }}.key 4096'
-   - 'openssl req -new -key {{ ca_path }}{{ openvpn_instance_name }}.key -subj "{{ ca_subj }}{{ openvpn_instance_name }}" -out {{ ca_path }}{{ openvpn_instance_name }}.csr'
-   - 'openssl x509 -req -in {{ ca_path }}{{ openvpn_instance_name }}.csr -CA {{ ca_path }}{{ ca_rootcrt }} -CAkey {{ ca_path }}{{ ca_rootkey }} -CAcreateserial -out {{ ca_path }}{{ openvpn_instance_name }}.crt -days 5000'
-  when: stat_result.stat.exists == False
-  delegate_to: '{{ ca_master }}'
+   - "{{ 'openssl genrsa -out ' + hostvars[inventory_hostname]['ca_path'] + vars['openvpn_instance_name'] + '.key' + ' 4096' }}"
+   - "{{ 'openssl req -new -key ' + hostvars[inventory_hostname]['ca_path'] + vars['openvpn_instance_name'] + '.key' + ' -subj ' + hostvars[inventory_hostname]['ca_subj'] + vars['openvpn_instance_name'] + ' -out ' + hostvars[inventory_hostname]['ca_path'] + vars['openvpn_instance_name'] + '.csr' }}"
+   - "{{ 'openssl x509 -req -in ' + hostvars[inventory_hostname]['ca_path'] + vars['openvpn_instance_name'] + '.csr' + ' -CA ' + hostvars[inventory_hostname]['ca_path'] + hostvars[inventory_hostname]['ca_rootcrt'] + ' -CAkey ' + hostvars[inventory_hostname]['ca_path'] + hostvars[inventory_hostname]['ca_rootkey'] + ' -CAcreateserial -out ' + hostvars[inventory_hostname]['ca_path'] + vars['openvpn_instance_name'] + '.crt' + ' -days 5000' }}"
+  when: "stat_result.stat.exists == False"
+  delegate_to: "{{ hostvars[inventory_hostname]['ca_master'] }}"
 - name: Fetch cert from master
-  fetch: src='{{ item }}' dest="{{ vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' }}" flat='yes' validate_checksum='yes' fail_on_missing='no'
+  fetch:
+    src: "{{ item }}"
+    dest: "{{ vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' }}"
+    flat: "yes"
+    validate_checksum: "yes"
+    fail_on_missing: "no"
   with_items:
-   - "{{ ca_path + vars['openvpn_instance_name'] + '.key' }}"
-   - "{{ ca_path + vars['openvpn_instance_name'] + '.crt' }}"
-   - "{{ ca_path }}{{ openvpn_ca_file }}"
-   - "{{ openvpn_src }}{{ openvpn_takey_file }}"
-  delegate_to: '{{ ca_master }}'
-  register: 'openvpn_fetched_result_0'
+   - "{{ hostvars[inventory_hostname]['ca_path'] + vars['openvpn_instance_name'] + '.key' }}"
+   - "{{ hostvars[inventory_hostname]['ca_path'] + vars['openvpn_instance_name'] + '.crt' }}"
+   - "{{ hostvars[inventory_hostname]['ca_path'] + hostvars[inventory_hostname]['openvpn_ca_file'] }}"
+   - "{{ hostvars[inventory_hostname]['ca_path'] + hostvars[inventory_hostname]['openvpn_src'] + '/' + hostvars[inventory_hostname]['openvpn_takey_file'] }}"
+  delegate_to: "{{ hostvars[inventory_hostname]['ca_master'] }}"
+  register: "openvpn_fetched_result_0"
 - name: Fetch CRL and DHPARAM from master
-  fetch: src='{{ item.src }}' dest="{{ vars['local_fetch_dir'] + '/' + hostvars[inventory_hostname]['openvpn_instance_name'] + '/' }}" flat='yes' validate_checksum='yes' fail_on_missing='no'
+  fetch:
+    src: "{{ item }}"
+    dest: "{{ vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' }}"
+    flat: "yes"
+    validate_checksum: "yes"
+    fail_on_missing: "no"
   with_items:
-   - { src: '{{ openvpn_src }}{{ openvpn_dhparam_file }}' }
-   - { src: '{{ ca_crl_path }}{{ openvpn_crl_file }}' }
-  delegate_to: '{{ ca_master }}'
-  register: 'openvpn_fetched_result_1'
-  when: "openvpn_instance == 'server'"
+   - "{{ hostvars[inventory_hostname]['ca_path'] + hostvars[inventory_hostname]['openvpn_src'] + '/' + hostvars[inventory_hostname]['openvpn_dhparam_file'] }}"
+   - "{{ hostvars[inventory_hostname]['ca_crl_path'] + hostvars[inventory_hostname]['openvpn_crl_file'] }}"
+  delegate_to: "{{ hostvars[inventory_hostname]['ca_master'] }}"
+  register: "openvpn_fetched_result_1"
+  when: "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
 - include: prepare.yml
-  when: "openvpn_fetched_result_0|success and openvpn_fetched_result_1|success and openvpn_instance == 'server'"
+  when: "openvpn_fetched_result_0|success and openvpn_fetched_result_1|success and hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
 - include: prepare.yml
-  when: "openvpn_fetched_result_0|success and openvpn_instance == 'client'"
+  when: "openvpn_fetched_result_0|success and hostvars[inventory_hostname]['openvpn_instance'] == 'client'"
 - include: worker.yml
-  when: "openvpn_fetched_result_0|success and openvpn_instance == 'user'"
+  when: "openvpn_fetched_result_0|success and hostvars[inventory_hostname]['openvpn_instance'] == 'user'"

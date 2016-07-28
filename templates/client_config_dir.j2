@@ -1,0 +1,9 @@
+{{ '## client_config_dir@' + item.instance + ': ' + item.cn }}
+{{ '# ' + ansible_managed }}
+{{ '# Do not edit manually' }}
+
+{% if item.options is string %}
+{{ item.options }}
+{% elif item.options %}
+{% if item.options %}{{ item.options | join('\n') }}{% endif %}
+{% endif %}

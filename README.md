@@ -1,42 +1,85 @@
 ansible-role-openvpn-ldap
-===========================
+=============================
 
 Role for deploy openvpn server/client/user with LDAP auth and Certificate Revocation List support.
 
 Attention
 -------------
+
 The role released as is, for common understanding how to "OpenVPN with Ansible". This role support most common options, also support
 'client config dir' for dynamic work with push routes to client. Role tested only with OpenLDAP.
 
 Ansible versions
 --------------------
-Role is adapted for Ansible 2.0, should work on 1.9.
+
+Role is adapted for Ansible 2.0, tested on 2.1.
 
 Requirements for usage with LDAP
 -----------------------------------
+
+**Software:**
 
 * LDAP User Directory;
 * SMTP server for send to end-users configuration;
 * OpenLDAP (ldapsearch binary) on instance which execute Role, for queries;
 * 7zip for compress all end-user files to one archive;
-* openvpn-auth-ldap plugin with RFC2307 patch:
-  * SRPM for EL7 you can found [here](https://github.com/k0ste/openvpn-auth-ldap-rfc2307).
-  * PKGBUILD for ArchLinux in [AUR](https://aur.archlinux.org/packages/openvpn-auth-ldap).
+
+
+**openvpn-auth-ldap plugin with RFC2307 patch**:
+
+SRPM for EL7 you can found [here](//github.com/k0ste/openvpn-auth-ldap-rfc2307).
+PKGBUILD for ArchLinux in [AUR](//aur.archlinux.org/packages/openvpn-auth-ldap).
+
 
 Example configuration of server with 4 tunnels
--------------------------------------------------
+---------------------------------------------------
+
+1st instance (openvpn1194) have client-config-dir.
+All clients receive routes.
+Special clients receive dedicated ipaddr.
 
 ```yaml
 ---
-openvpn_default_routes:
-  - '5.128.220.1 255.255.255.255'
-  - '5.128.220.254 255.255.255.255'
+openvpn_client_config_mgmt: 'true'
+openvpn_instance: 'server'
+
+openvpn_openvpn1194_config_dir: '/etc/openvpn/openvpn1194'
+openvpn_openvpn1194_DEFAULT:
+  - 'push route 10.9.0.0 255.255.255.0'
+  - 'push route 10.10.0.0 255.255.255.0'
+  - 'push route 10.11.0.0 255.255.255.0'
+
 openvpn_dest: '/etc/openvpn/'
-openvpn_tls_dest: '{{ openvpn_dest }}tls/'
-openvpn_client_config_dir: '{{ openvpn_dest }}main/'
+openvpn_tls_dest: '/etc/openvpn/tls/'
 openvpn_log_dest: '/var/log/openvpn/'
 openvpn_pool_dest: '/var/lib/openvpn/'
-openvpn_instance: 'server'
+
+openvpn_clients_conf:
+- {
+instance: 'openvpn1194',
+dest: "{{ hostvars[inventory_hostname]['openvpn_openvpn1194_config_dir'] }}",
+cn: 'DEFAULT',
+options: "{{ hostvars[inventory_hostname]['openvpn_openvpn1194_DEFAULT'] }}"
+}
+- {
+instance: 'openvpn1194',
+dest: "{{ hostvars[inventory_hostname]['openvpn_openvpn1194_config_dir'] }}",
+cn: 'DEFAULT',
+options: "{{ hostvars[inventory_hostname]['openvpn_openvpn1194_DEFAULT'] }}"
+}
+- {
+instance: 'openvpn1194',
+dest: "{{ hostvars[inventory_hostname]['openvpn_openvpn1194_config_dir'] }}",
+cn: 'dallas',
+options: 'ifconfig-push 10.15.0.2 255.255.255.0'
+}
+- {
+instance: 'openvpn1194',
+dest: "{{ hostvars[inventory_hostname]['openvpn_openvpn1194_config_dir'] }}",
+cn: 'boston',
+options: 'ifconfig-push 10.15.0.3 255.255.255.0'
+}
+
 openvpn_server:
 - {
 name: 'openvpn1194',
@@ -50,8 +93,8 @@ key: '{{ openvpn_instance_name }}.key',
 tls_auth: '{{ openvpn_takey_file }}',
 dh: '{{ openvpn_dhparam_file }}',
 crl_verify: '{{ openvpn_crl_file }}',
-user: '{{ openvpn_instance_user }}',
-group: '{{ openvpn_instance_group }}',
+user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
+group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 client_cert_not_required: 'true',
 username_as_common_name: 'true',
 multihome: 'true',
@@ -74,7 +117,7 @@ push_route: '192.168.0.0 255.255.0.0',
 push_persist_key: 'true',
 push_persist_tun: 'true',
 push_dhcp_option: 'DNS 192.168.128.1',
-client_config_dir: 'true',
+client_config_dir: "{{ hostvars[inventory_hostname]['openvpn_openvpn1194_config_dir'] }}",
 plugin: 'true',
 plugin_name: 'openvpn-auth-ldap.so',
 plugin_conf: 'auth-ldap.conf'
@@ -91,8 +134,8 @@ key: '{{ openvpn_instance_name }}.key',
 tls_auth: '{{ openvpn_takey_file }}',
 dh: '{{ openvpn_dhparam_file }}',
 crl_verify: '{{ openvpn_crl_file }}',
-user: '{{ openvpn_instance_user }}',
-group: '{{ openvpn_instance_group }}',
+user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
+group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 client_cert_not_required: 'false',
 username_as_common_name: 'false',
 multihome: 'true',
@@ -130,8 +173,8 @@ key: '{{ openvpn_instance_name }}.key',
 tls_auth: '{{ openvpn_takey_file }}',
 dh: '{{ openvpn_dhparam_file }}',
 crl_verify: '{{ openvpn_crl_file }}',
-user: '{{ openvpn_instance_user }}',
-group: '{{ openvpn_instance_group }}',
+user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
+group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 client_cert_not_required: 'false',
 username_as_common_name: 'false',
 multihome: 'true',
@@ -169,8 +212,8 @@ key: '{{ openvpn_instance_name }}.key',
 tls_auth: '{{ openvpn_takey_file }}',
 dh: '{{ openvpn_dhparam_file }}',
 crl_verify: '{{ openvpn_crl_file }}',
-user: '{{ openvpn_instance_user }}',
-group: '{{ openvpn_instance_group }}',
+user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
+group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 client_cert_not_required: 'false',
 username_as_common_name: 'false',
 duplicate_cn: 'true',
@@ -206,9 +249,10 @@ Example configuration of client with 2 tunnels
 ```yaml
 ---
 openvpn_dest: '/etc/openvpn/'
-openvpn_tls_dest: '{{ openvpn_dest }}tls/'
+openvpn_tls_dest: '/etc/openvpn/tls/'
 openvpn_log_dest: '/var/log/openvpn/'
 openvpn_pool_dest: '/var/lib/openvpn/'
+
 openvpn_instance: 'client'
 openvpn_client:
 - {
@@ -222,8 +266,8 @@ tls_version_min: '1.2',
 ca: '{{ openvpn_ca_file }}',
 cert: '{{ openvpn_instance_name }}.crt',
 key: '{{ openvpn_instance_name }}.key',
-user: '{{ openvpn_instance_user }}',
-group: '{{ openvpn_instance_group }}',
+user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
+group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 resolv_retry: 'infinite',
 nobind: 'true',
 persist_tun: 'true',
@@ -246,8 +290,8 @@ tls_version_min: '1.2',
 ca: '{{ openvpn_ca_file }}',
 cert: '{{ openvpn_instance_name }}.crt',
 key: '{{ openvpn_instance_name }}.key',
-user: '{{ openvpn_instance_user }}',
-group: '{{ openvpn_instance_group }}',
+user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
+group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 resolv_retry: 'infinite',
 nobind: 'true',
 persist_tun: 'true',
@@ -259,12 +303,10 @@ verbosity: '4',
 mute: '5',
 mute_replay_warnings: 'true'
 }
-
 ```
 
 Example configuration of user with auth-login-pass
-----------------------------------------------------
-
+-------------------------------------------------------
 
 ```yaml
 ---
@@ -272,14 +314,15 @@ openvpn_dest: ''
 openvpn_tls_dest: ''
 openvpn_log_dest: ''
 openvpn_instance: 'user'
+
 openvpn_client:
 - {
 name: '{{ openvpn_instance_name }}',
 remote: 'openvpnserver.com 1197',
 proto: 'udp',
 dev: 'tap0',
-user: '{{ openvpn_instance_user }}',
-group: '{{ openvpn_instance_group }}',
+user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
+group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 resolv_retry: 'infinite',
 explicit-exit-notify: '2',
 nobind: 'true',

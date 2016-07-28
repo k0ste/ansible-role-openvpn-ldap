@@ -1,14 +1,14 @@
-openvpn_src: '{{ ca_path }}openvpn/'
+---
 openvpn_dest: '/etc/openvpn/'
-openvpn_tls_dest: '{{ openvpn_dest }}tls/'
+openvpn_tls_dest: '/etc/openvpn/tls/'
+openvpn_client_config_dir: '/etc/openvpn/main/'
 openvpn_log_dest: '/var/log/openvpn/'
-openvpn_client_config_dir: '{{ openvpn_dest }}main/'
 openvpn_pool_dest: '/var/lib/openvpn/'
+openvpn_src: '{{ ca_path }}openvpn/'
 openvpn_crl_file: 'crl.pem'
 openvpn_dhparam_file: 'dhparam.pem'
 openvpn_takey_file: 'ta.key'
 openvpn_ca_file: '{{ ca_rootcrt }}'
-openvpn_dirs: ['{{ openvpn_dest }}', '{{ openvpn_tls_dest }}', '{{ openvpn_log_dest }}', '{{ openvpn_pool_dest }}', '{{ openvpn_client_config_dir }}']
 openvpn_instance_group: 'nobody'
 openvpn_instance_user: 'nogroup'
 openvpn_default_routes:
