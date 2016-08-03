@@ -24,8 +24,8 @@ group {{ item.group }}
 {% if item.resolv_retry is defined %}
 resolv-retry {{ item.resolv_retry }}
 {% endif %}
-{% if item.explicit_exit_notify is defined %}
-explicit-exit-notify {{ item.explicit-exit-notify }}
+{% if item.explicit_exit_notify is defined and item.explicit_exit_notify != '' %}
+{{ 'explicit-exit-notify ' + item.explicit_exit_notify }}
 {% endif %}
 {% if item.nobind == 'true' %}
 nobind
