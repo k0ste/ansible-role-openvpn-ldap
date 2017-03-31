@@ -34,9 +34,10 @@ PKGBUILD for ArchLinux in [AUR](//aur.archlinux.org/packages/openvpn-auth-ldap).
 Example configuration of server with 4 tunnels
 ---------------------------------------------------
 
-1st instance (openvpn1194) have client-config-dir.
-All clients receive routes.
-Special clients receive dedicated ipaddr.
+- First instance (openvpn1194) have client-config-dir.
+- All clients receive routes.
+- Special clients receive dedicated ipaddr.
+- Last instance (openvpn1198) allow only one connection per user.
 
 ```yaml
 ---
@@ -44,10 +45,15 @@ openvpn_client_config_mgmt: 'true'
 openvpn_instance: 'server'
 
 openvpn_openvpn1194_config_dir: '/etc/openvpn/openvpn1194'
+openvpn_openvpn1198_config_dir: '/etc/openvpn/openvpn1198'
 openvpn_openvpn1194_DEFAULT:
   - 'push route 10.9.0.0 255.255.255.0'
   - 'push route 10.10.0.0 255.255.255.0'
   - 'push route 10.11.0.0 255.255.255.0'
+
+openvpn_openvpn1198_user1:
+  - 'ifconfig-push 10.19.0.2 255.255.255.0'
+  - 'push route 192.168.128.0 255.255.255.0'
 
 openvpn_dest: '/etc/openvpn/'
 openvpn_tls_dest: '/etc/openvpn/tls/'
@@ -79,6 +85,13 @@ dest: "{{ hostvars[inventory_hostname]['openvpn_openvpn1194_config_dir'] }}",
 cn: 'boston',
 options: 'ifconfig-push 10.15.0.3 255.255.255.0'
 }
+## Restricted users. Have only one connection
+- {
+instance: 'openvpn1198',
+dest: "{{ hostvars[inventory_hostname]['openvpn_openvpn1198_config_dir'] }}",
+cn: 'user1',
+options: "{{ hostvars[inventory_hostname]['openvpn_openvpn1198_user1'] }}"
+}
 
 openvpn_server:
 - {
@@ -98,6 +111,7 @@ group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 client_cert_not_required: 'true',
 username_as_common_name: 'true',
 multihome: 'true',
+management: '127.0.0.1 7505',
 persist_key: 'true',
 persist_tun: 'true',
 keepalive: '10 60',
@@ -240,6 +254,47 @@ persist_key: 'true',
 client_config_dir: 'true',
 plugin: 'false'
 }
+- {
+name: 'openvpn1198',
+port: '1198',
+proto: 'udp',
+dev: 'tap4',
+server: '10.19.0.0 255.255.255.0',
+ca: '{{ openvpn_ca_file }}',
+cert: '{{ openvpn_instance_name }}.crt',
+key: '{{ openvpn_instance_name }}.key',
+tls_auth: '{{ openvpn_takey_file }}',
+dh: '{{ openvpn_dhparam_file }}',
+crl_verify: '{{ openvpn_crl_file }}',
+user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
+group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
+client_cert_not_required: 'false',
+username_as_common_name: 'false',
+duplicate_cn: 'false',
+multihome: 'true',
+persist_tun: 'true',
+keepalive: '10 60',
+max_clients: '250',
+reneg_sec: '86400',
+replay_window: '64',
+client_to_client: 'true',
+comp_lzo: 'adaptive',
+verbosity: '4',
+mute: '10',
+mute_replay_warnings: 'true',
+status: 'status1198.log',
+push: 'true',
+push_comp_lzo: 'adaptive',
+push_persist_key: 'true',
+push_persist_tun: 'true',
+push_dhcp_option: 'DNS 192.168.128.1',
+client_config_dir: "{{ hostvars[inventory_hostname]['openvpn_openvpn1198_config_dir'] }}",
+ccd_exclusive: 'true',
+tls_server: 'true',
+tls_version_min: '1.2',
+persist_key: 'true',
+plugin: 'false'
+}
 ```
 
 Example configuration of client with 2 tunnels
@@ -355,6 +410,8 @@ Example playbooks
   remote_user: ansible
   no_log: false
   strategy: free
+  vars:
+    openvpn_target_port: ''
   roles:
   - openvpn_ldap
   hosts: target-client
@@ -370,6 +427,8 @@ Example playbooks
   strategy: free
   roles:
   - openvpn_ldap
+  vars:
+    openvpn_target_port: ''
   vars_prompt:
    - name: 'openvpn_revoke_target'
      prompt: 'What instance name should be revoked?'
@@ -382,7 +441,11 @@ Example playbooks
 - name: Deploy OpenVPN Server Instance
   become: true
   gather_facts: true
-  user: ansible
+  remote_user: ansible
+  no_log: false
+  strategy: free
+  vars:
+    openvpn_target_port: ''
   roles:
   - openvpn_ldap
   hosts: target-server
@@ -403,4 +466,8 @@ Example playbooks
    - name: 'openvpn_target_user'
      prompt: 'What user name?'
      private: no
+   - name: 'openvpn_target_port'
+     prompt: 'What port (1197 for users, 1198 for restricted_users)?'
+     private: no
+     default: '1197'
 ```
