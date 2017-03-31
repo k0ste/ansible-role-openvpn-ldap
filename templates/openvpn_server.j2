@@ -32,7 +32,10 @@ client-cert-not-required
 duplicate-cn
 {% endif %}
 {% if item.multihome is defined and item.multihome == 'true' %}
-multihome
+{{ 'multihome' }}
+{% endif %}
+{% if item.management is defined and item.management != '' %}
+{{ 'management ' + item.management }}
 {% endif %}
 {% if item.username_as_common_name == 'true' %}
 username-as-common-name
