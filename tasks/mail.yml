@@ -1,20 +1,33 @@
 ---
-- name: Make archive
-  local_action: command {{ '7z a' + ' ' + vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' + vars['openvpn_instance_name'] + '.7z' + ' ' + vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] }}
-  register: "openvpn_archive_result"
-  notify: "Delete fetched files"
-- name: Send mail
-  local_action: mail
-    host="{{ hostvars[inventory_hostname]['openvpn_mail_host'] }}"
-    port="{{ hostvars[inventory_hostname]['openvpn_mail_port'] }}"
-    username="{{ hostvars[inventory_hostname]['openvpn_mail_username'] }}"
-    password="{{ hostvars[inventory_hostname]['openvpn_mail_password'] }}"
-    subject="{{ hostvars[inventory_hostname]['openvpn_mail_subject'] }}"
-    from="{{ hostvars[inventory_hostname]['openvpn_mail_from'] }}"
-    headers="{{ hostvars[inventory_hostname]['openvpn_mail_headers'] }}"
-    charset="{{ hostvars[inventory_hostname]['openvpn_mail_charset'] }}"
-    body="{{ hostvars[inventory_hostname]['openvpn_mail_body'] }}"
-    to="{{ openvpn_ldap_result.stdout }}"
-    attach="{{ vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' + vars['openvpn_instance_name'] + '.7z' }}"
-  when: "openvpn_archive_result|success"
-  register: "openvpn_mail_result"
+- name: openvpn | Make archive
+  local_action:
+    module: "archive"
+    path: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] }}"
+    dest: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
+              '/' ~ vars['openvpn_instance_name'] ~ '.gz' }}"
+  notify:
+  - "Delete fetched files"
+- name: openvpn | Send mail
+  local_action:
+    module: "mail"
+    host: "{{ hostvars[inventory_hostname]['openvpn_mail_host'] |
+              default(omit) }}"
+    port: "{{ hostvars[inventory_hostname]['openvpn_mail_port'] |
+              default(omit) }}"
+    username: "{{ hostvars[inventory_hostname]['openvpn_mail_username'] |
+                  default(omit) }}"
+    password: "{{ hostvars[inventory_hostname]['openvpn_mail_password'] |
+                  default(omit) }}"
+    subject: "{{ hostvars[inventory_hostname]['openvpn_mail_subject'] |
+                 default(omit) }}"
+    from: "{{ hostvars[inventory_hostname]['openvpn_mail_from'] |
+              default(omit) }}"
+    headers: "{{ hostvars[inventory_hostname]['openvpn_mail_headers'] |
+                 default(omit) }}"
+    charset: "{{ hostvars[inventory_hostname]['openvpn_mail_charset'] |
+                 default(omit) }}"
+    body: "{{ hostvars[inventory_hostname]['openvpn_mail_body'] |
+              default(omit) }}"
+    to: "{{ openvpn_ldap_result.stdout }}"
+    attach: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
+                '/' ~ vars['openvpn_instance_name'] ~ '.gz' }}"

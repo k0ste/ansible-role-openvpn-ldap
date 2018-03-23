@@ -1,35 +1,29 @@
 ---
-- name: Add the OS specific varibles
-  include_vars: "{{ hostvars[inventory_hostname]['ansible_os_family'] + '.yml' }}"
-- name: Raise user is not defined
-  fail:
-    msg: "User is not defined"
-  when: "hostvars[inventory_hostname]['openvpn_instance'] == 'user' and vars['openvpn_target_user'] == ''"
-- name: Check for ldapsearch binary
-  local_action: command ldapsearch -VV
-  register: "ldapsearch_rc"
-- name: Raise OpenLDAP is not installed
-  fail:
-    msg: "OpenLDAP is not installed"
-  when: "hostvars[inventory_hostname]['openvpn_instance'] == 'user' and ldapsearch_rc.rc == 1"
-- name: Set local facts
-  set_fact:
-    local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] + '_' + lookup('env', 'USER') }}"
-- name: Set facts about client/server instance [Facter 2]
-  set_fact:
-    openvpn_instance_name: "{{ hostvars[inventory_hostname]['facter_fqdn'] }}"
-  when: "hostvars[inventory_hostname]['ansible_os_family'] == 'RedHat' and (hostvars[inventory_hostname]['openvpn_instance'] == 'server' or hostvars[inventory_hostname]['openvpn_instance'] == 'client')"
-- name: Set facts about client/server instance [Facter 3]
-  set_fact:
-    openvpn_instance_name: "{{ hostvars[inventory_hostname]['facter_networking']['fqdn'] }}"
-  when: "hostvars[inventory_hostname]['ansible_os_family'] != 'RedHat' and (hostvars[inventory_hostname]['openvpn_instance'] == 'server' or hostvars[inventory_hostname]['openvpn_instance'] == 'client')"
-- include: master.yml
-  when: "hostvars[inventory_hostname]['openvpn_instance'] is defined and vars['openvpn_revoke_target'] is not defined and (hostvars[inventory_hostname]['openvpn_instance'] == 'client' or hostvars[inventory_hostname]['openvpn_instance'] == 'server')"
-- name: Set facts about end-user instance
+- include_tasks: pre_requisite.yml
+- include_tasks: packages_ca_master.yml
+  when:
+  - "vars['openvpn_revoke_target'] is not defined"
+- include_tasks: packages_client.yml
+  when:
+  - "hostvars[inventory_hostname]['openvpn_install_packages'] is defined"
+  - "hostvars[inventory_hostname]['openvpn_install_packages'] == 'true'"
+  - "hostvars[inventory_hostname]['openvpn_instance'] == 'client'"
+- include_tasks: master.yml
+  when:
+  - "vars['openvpn_revoke_target'] is not defined"
+  - "(hostvars[inventory_hostname]['openvpn_instance'] == 'client' or
+      hostvars[inventory_hostname]['openvpn_instance'] == 'server')"
+- name: openvpn | Set facts about end-user instance
   set_fact:
     openvpn_instance_name: "{{ vars['openvpn_target_user'] }}"
-  when: "hostvars[inventory_hostname]['openvpn_instance'] is defined and hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
-- include: userfind.yml
-  when: "hostvars[inventory_hostname]['openvpn_instance'] is defined and hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
-- include: crl.yml
-  when: "vars['openvpn_revoke_target'] is defined and hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
+  when:
+  - "hostvars[inventory_hostname]['openvpn_instance'] is defined"
+  - "hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
+- include_tasks: userfind.yml
+  when:
+  - "hostvars[inventory_hostname]['openvpn_instance'] is defined"
+  - "hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
+- include_tasks: crl.yml
+  when:
+  - "vars['openvpn_revoke_target'] is defined"
+  - "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"

@@ -1,47 +1,79 @@
 ---
-- name: Check availability key on master
+- name: openvpn | Check availability key on master
   stat:
-    path: "{{ hostvars[inventory_hostname]['ca_path'] + vars['openvpn_revoke_target'] + '.crt' }}"
-  register: "stat_result"
-  delegate_to: "{{ hostvars[inventory_hostname]['ca_master'] }}"
-- name: Cert {{ vars['openvpn_revoke_target'] }} not found
+    path: "{{ hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
+              vars['openvpn_revoke_target'] ~ '.crt' }}"
+  register: "cert_stat_result"
+  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
+- name: "{{ 'openvpn | Cert ' ~ vars['openvpn_revoke_target'] ~ ' not found' }}"
   fail:
-    msg: "{{ 'Cert for ' + vars['openvpn_revoke_target'] + ' not found' }}"
-  when: "stat_result.stat.exists == False"
-- name: Revoke cert
-  shell: '{{ item }}'
-  with_items:
-   - 'openssl ca -keyfile {{ ca_path }}{{ ca_rootkey }} -cert {{ ca_path }}{{ ca_rootcrt }} -revoke {{ ca_path }}{{ openvpn_revoke_target }}.crt'
-   - 'openssl ca -keyfile {{ ca_path }}{{ ca_rootkey }} -cert {{ ca_path }}{{ ca_rootcrt }} -gencrl -out {{ ca_crl_path }}{{ openvpn_crl_file }}'
-  when: "stat_result.stat.exists == True"
-  delegate_to: "{{ hostvars[inventory_hostname]['ca_master'] }}"
-  register: "openvpn_revoke_result"
-- name: Delete revoked cert
+    msg: "{{ 'Cert for ' ~ vars['openvpn_revoke_target'] ~ ' not found' }}"
+  when:
+  - "cert_stat_result.stat.exists == False"
+- name: openvpn | Deploy temp openssl.conf
+  template:
+    src: "openssl_conf.j2"
+    dest: "/tmp/openssl.conf"
+    group: "root"
+    owner: "root"
+    mode: "0400"
+  when:
+  - "cert_stat_result.stat.exists == True"
+  notify:
+  - "Delete temp openssl.conf"
+  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
+- name: "{{ 'openvpn | Revoke ' ~ vars['openvpn_revoke_target'] ~ ' cert' }}"
+  shell: "{{ 'openssl ca -config /tmp/openssl.conf -keyfile ' ~
+             hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
+             hostvars[inventory_hostname]['openvpn_ca_rootkey'] ~ ' -cert ' ~
+             hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
+             hostvars[inventory_hostname]['openvpn_ca_rootcrt'] ~ ' -revoke ' ~
+             hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
+             vars['openvpn_revoke_target'] ~ '.crt' }}"
+  when:
+  - "cert_stat_result.stat.exists == True"
+  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
+- name: openvpn | Generate CRL
+  shell: "{{ 'openssl ca -config /tmp/openssl.conf -keyfile ' ~
+             hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
+             hostvars[inventory_hostname]['openvpn_ca_rootkey'] ~ ' -cert ' ~
+             hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
+             hostvars[inventory_hostname]['openvpn_ca_rootcrt'] ~
+             ' -gencrl -out ' ~
+             hostvars[inventory_hostname]['openvpn_ca_crl_path'] ~ '/' ~
+             hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}"
+  when:
+  - "cert_stat_result.stat.exists == True"
+  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
+- name: openvpn | Delete revoked cert
   file:
-    path: "{{ hostvars[inventory_hostname]['ca_path'] + vars['openvpn_revoke_target'] + item }}"
+    path: "{{ hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
+              vars['openvpn_revoke_target'] ~ item }}"
     state: "absent"
   with_items:
    - '.csr'
    - '.crt'
    - '.key'
-  when: "openvpn_revoke_result|success"
-  delegate_to: "{{ hostvars[inventory_hostname]['ca_master'] }}"
-- name: Fetch CRL from master
+  loop_control:
+    label: "{{ vars['openvpn_revoke_target'] ~ item }}"
+  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
+- name: openvpn | Fetch CRL from master
   fetch:
-    src: "{{ ca_crl_path }}{{ openvpn_crl_file }}"
-    dest: "{{ vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' }}"
+    src: "{{ hostvars[inventory_hostname]['openvpn_ca_crl_path'] ~ '/' ~
+             hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}"
+    dest: "{{ vars['local_fetch_dir'] ~ '/' ~
+              vars['openvpn_instance_name'] ~ '/' }}"
     flat: "yes"
     validate_checksum: "yes"
-    fail_on_missing: "no"
-  delegate_to: "{{ hostvars[inventory_hostname]['ca_master'] }}"
-  register: "openvpn_fetched_result"
-  when: "openvpn_revoke_result|success"
-- name: Update CRL
+    fail_on_missing: "yes"
+  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
+- name: openvpn | Update CRL
   copy:
-    src: "{{ vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' + hostvars[inventory_hostname]['openvpn_crl_file'] }}"
+    src: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
+             '/' ~ hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}"
     dest: "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
     group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}"
     owner: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}"
     mode: "0400"
-  register: "openvpn_crl_result"
-  notify: "Delete fetched files"
+  notify:
+  - "Delete fetched files"

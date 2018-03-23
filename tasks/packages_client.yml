@@ -1,0 +1,30 @@
+---
+- name: openvpn | Install the required packages in Redhat derivatives
+  yum:
+    name: "{{ item }}"
+    state: "installed"
+  with_items: "{{ hostvars[inventory_hostname]['openvpn_packages_client'] }}"
+  loop_control:
+    label: "{{ item }}"
+  when:
+  - "hostvars[inventory_hostname]['ansible_os_family'] == 'RedHat'"
+- name: openvpn | Install the required packages in Debian derivatives
+  apt:
+    name: "{{ item }}"
+    state: "installed"
+    update_cache: "yes"
+  with_items: "{{ hostvars[inventory_hostname]['openvpn_packages_client'] }}"
+  loop_control:
+    label: "{{ item }}"
+  when:
+  - "hostvars[inventory_hostname]['ansible_os_family'] == 'Debian'"
+- name: openvpn | Install the required packages in ArchLinux derivatives
+  pacman:
+    name: "{{ item }}"
+    state: "installed"
+    update_cache: "yes"
+  with_items: "{{ hostvars[inventory_hostname]['openvpn_packages_client'] }}"
+  loop_control:
+    label: "{{ item }}"
+  when:
+  - "hostvars[inventory_hostname]['ansible_os_family'] == 'Archlinux'"

@@ -1,14 +1,14 @@
 ---
-- name: Delete that should not be
+- name: openvpn | Delete catalogs (clean up before deploy)
   file:
     name: "{{ item }}"
     state: "absent"
   with_items:
-    - "{{ hostvars[inventory_hostname]['openvpn_dest'] }}"
-    - "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
-    - "{{ hostvars[inventory_hostname]['openvpn_log_dest'] }}"
-    - "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
-- name: Create catalogs
+  - "{{ hostvars[inventory_hostname]['openvpn_dest'] }}"
+  - "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
+  - "{{ hostvars[inventory_hostname]['openvpn_log_dest'] }}"
+  - "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
+- name: openvpn | Create catalogs
   file:
     path: "{{ item }}"
     state: "directory"
@@ -17,11 +17,11 @@
     mode: "0755"
     recurse: "yes"
   with_items:
-    - "{{ hostvars[inventory_hostname]['openvpn_dest'] }}"
-    - "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
-    - "{{ hostvars[inventory_hostname]['openvpn_log_dest'] }}"
-    - "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
-- name: Create client config catalogs
+  - "{{ hostvars[inventory_hostname]['openvpn_dest'] }}"
+  - "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
+  - "{{ hostvars[inventory_hostname]['openvpn_log_dest'] }}"
+  - "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
+- name: openvpn | Create client config catalogs
   file:
     path: "{{ item.client_config_dir }}"
     state: "directory"
@@ -30,36 +30,42 @@
     mode: "0755"
     recurse: "yes"
   with_items: "{{ hostvars[inventory_hostname]['openvpn_server'] }}"
-  when: "hostvars[inventory_hostname]['openvpn_instance'] == 'server' and (item.client_config_dir is defined and item.client_config_dir != '')"
-- name: Copy TLS files for client instance
+  loop_control:
+    label: "{{ item.client_config_dir }}"
+  when:
+  - "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
+  - "item.client_config_dir is defined"
+  - "item.client_config_dir != ''"
+- name: openvpn | Copy TLS files for client instance
   copy:
-    src: "{{ vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' + item }}"
+    src: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
+             '/' ~ item }}"
     dest: "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
     group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}"
     owner: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}"
     mode: "0400"
   with_items:
-  - "{{ vars['openvpn_instance_name'] + '.crt' }}"
-  - "{{ vars['openvpn_instance_name'] + '.key' }}"
+  - "{{ vars['openvpn_instance_name'] ~ '.crt' }}"
+  - "{{ vars['openvpn_instance_name'] ~ '.key' }}"
   - "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}"
   - "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}"
-  register: "openvpn_copy_result"
-  when: "hostvars[inventory_hostname]['openvpn_instance'] == 'client'"
-- name: Copy TLS files for server instance
+  when:
+  - "hostvars[inventory_hostname]['openvpn_instance'] == 'client'"
+- name: openvpn | Copy TLS files for server instance
   copy:
-    src: "{{ vars['local_fetch_dir'] + '/' + vars['openvpn_instance_name'] + '/' + item }}"
+    src: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
+             '/' ~ item }}"
     dest: "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
     group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}"
     owner: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}"
     mode: "0400"
   with_items:
-  - "{{ vars['openvpn_instance_name'] + '.crt' }}"
-  - "{{ vars['openvpn_instance_name'] + '.key' }}"
+  - "{{ vars['openvpn_instance_name'] ~ '.crt' }}"
+  - "{{ vars['openvpn_instance_name'] ~ '.key' }}"
   - "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}"
   - "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}"
   - "{{ hostvars[inventory_hostname]['openvpn_dhparam_file'] }}"
-  - "{{ hostvars[inventory_hostname]['openvpn_crl_file'] }}"
-  register: "openvpn_copy_result"
-  when: "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
-- include: worker.yml
-  when: "openvpn_copy_result|success"
+  - "{{ hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}"
+  when:
+  - "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
+- include_tasks: worker.yml

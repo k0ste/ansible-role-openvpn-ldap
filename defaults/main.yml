@@ -1,60 +1,55 @@
 ---
-openvpn_dest: '/etc/openvpn/'
-openvpn_tls_dest: '/etc/openvpn/tls/'
-openvpn_client_config_dir: '/etc/openvpn/main/'
-openvpn_log_dest: '/var/log/openvpn/'
-openvpn_pool_dest: '/var/lib/openvpn/'
-openvpn_src: '{{ ca_path }}openvpn/'
-openvpn_crl_file: 'crl.pem'
+openvpn_install_packages: 'true'
+openvpn_src: '/srv/ca/openvpn'
+openvpn_dest: '/etc/openvpn'
+openvpn_tls_dest: '/etc/openvpn/tls'
+openvpn_log_dest: '/var/log/openvpn'
+openvpn_pool_dest: '/var/lib/openvpn'
+
 openvpn_dhparam_file: 'dhparam.pem'
 openvpn_takey_file: 'ta.key'
-openvpn_ca_file: '{{ ca_rootcrt }}'
 openvpn_instance_group: 'nobody'
 openvpn_instance_user: 'nogroup'
-openvpn_default_routes:
- - '192.168.5.3 255.255.255.255'
- - '192.168.6.3 255.255.255.255'
+openvpn_default_routes: []
 
-openvpn_ldap_host: '{{ ldap_query_host }}'
-openvpn_ldap_binddn: '{{ ldap_query_binddn }}'
-openvpn_ldap_password: '{{ ldap_query_password }}'
+# CA
+openvpn_ca_crl_path: '/srv/ca/crl'
+openvpn_ca_crl_file: 'crl.pem'
+openvpn_ca_path: '/srv/ca'
+openvpn_ca_rootcrt: 'rootCA.crt'
+openvpn_ca_file: 'rootCA.crt'
+openvpn_ca_rootkey: 'rootCA.key'
+openvpn_ca_master: 'ca.example.com'
+
+# CSR
+openvpn_csr_country_name: 'US'
+openvpn_csr_state: 'MA'
+openvpn_csr_locality_name: 'Boston'
+openvpn_csr_organization_name: 'Org'
+openvpn_csr_organization_unit: 'IT'
+
+# LDAP
+openvpn_ldap_host: 'ldap://example.com:389'
+openvpn_ldap_binddn: 'cn=user,ou=people,dc=example,dc=com'
+openvpn_ldap_password: 'secret'
 openvpn_ldap_timeout: '10'
 openvpn_ldap_follow_referals: 'no'
 openvpn_ldap_tls_enable: 'no'
-openvpn_ldap_basedn: '{{ ldap_basedn }}'
+openvpn_ldap_basedn: 'ou=people,dc=example,dc=com'
 openvpn_ldap_filter: '(uid=%u)'
 openvpn_ldap_require_group: 'true'
 openvpn_ldap_rfc2307: 'false'
-openvpn_ldap_group_basedn: '{{ ldap_groups_root }}'
+openvpn_ldap_group_basedn: 'ou=groups,dc=example,dc=com'
 openvpn_ldap_group_filter: '(cn=vpn_users)'
 openvpn_ldap_group_attr: 'memberUid'
-
-openvpn_ldap_user_filter: '(uid={{ openvpn_target_user }})'
+openvpn_ldap_user_filter: 'uid'
 openvpn_ldap_mail_filter: 'mail'
 
-ldap_files: ['db_config.ldif', 'monitor.ldif', 'replica.ldif', 'cn=config', 'index.ldif']
-ldap_add_schema: ['core.ldif', 'cosine.ldif', 'nis.ldif', 'inetorgperson.ldif', 'misc.ldif']
-ldap_add_src: ['db_config.ldif', 'index.ldif', 'monitor.ldif', 'ssl.ldif', 'replica.ldif']
-ldap_binddn: 'cn=config'
-ldap_root: 'dc=domain,dc=local'
-ldap_basedn: 'ou=people,{{ ldap_root }}'
-ldap_groups_root: 'ou=groups,{{ ldap_root }}'
-ldap_src_path: '/root/LDAP/'
-ldap_schema_path: '/etc/openldap/schema/'
-ldap_pwd: 'reader'
-ldap_targetcn: 'mail=mail@host.com'
-ldap_targetexpect: 'mail'
-
-#for query
-ldap_query_host: 'ldap://ldap.localdomain:389'
-ldap_query_binddn: 'cn=reader,{{ ldap_basedn }}'
-ldap_query_password: 'reader'
-
-#Mail
+# email
 openvpn_mail_host: 'localhost'
 openvpn_mail_port: '25'
-openvpn_mail_username: ''
-openvpn_mail_password: ''
+openvpn_mail_username: 'user'
+openvpn_mail_password: 'secret'
 openvpn_mail_from: 'noc@localhost'
 openvpn_mail_subject: 'OpenVPN access'
 openvpn_mail_headers: 'Reply-To=noc@localhost'

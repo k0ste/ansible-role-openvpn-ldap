@@ -1,20 +1,20 @@
-## openvpn@{{ item.name }}.conf
-# {{ ansible_managed }}
-# Do not edit manually
+{{ '## openvpn@' ~ item.name ~ '.conf' }}
+{{ '# ' + ansible_managed }}
+{{ '# Do not edit manually' }}
 
 port {{ item.port }}
 proto {{ item.proto }}
 dev {{ item.dev }}
 server {{ item.server }}
-dh {{ openvpn_tls_dest}}{{ item.dh }}
-ca {{ openvpn_tls_dest }}{{ item.ca }}
-cert {{ openvpn_tls_dest }}{{ item.cert }}
-key {{ openvpn_tls_dest }}{{ item.key }}
+{{ 'dh' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.dh }}
+{{ 'ca' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.ca }}
+{{ 'cert' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.cert }}
+{{ 'key' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.key }}
 {% if item.tls_auth is defined %}
-tls-auth {{ openvpn_tls_dest }}{{ item.tls_auth }} 0
+{{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.tls_auth ~ ' 0' }}
 {% endif %}
 {% if item.crl_verify is defined %}
-crl-verify {{ openvpn_tls_dest}}{{ item.crl_verify }}
+{{ 'crl-verify' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.crl_verify }}
 {% endif %}
 {% if item.route is defined %}
 route {{ item.route }}
@@ -70,16 +70,16 @@ mute {{ item.mute }}
 mute-replay-warnings
 {% endif %}
 {% if item.ifconfig_pool_persist is defined %}
-ifconfig-pool-persist {{ openvpn_pool_dest }}{{ item.ifconfig_pool_persist }}
+{{ 'ifconfig-pool-persist' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_pool_dest'] ~ '/' ~ item.ifconfig_pool_persist }}
 {% endif %}
 {% if item.status is defined %}
-status {{ openvpn_pool_dest }}{{ item.status }}
+{{ 'status' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_pool_dest'] ~ '/' ~ item.status }}
 {% endif %}
 {% if item.log is defined %}
 {% if item.log_append == 'true' %}
-log-append {{ openvpn_log_dest }}{{ item.log }}
+{{ 'log-append' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~ item.log }}
 {% else %}
-log {{ item.log }}
+{{ 'log' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~ item.log }}
 {% endif %}
 {% endif %}
 {% if item.push == 'true' %}
@@ -146,6 +146,8 @@ auth {{ item.auth }}
 {% endif %}
 {% if item.plugin is defined %}
 {% if item.plugin == 'true' %}
-plugin {{ openvpn_plugin_path }}{{ item.plugin_name }} {{ openvpn_dest }}{{ item.plugin_conf }}
+{{ 'plugin ' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~ '/' ~
+    item.plugin_name ~ ' ' ~ hostvars[inventory_hostname]['openvpn_dest'] ~
+    '/' ~ item.plugin_conf }}
 {% endif %}
 {% endif %}

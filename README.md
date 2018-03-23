@@ -1,38 +1,29 @@
-ansible-role-openvpn-ldap
-=============================
+# ansible-role-openvpn-ldap
 
-Role for deploy openvpn server/client/user with LDAP auth and Certificate Revocation List support.
+Role for deploy openvpn server/client/user with LDAP auth and Certificate
+Revocation List support.
 
-Attention
--------------
+## Attention
 
-The role released as is, for common understanding how to "OpenVPN with Ansible". This role support most common options, also support
-'client config dir' for dynamic work with push routes to client. Role tested only with OpenLDAP.
+The role released as is, for common understanding how to "OpenVPN with Ansible".
+This role support most common options, also support 'client config dir' for
+dynamic work with push routes to client. Role tested only with OpenLDAP.
 
-Ansible versions
---------------------
+## Requirements for usage with LDAP
 
-Role is adapted for Ansible 2.0, tested on 2.1.
+###### Software:
 
-Requirements for usage with LDAP
------------------------------------
-
-**Software:**
-
+* Ansible 2.4;
 * LDAP User Directory;
 * SMTP server for send to end-users configuration;
 * OpenLDAP (ldapsearch binary) on instance which execute Role, for queries;
-* 7zip for compress all end-user files to one archive;
 
-
-**openvpn-auth-ldap plugin with RFC2307 patch**:
+###### openvpn-auth-ldap plugin with RFC2307 patch:
 
 SRPM for EL7 you can found [here](//github.com/k0ste/openvpn-auth-ldap-rfc2307).
 PKGBUILD for ArchLinux in [AUR](//aur.archlinux.org/packages/openvpn-auth-ldap).
 
-
-Example configuration of server with 4 tunnels
----------------------------------------------------
+## Example configuration of server with 4 tunnels
 
 - First instance (openvpn1194) have client-config-dir.
 - All clients receive routes.
@@ -41,7 +32,68 @@ Example configuration of server with 4 tunnels
 
 ```yaml
 ---
+openvpn_install_packages: 'true'
+openvpn_src: '/srv/ca/openvpn'
+openvpn_dest: '/etc/openvpn'
+openvpn_tls_dest: '/etc/openvpn/tls'
+openvpn_log_dest: '/var/log/openvpn'
+openvpn_pool_dest: '/var/lib/openvpn'
+
+openvpn_dhparam_file: 'dhparam.pem'
+openvpn_takey_file: 'ta.key'
+openvpn_instance_group: 'nobody'
+openvpn_instance_user: 'nogroup'
+openvpn_default_routes: []
+
+# CA
+openvpn_ca_crl_path: '/srv/ca/crl'
+openvpn_ca_crl_file: 'crl.pem'
+openvpn_ca_path: '/srv/ca'
+openvpn_ca_rootcrt: 'rootCA.crt'
+openvpn_ca_file: 'rootCA.crt'
+openvpn_ca_rootkey: 'rootCA.key'
+openvpn_ca_master: 'ca.example.com'
+
+# CSR
+openvpn_csr_country_name: 'US'
+openvpn_csr_state: 'MA'
+openvpn_csr_locality_name: 'Boston'
+openvpn_csr_organization_name: 'Org'
+openvpn_csr_organization_unit: 'IT'
+
+# LDAP
+openvpn_ldap_host: 'ldap://example.com:389'
+openvpn_ldap_binddn: 'cn=user,ou=people,dc=example,dc=com'
+openvpn_ldap_password: 'secret'
+openvpn_ldap_timeout: '10'
+openvpn_ldap_follow_referals: 'no'
+openvpn_ldap_tls_enable: 'no'
+openvpn_ldap_basedn: 'ou=people,dc=example,dc=com'
+openvpn_ldap_filter: '(uid=%u)'
+openvpn_ldap_require_group: 'true'
+openvpn_ldap_rfc2307: 'false'
+openvpn_ldap_group_basedn: 'ou=groups,dc=example,dc=com'
+openvpn_ldap_group_filter: '(cn=vpn_users)'
+openvpn_ldap_group_attr: 'memberUid'
+openvpn_ldap_user_filter: 'uid'
+openvpn_ldap_mail_filter: 'mail'
+
+# email
+openvpn_mail_host: 'localhost'
+openvpn_mail_port: '25'
+openvpn_mail_username: 'user'
+openvpn_mail_password: 'secret'
+openvpn_mail_from: 'noc@localhost'
+openvpn_mail_subject: 'OpenVPN access'
+openvpn_mail_headers: 'Reply-To=noc@localhost'
+openvpn_mail_charset: 'utf8'
+openvpn_mail_body: 'Phoney smile and fake hello'
+```
+
+```yaml
+---
 openvpn_client_config_mgmt: 'true'
+openvpn_install_packages: 'false'
 openvpn_instance: 'server'
 
 openvpn_openvpn1194_config_dir: '/etc/openvpn/openvpn1194'
@@ -54,11 +106,6 @@ openvpn_openvpn1194_DEFAULT:
 openvpn_openvpn1198_user1:
   - 'ifconfig-push 10.19.0.2 255.255.255.0'
   - 'push route 192.168.128.0 255.255.255.0'
-
-openvpn_dest: '/etc/openvpn/'
-openvpn_tls_dest: '/etc/openvpn/tls/'
-openvpn_log_dest: '/var/log/openvpn/'
-openvpn_pool_dest: '/var/lib/openvpn/'
 
 openvpn_clients_conf:
 - {
@@ -100,12 +147,12 @@ port: '1194',
 proto: 'udp',
 dev: 'tap0',
 server: '10.15.0.0 255.255.255.0',
-ca: '{{ openvpn_ca_file }}',
-cert: '{{ openvpn_instance_name }}.crt',
-key: '{{ openvpn_instance_name }}.key',
-tls_auth: '{{ openvpn_takey_file }}',
-dh: '{{ openvpn_dhparam_file }}',
-crl_verify: '{{ openvpn_crl_file }}',
+ca: "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}",
+cert: "{{ vars['openvpn_instance_name'] + '.crt' }}",
+key: "{{ vars['openvpn_instance_name'] + '.key' }}",
+tls_auth: "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}",
+dh: "{{ hostvars[inventory_hostname]['openvpn_dhparam_file'] }}",
+crl_verify: "{{ hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}",
 user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
 group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 client_cert_not_required: 'true',
@@ -142,12 +189,12 @@ port: '1195',
 proto: 'udp',
 dev: 'tap1',
 server: '10.16.0.0 255.255.255.0',
-ca: '{{ openvpn_ca_file }}',
-cert: '{{ openvpn_instance_name }}.crt',
-key: '{{ openvpn_instance_name }}.key',
-tls_auth: '{{ openvpn_takey_file }}',
-dh: '{{ openvpn_dhparam_file }}',
-crl_verify: '{{ openvpn_crl_file }}',
+ca: "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}",
+cert: "{{ vars['openvpn_instance_name'] + '.crt' }}",
+key: "{{ vars['openvpn_instance_name'] + '.key' }}",
+tls_auth: "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}",
+dh: "{{ hostvars[inventory_hostname]['openvpn_dhparam_file'] }}",
+crl_verify: "{{ hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}",
 user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
 group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 client_cert_not_required: 'false',
@@ -181,12 +228,12 @@ port: '1196',
 proto: 'udp',
 dev: 'tap2',
 server: '10.17.0.0 255.255.255.0',
-ca: '{{ openvpn_ca_file }}',
-cert: '{{ openvpn_instance_name }}.crt',
-key: '{{ openvpn_instance_name }}.key',
-tls_auth: '{{ openvpn_takey_file }}',
-dh: '{{ openvpn_dhparam_file }}',
-crl_verify: '{{ openvpn_crl_file }}',
+ca: "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}",
+cert: "{{ vars['openvpn_instance_name'] + '.crt' }}",
+key: "{{ vars['openvpn_instance_name'] + '.key' }}",
+tls_auth: "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}",
+dh: "{{ hostvars[inventory_hostname]['openvpn_dhparam_file'] }}",
+crl_verify: "{{ hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}",
 user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
 group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 client_cert_not_required: 'false',
@@ -220,12 +267,12 @@ port: '1197',
 proto: 'udp',
 dev: 'tap3',
 server: '10.18.0.0 255.255.255.0',
-ca: '{{ openvpn_ca_file }}',
-cert: '{{ openvpn_instance_name }}.crt',
-key: '{{ openvpn_instance_name }}.key',
-tls_auth: '{{ openvpn_takey_file }}',
-dh: '{{ openvpn_dhparam_file }}',
-crl_verify: '{{ openvpn_crl_file }}',
+ca: "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}",
+cert: "{{ vars['openvpn_instance_name'] + '.crt' }}",
+key: "{{ vars['openvpn_instance_name'] + '.key' }}",
+tls_auth: "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}",
+dh: "{{ hostvars[inventory_hostname]['openvpn_dhparam_file'] }}",
+crl_verify: "{{ hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}",
 user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
 group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 client_cert_not_required: 'false',
@@ -260,12 +307,12 @@ port: '1198',
 proto: 'udp',
 dev: 'tap4',
 server: '10.19.0.0 255.255.255.0',
-ca: '{{ openvpn_ca_file }}',
-cert: '{{ openvpn_instance_name }}.crt',
-key: '{{ openvpn_instance_name }}.key',
-tls_auth: '{{ openvpn_takey_file }}',
-dh: '{{ openvpn_dhparam_file }}',
-crl_verify: '{{ openvpn_crl_file }}',
+ca: "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}",
+cert: "{{ vars['openvpn_instance_name'] + '.crt' }}",
+key: "{{ vars['openvpn_instance_name'] + '.key' }}",
+tls_auth: "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}",
+dh: "{{ hostvars[inventory_hostname]['openvpn_dhparam_file'] }}",
+crl_verify: "{{ hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}",
 user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
 group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 client_cert_not_required: 'false',
@@ -297,9 +344,7 @@ plugin: 'false'
 }
 ```
 
-Example configuration of client with 2 tunnels
--------------------------------------------------
-
+## Example configuration of client with 2 tunnels
 
 ```yaml
 ---
@@ -315,12 +360,12 @@ name: 'openvpn1195',
 remote: '10.15.0.1 1195',
 proto: 'udp',
 dev: 'tap0',
-tls_auth: '{{ openvpn_takey_file }}',
+tls_auth: "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}",
 tls_client: 'true',
 tls_version_min: '1.2',
-ca: '{{ openvpn_ca_file }}',
-cert: '{{ openvpn_instance_name }}.crt',
-key: '{{ openvpn_instance_name }}.key',
+ca: "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}",
+cert: "{{ vars['openvpn_instance_name'] + '.crt' }}",
+key: "{{ vars['openvpn_instance_name'] + '.key' }}",
 user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
 group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 resolv_retry: 'infinite',
@@ -339,12 +384,12 @@ name: 'openvpn1196',
 remote: '10.16.0.1 1196',
 proto: 'udp',
 dev: 'tap1',
-tls_auth: '{{ openvpn_takey_file }}',
+tls_auth: "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}",
 tls_client: 'true',
 tls_version_min: '1.2',
-ca: '{{ openvpn_ca_file }}',
-cert: '{{ openvpn_instance_name }}.crt',
-key: '{{ openvpn_instance_name }}.key',
+ca: "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}",
+cert: "{{ vars['openvpn_instance_name'] + '.crt' }}",
+key: "{{ vars['openvpn_instance_name'] + '.key' }}",
 user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
 group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
 resolv_retry: 'infinite',
@@ -360,8 +405,7 @@ mute_replay_warnings: 'true'
 }
 ```
 
-Example configuration of user with auth-login-pass
--------------------------------------------------------
+## Example configuration of user with auth-login-pass
 
 ```yaml
 ---
@@ -391,16 +435,15 @@ mute: '5',
 mute_replay_warnings: 'true',
 tls_client: 'true',
 tls_version_min: '1.2',
-tls_auth: '{{ openvpn_takey_file }}',
-ca: '{{ openvpn_ca_file }}',
-cert: '{{ openvpn_instance_name }}.crt',
-key: '{{ openvpn_instance_name }}.key',
+tls_auth: "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}",
+ca: "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}",
+cert: "{{ vars['openvpn_instance_name'] + '.crt' }}",
+key: "{{ vars['openvpn_instance_name'] + '.key' }}",
 persist_key: 'true'
 }
 ```
 
-Example playbooks
-----------------------------------------------------
+## Example playbooks
 
 ```yaml
 ---

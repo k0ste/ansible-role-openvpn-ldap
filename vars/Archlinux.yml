@@ -1,3 +1,5 @@
 ---
 openvpn_service: 'openvpn@'
-openvpn_plugin_path: '/usr/lib/openvpn/'
+openvpn_plugin_path: '/usr/lib/openvpn'
+openvpn_packages_master: 'python-pyopenssl'
+openvpn_packages_client: 'openvpn'

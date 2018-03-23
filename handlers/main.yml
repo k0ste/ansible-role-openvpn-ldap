@@ -1,17 +1,28 @@
 ---
 - name: Delete fetched files
-  local_action: file
-                path="{{ vars['local_fetch_dir'] }}"
-                state="absent"
+  local_action:
+    module: "file"
+    path: "{{ vars['local_fetch_dir'] }}"
+    state: "absent"
+- name: Delete temp openssl.conf
+  file:
+    path: "/tmp/openssl.conf"
+    state: "absent"
+  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
 - name: Deploy plugin configuration
   template:
     src: "auth_ldap.j2"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_dest'] + item.plugin_conf }}"
+    dest: "{{ hostvars[inventory_hostname]['openvpn_dest'] ~ '/' ~
+              item.plugin_conf }}"
     group: "{{ item.group }}"
     owner: "{{ item.user }}"
     mode: "0400"
   with_items: "{{ hostvars[inventory_hostname]['openvpn_server'] }}"
-  when: "item.plugin is defined and item.plugin == 'true'"
+  loop_control:
+    label: "{{ item.plugin }}"
+  when:
+  - "item.plugin is defined"
+  - "item.plugin == 'true'"
 - name: Deploy clients configuration
   template:
     src: "client_config_dir.j2"
@@ -20,4 +31,8 @@
     owner: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}"
     mode: "0400"
   with_items: "{{ hostvars[inventory_hostname]['openvpn_clients_conf'] }}"
-  when: "hostvars[inventory_hostname]['openvpn_client_config_mgmt'] is defined and hostvars[inventory_hostname]['openvpn_client_config_mgmt'] != ''"
+  loop_control:
+    label: "{{ item.cn }}"
+  when:
+  - "hostvars[inventory_hostname]['openvpn_client_config_mgmt'] is defined"
+  - "hostvars[inventory_hostname]['openvpn_client_config_mgmt'] != ''"

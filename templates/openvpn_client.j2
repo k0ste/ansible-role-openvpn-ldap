@@ -1,6 +1,6 @@
-## openvpn@{{ item.name }}.conf
-# {{ ansible_managed }}
-# Do not edit manually
+{{ '## openvpn@' ~ item.name ~ '.conf' }}
+{{ '# ' + ansible_managed }}
+{{ '# Do not edit manually' }}
 
 client
 remote {{ item.remote }}
@@ -9,9 +9,9 @@ proto {{ item.proto }}
 dev {{ item.dev }}
 {% endif %}
 {% if item.tls_auth is defined %}
-tls-auth {{ openvpn_tls_dest }}{{ item.tls_auth }} 1
+{{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.tls_auth ~ ' 1' }}
 {% endif %}
-ca {{ openvpn_tls_dest }}{{ item.ca }}
+{{ 'ca' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.ca }}
 {% if item.persist_key == 'true' %}
 persist-key
 {% endif %}
@@ -53,9 +53,9 @@ mute {{ item.mute }}
 {% endif %}
 {% if item.log is defined %}
 {% if item.log_append == 'true' %}
-log-append {{ openvpn_log_dest}}{{ item.log }}
+{{ 'log-append' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~ item.log }}
 {% else %}
-log {{ openvpn_log_dest }}{{ item.log }}
+{{ 'log' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~ item.log }}
 {% endif %}
 {% endif %}
 {% if item.tls_client is defined %}
@@ -63,8 +63,8 @@ tls-client
 {% if item.tls_version_min is defined %}
 tls-version-min {{ item.tls_version_min }}
 {% endif %}
-cert {{ openvpn_tls_dest }}{{ item.cert }}
-key {{ openvpn_tls_dest }}{{ item.key }}
+{{ 'cert' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.cert }}
+{{ 'key' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.key }}
 {% if item.cipher is defined %}
 cipher {{ item.cipher }}
 {% endif %}

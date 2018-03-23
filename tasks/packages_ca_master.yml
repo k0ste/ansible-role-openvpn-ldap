@@ -1,0 +1,33 @@
+---
+- name: openvpn | Install the required packages in Redhat derivatives (CA)
+  yum:
+    name: "{{ item }}"
+    state: "installed"
+  with_items: "{{ vars['local_packages_master'] }}"
+  loop_control:
+    label: "{{ item }}"
+  when:
+  - "vars['local_ca_master_os'] == 'RedHat'"
+  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
+- name: openvpn | Install the required packages in Debian derivatives (CA)
+  apt:
+    name: "{{ item }}"
+    state: "installed"
+    update_cache: "yes"
+  with_items: "{{ vars['local_packages_master'] }}"
+  loop_control:
+    label: "{{ item }}"
+  when:
+  - "vars['local_ca_master_os'] == 'Debian'"
+  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
+- name: openvpn | Install the required packages in ArchLinux derivatives (CA)
+  pacman:
+    name: "{{ item }}"
+    state: "installed"
+    update_cache: "yes"
+  with_items: "{{ vars['local_packages_master'] }}"
+  loop_control:
+    label: "{{ item }}"
+  when:
+  - "vars['local_ca_master_os'] == 'Archlinux'"
+  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
