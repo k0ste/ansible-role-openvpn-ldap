@@ -16,17 +16,19 @@
 - name: openvpn | Generate certificate signing request on master
   openssl_csr:
     common_name: "{{ vars['openvpn_instance_name'] }}"
-    country_name: "{{ vars['inventory_hostname']['openvpn_csr_country_name'] |
-                      default(omit) }}"
+    country_name: "{{
+      hostvars[inventory_hostname]['openvpn_csr_country_name'] |
+      default(omit) }}"
     state_or_province_name: "{{
-      vars['inventory_hostname']['openvpn_csr_state'] | default(omit) }}"
-    locality_name: "{{ vars['inventory_hostname']['openvpn_csr_locality_name'] |
-                       default(omit) }}"
+      hostvars[inventory_hostname]['openvpn_csr_state'] | default(omit) }}"
+    locality_name: "{{
+      hostvars[inventory_hostname]['openvpn_csr_locality_name'] |
+      default(omit) }}"
     organization_name: "{{
-      vars['inventory_hostname']['openvpn_csr_organization_name'] |
+      hostvars[inventory_hostname]['openvpn_csr_organization_name'] |
       default(omit) }}"
     organizational_unit_name: "{{
-      vars['inventory_hostname']['openvpn_csr_organization_unit'] |
+      hostvars[inventory_hostname]['openvpn_csr_organization_unit'] |
       default(omit) }}"
     path: "{{ hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
                          vars['openvpn_instance_name'] ~ '.csr' }}"
