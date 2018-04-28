@@ -28,6 +28,9 @@ openvpn_csr_locality_name: 'Boston'
 openvpn_csr_organization_name: 'Org'
 openvpn_csr_organization_unit: 'IT'
 
+# CRL
+openvpn_crl_days: '30'
+
 # LDAP
 openvpn_ldap_host: 'ldap://example.com:389'
 openvpn_ldap_binddn: 'cn=user,ou=people,dc=example,dc=com'
