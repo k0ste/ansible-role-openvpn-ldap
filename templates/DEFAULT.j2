@@ -1,9 +1,0 @@
-{{ '## DEFAULT' }}
-{{ '# ' + ansible_managed }}
-{{ '# Do not edit manually' }}
-
-{% if openvpn_default_routes is defined %}
-{% for a in openvpn_default_routes %}
-{{ 'push' + ' \"route ' + a + '\"' }}
-{% endfor %}
-{% endif %}

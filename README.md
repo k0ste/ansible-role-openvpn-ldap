@@ -43,7 +43,6 @@ openvpn_dhparam_file: 'dhparam.pem'
 openvpn_takey_file: 'ta.key'
 openvpn_instance_group: 'nobody'
 openvpn_instance_user: 'nogroup'
-openvpn_default_routes: []
 
 # CA
 openvpn_ca_crl_path: '/srv/ca/crl'
@@ -102,13 +101,13 @@ openvpn_instance: 'server'
 openvpn_openvpn1194_config_dir: '/etc/openvpn/openvpn1194'
 openvpn_openvpn1198_config_dir: '/etc/openvpn/openvpn1198'
 openvpn_openvpn1194_DEFAULT:
-  - 'push route 10.9.0.0 255.255.255.0'
-  - 'push route 10.10.0.0 255.255.255.0'
-  - 'push route 10.11.0.0 255.255.255.0'
+  - 'push "route 10.9.0.0 255.255.255.0"'
+  - 'push "route 10.10.0.0 255.255.255.0"'
+  - 'push "route 10.11.0.0 255.255.255.0"'
 
 openvpn_openvpn1198_user1:
-  - 'ifconfig-push 10.19.0.2 255.255.255.0'
-  - 'push route 192.168.128.0 255.255.255.0'
+  - 'ifconfig-push "10.19.0.2 255.255.255.0"'
+  - 'push "route 192.168.128.0 255.255.255.0"'
 
 openvpn_clients_conf:
 - {

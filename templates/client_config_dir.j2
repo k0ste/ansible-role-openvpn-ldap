@@ -2,8 +2,12 @@
 {{ '# ' + ansible_managed }}
 {{ '# Do not edit manually' }}
 
+{% if item.options is defined and item.options != '' %}
 {% if item.options is string %}
 {{ item.options }}
-{% elif item.options %}
-{% if item.options %}{{ item.options | join('\n') }}{% endif %}
+{% elif item.options is sequence %}
+{% for opt in item.options %}
+{{ opt }}
+{% endfor %}
+{% endif %}
 {% endif %}

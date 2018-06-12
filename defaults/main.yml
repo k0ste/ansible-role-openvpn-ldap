@@ -10,7 +10,6 @@ openvpn_dhparam_file: 'dhparam.pem'
 openvpn_takey_file: 'ta.key'
 openvpn_instance_group: 'nobody'
 openvpn_instance_user: 'nogroup'
-openvpn_default_routes: []
 
 # CA
 openvpn_ca_crl_path: '/srv/ca/crl'
