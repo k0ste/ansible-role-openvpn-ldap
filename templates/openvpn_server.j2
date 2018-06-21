@@ -2,10 +2,10 @@
 {{ '# ' + ansible_managed }}
 {{ '# Do not edit manually' }}
 
-port {{ item.port }}
-proto {{ item.proto }}
-dev {{ item.dev }}
-server {{ item.server }}
+{{ 'port' ~ ' ' ~ item.port }}
+{{ 'proto' ~ ' ' ~ item.proto }}
+{{ 'dev' ~ ' ' ~ item.dev }}
+{{ 'server' ~ ' ' ~ item.server }}
 {{ 'dh' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.dh }}
 {{ 'ca' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.ca }}
 {{ 'cert' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.cert }}
@@ -25,8 +25,9 @@ user {{ item.user }}
 {% if item.group is defined %}
 group {{ item.group }}
 {% endif %}
-{% if item.client_cert_not_required == 'true' %}
-client-cert-not-required
+{% if item.verify_client_cert is defined and
+      item.verify_client_cert in ['none', 'optional', 'require'] %}
+{{ 'verify-client-cert' + ' ' + item.verify_client_cert }}
 {% endif %}
 {% if item.duplicate_cn is defined and item.duplicate_cn == 'true' %}
 duplicate-cn

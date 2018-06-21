@@ -1,4 +1,8 @@
 ---
+openvpn_client_enable: 'true'
+openvpn_server_enable: 'true'
+openvpn_client_restart: 'true'
+openvpn_server_restart: 'true'
 openvpn_install_packages: 'true'
 openvpn_src: '/srv/ca/openvpn'
 openvpn_dest: '/etc/openvpn'

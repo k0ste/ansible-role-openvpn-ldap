@@ -36,3 +36,27 @@
   when:
   - "hostvars[inventory_hostname]['openvpn_client_config_mgmt'] is defined"
   - "hostvars[inventory_hostname]['openvpn_client_config_mgmt'] != ''"
+- name: Restart openvpn-client instances
+  systemd:
+    name: "{{
+      hostvars[inventory_hostname]['openvpn_client_service'] ~ item.name }}"
+    state: "restarted"
+  with_items: "{{ hostvars[inventory_hostname]['openvpn_client'] }}"
+  loop_control:
+    label: "{{
+      hostvars[inventory_hostname]['openvpn_client_service'] ~ item.name }}"
+  when:
+  - "hostvars[inventory_hostname]['openvpn_client_restart'] is defined"
+  - "hostvars[inventory_hostname]['openvpn_client_restart'] == 'true'"
+- name: Restart openvpn-server instances
+  systemd:
+    name: "{{
+      hostvars[inventory_hostname]['openvpn_server_service'] ~ item.name }}"
+    state: "restarted"
+  with_items: "{{ hostvars[inventory_hostname]['openvpn_server'] }}"
+  loop_control:
+    label: "{{
+      hostvars[inventory_hostname]['openvpn_server_service'] ~ item.name }}"
+  when:
+  - "hostvars[inventory_hostname]['openvpn_server_restart'] is defined"
+  - "hostvars[inventory_hostname]['openvpn_server_restart'] == 'true'"

@@ -14,6 +14,7 @@ dynamic work with push routes to client. Role tested only with OpenLDAP.
 ###### Software:
 
 * Ansible 2.4;
+* OpenVPN 2.4+ with builtin `openvpn-client`/`openvpn-server` systemd services.
 * LDAP User Directory;
 * SMTP server for send to end-users configuration;
 * OpenLDAP (ldapsearch binary) on instance which execute Role, for queries;
@@ -32,6 +33,10 @@ PKGBUILD for ArchLinux in [AUR](//aur.archlinux.org/packages/openvpn-auth-ldap).
 
 ```yaml
 ---
+openvpn_client_enable: 'true'
+openvpn_server_enable: 'true'
+openvpn_client_restart: 'true'
+openvpn_server_restart: 'true'
 openvpn_install_packages: 'true'
 openvpn_src: '/srv/ca/openvpn'
 openvpn_dest: '/etc/openvpn'
@@ -157,7 +162,7 @@ dh: "{{ hostvars[inventory_hostname]['openvpn_dhparam_file'] }}",
 crl_verify: "{{ hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}",
 user: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}",
 group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}",
-client_cert_not_required: 'true',
+verify_client_cert: 'none',
 username_as_common_name: 'true',
 multihome: 'true',
 management: '127.0.0.1 7505',

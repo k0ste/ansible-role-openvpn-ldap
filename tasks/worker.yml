@@ -12,6 +12,8 @@
     label: "{{ item.name ~ '.conf' }}"
   when:
   - "hostvars[inventory_hostname]['openvpn_instance'] == 'client'"
+  notify:
+  - "Restart openvpn-client instances"
 - name: openvpn | Deploy server configuration
   template:
     src: "openvpn_server.j2"
@@ -28,6 +30,33 @@
   notify:
   - "Deploy plugin configuration"
   - "Deploy clients configuration"
+  - "Restart openvpn-server instances"
+- name: openvpn | Enable openvpn-client services
+  systemd:
+    name: "{{
+      hostvars[inventory_hostname]['openvpn_client_service'] ~ item.name }}"
+    enabled: "yes"
+  with_items: "{{ hostvars[inventory_hostname]['openvpn_client'] }}"
+  loop_control:
+    label: "{{
+      hostvars[inventory_hostname]['openvpn_client_service'] ~ item.name }}"
+  when:
+  - "hostvars[inventory_hostname]['openvpn_instance'] == 'client'"
+  - "hostvars[inventory_hostname]['openvpn_client_enable'] is defined"
+  - "hostvars[inventory_hostname]['openvpn_client_enable'] == 'true'"
+- name: openvpn | Enable openvpn-server services
+  systemd:
+    name: "{{
+      hostvars[inventory_hostname]['openvpn_server_service'] ~ item.name }}"
+    enabled: "yes"
+  with_items: "{{ hostvars[inventory_hostname]['openvpn_server'] }}"
+  loop_control:
+    label: "{{
+      hostvars[inventory_hostname]['openvpn_server_service'] ~ item.name }}"
+  when:
+  - "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
+  - "hostvars[inventory_hostname]['openvpn_server_enable'] is defined"
+  - "hostvars[inventory_hostname]['openvpn_server_enable'] == 'true'"
 - name: openvpn | Deploy user configuration
   local_action:
     module: "template"
