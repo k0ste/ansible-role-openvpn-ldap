@@ -3,7 +3,7 @@
   file:
     name: "{{ item }}"
     state: "absent"
-  with_items:
+  loop:
   - "{{ hostvars[inventory_hostname]['openvpn_dest'] }}"
   - "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
   - "{{ hostvars[inventory_hostname]['openvpn_log_dest'] }}"
@@ -16,7 +16,7 @@
     owner: "root"
     mode: "0755"
     recurse: "yes"
-  with_items:
+  loop:
   - "{{ hostvars[inventory_hostname]['openvpn_dest'] }}"
   - "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
   - "{{ hostvars[inventory_hostname]['openvpn_log_dest'] }}"
@@ -29,7 +29,7 @@
     owner: "root"
     mode: "0755"
     recurse: "yes"
-  with_items: "{{ hostvars[inventory_hostname]['openvpn_server'] }}"
+  loop: "{{ hostvars[inventory_hostname]['openvpn_server'] }}"
   loop_control:
     label: "{{ item.client_config_dir }}"
   when:
@@ -39,33 +39,35 @@
 - name: openvpn | Copy TLS files for client instance
   copy:
     src: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
-             '/' ~ item }}"
+      '/' ~ item }}"
     dest: "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
     group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}"
     owner: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}"
     mode: "0400"
-  with_items:
-  - "{{ vars['openvpn_instance_name'] ~ '.crt' }}"
-  - "{{ vars['openvpn_instance_name'] ~ '.key' }}"
+  loop:
+  - "{{ hostvars[inventory_hostname]['openvpn_instance_name'] ~ '.crt' }}"
+  - "{{ hostvars[inventory_hostname]['openvpn_instance_name'] ~ '.key' }}"
   - "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}"
   - "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}"
+  diff: "false"
   when:
   - "hostvars[inventory_hostname]['openvpn_instance'] == 'client'"
 - name: openvpn | Copy TLS files for server instance
   copy:
     src: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
-             '/' ~ item }}"
+      '/' ~ item }}"
     dest: "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
     group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}"
     owner: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}"
     mode: "0400"
-  with_items:
-  - "{{ vars['openvpn_instance_name'] ~ '.crt' }}"
-  - "{{ vars['openvpn_instance_name'] ~ '.key' }}"
+  loop:
+  - "{{ hostvars[inventory_hostname]['openvpn_instance_name'] ~ '.crt' }}"
+  - "{{ hostvars[inventory_hostname]['openvpn_instance_name'] ~ '.key' }}"
   - "{{ hostvars[inventory_hostname]['openvpn_ca_file'] }}"
   - "{{ hostvars[inventory_hostname]['openvpn_takey_file'] }}"
   - "{{ hostvars[inventory_hostname]['openvpn_dhparam_file'] }}"
   - "{{ hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}"
+  diff: "false"
   when:
   - "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
-- include_tasks: worker.yml
+- import_tasks: "worker.yml"

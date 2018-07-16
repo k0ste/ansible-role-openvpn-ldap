@@ -2,15 +2,15 @@
 - name: openvpn | Check user is present on LDAP
   local_action:
     module: shell {{ 'ldapsearch -x -LLL -H ' ~
-        hostvars[inventory_hostname]['openvpn_ldap_host'] ~ ' -D ' ~
-        hostvars[inventory_hostname]['openvpn_ldap_binddn'] ~ ' -w ' ~
-        hostvars[inventory_hostname]['openvpn_ldap_password'] ~ ' -b ' ~
-        hostvars[inventory_hostname]['openvpn_ldap_basedn'] ~ ' ' ~
-        hostvars[inventory_hostname]['openvpn_ldap_user_filter'] ~ '=' ~
-        vars['openvpn_instance_name'] ~ ' ' ~
-        hostvars[inventory_hostname]['openvpn_ldap_mail_filter'] }}
+      hostvars[inventory_hostname]['openvpn_ldap_host'] ~ ' -D ' ~
+      hostvars[inventory_hostname]['openvpn_ldap_binddn'] ~ ' -w ' ~
+      hostvars[inventory_hostname]['openvpn_ldap_password'] ~ ' -b ' ~
+      hostvars[inventory_hostname]['openvpn_ldap_basedn'] ~ ' ' ~
+      hostvars[inventory_hostname]['openvpn_ldap_user_filter'] ~ '=' ~
+      vars['openvpn_instance_name'] ~ ' ' ~
+      hostvars[inventory_hostname]['openvpn_ldap_mail_filter'] }}
   register: "openvpn_ldap_result"
   failed_when:
   - "openvpn_ldap_result.stdout is defined"
   - "openvpn_ldap_result.stdout == ''"
-- include_tasks: master.yml
+- import_tasks: "master.yml"

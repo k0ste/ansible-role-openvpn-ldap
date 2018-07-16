@@ -1,14 +1,14 @@
 ---
-- include_tasks: pre_requisite.yml
-- include_tasks: packages_ca_master.yml
+- import_tasks: "pre_requisite.yml"
+- include_tasks: "packages_ca_master.yml"
   when:
   - "vars['openvpn_revoke_target'] is not defined"
-- include_tasks: packages_client.yml
+- include_tasks: "packages_client.yml"
   when:
   - "hostvars[inventory_hostname]['openvpn_install_packages'] is defined"
   - "hostvars[inventory_hostname]['openvpn_install_packages'] == 'true'"
   - "hostvars[inventory_hostname]['openvpn_instance'] == 'client'"
-- include_tasks: master.yml
+- include_tasks: "master.yml"
   when:
   - "vars['openvpn_revoke_target'] is not defined"
   - "(hostvars[inventory_hostname]['openvpn_instance'] == 'client' or
@@ -19,11 +19,11 @@
   when:
   - "hostvars[inventory_hostname]['openvpn_instance'] is defined"
   - "hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
-- include_tasks: userfind.yml
+- include_tasks: "userfind.yml"
   when:
   - "hostvars[inventory_hostname]['openvpn_instance'] is defined"
   - "hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
-- include_tasks: crl.yml
+- include_tasks: "crl.yml"
   when:
   - "vars['openvpn_revoke_target'] is defined"
   - "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"

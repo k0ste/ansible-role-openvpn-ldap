@@ -20,7 +20,7 @@
 - name: openvpn | Set local facts
   set_fact:
     local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] ~
-                         '_' ~ lookup('env', 'USER') }}"
+      '_' ~ lookup('env', 'USER') }}"
 - name: openvpn | Gather facts about CA master
   setup:
   delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
@@ -31,23 +31,29 @@
     - "hostvars[inventory_hostname]['ansible_os_family'] is defined"
     msg: "Can't gather facts from CA master."
 - name: openvpn | Add the OS specific varibles
-  include_vars: "{{ hostvars[inventory_hostname]['ansible_os_family'] ~ '.yml' }}"
+  include_vars: "{{
+    hostvars[inventory_hostname]['ansible_os_family'] ~ '.yml' }}"
 - name: openvpn | Set facts about CA master
   set_fact:
-    local_ca_master_os:
-      "{{ hostvars[inventory_hostname]['ansible_os_family'] }}"
-    local_packages_master:
-      "{{ hostvars[inventory_hostname]['openvpn_packages_master'] }}"
+    local_ca_master_os: "{{
+      hostvars[inventory_hostname]['ansible_os_family'] }}"
+    local_packages_master: "{{
+      hostvars[inventory_hostname]['openvpn_packages_master'] }}"
   delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
+- meta: "clear_facts"
 - name: openvpn | Gather instance facts
   setup:
 - name: openvpn | Add the OS specific varibles
-  include_vars: "{{ hostvars[inventory_hostname]['ansible_os_family'] ~ '.yml' }}"
+  include_vars: "{{
+    hostvars[inventory_hostname]['ansible_os_family'] ~ '.yml' }}"
 - name: openvpn | Check facter facts
   assert:
     that:
     - "hostvars[inventory_hostname]['facter_facterversion'] is defined"
     msg: "Facter facts not found. Please install facter."
+  when:
+  - "(hostvars[inventory_hostname]['openvpn_instance'] == 'server' or
+      hostvars[inventory_hostname]['openvpn_instance'] == 'client')"
 - name: openvpn | Set facts about client/server instance [Facter 2]
   set_fact:
     openvpn_instance_name: "{{ hostvars[inventory_hostname]['facter_fqdn'] }}"
@@ -58,7 +64,7 @@
 - name: openvpn | Set facts about client/server instance [Facter 3]
   set_fact:
     openvpn_instance_name: "{{
-        hostvars[inventory_hostname]['facter_networking']['fqdn'] }}"
+      hostvars[inventory_hostname]['facter_networking']['fqdn'] }}"
   when:
    - "hostvars[inventory_hostname]['ansible_os_family'] != 'RedHat'"
    - "(hostvars[inventory_hostname]['openvpn_instance'] == 'server' or

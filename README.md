@@ -13,7 +13,7 @@ dynamic work with push routes to client. Role tested only with OpenLDAP.
 
 ###### Software:
 
-* Ansible 2.4;
+* Ansible 2.5+;
 * OpenVPN 2.4+ with builtin `openvpn-client`/`openvpn-server` systemd services.
 * LDAP User Directory;
 * SMTP server for send to end-users configuration;

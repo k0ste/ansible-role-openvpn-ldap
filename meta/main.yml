@@ -6,7 +6,7 @@ galaxy_info:
                 Certificate relocation support."
   company: "YASB"
   license: "GPL"
-  min_ansible_version: "2.4"
+  min_ansible_version: "2.5"
   platforms:
   - name: EL
     versions:
