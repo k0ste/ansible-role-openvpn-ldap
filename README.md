@@ -84,6 +84,7 @@ openvpn_ldap_group_filter: '(cn=vpn_users)'
 openvpn_ldap_group_attr: 'memberUid'
 openvpn_ldap_user_filter: 'uid'
 openvpn_ldap_mail_filter: 'mail'
+openvpn_mail_timeout: '10'
 
 # email
 openvpn_mail_host: 'localhost'

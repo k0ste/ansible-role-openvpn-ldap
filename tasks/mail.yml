@@ -28,6 +28,8 @@
       default(omit) }}"
     subject: "{{ hostvars[inventory_hostname]['openvpn_mail_subject'] |
       default(omit) }}"
+    timeout: "{{ hostvars[inventory_hostname]['openvpn_mail_timeout'] |
+      default(omit) }}"
     to: "{{ openvpn_ldap_result.stdout }}"
     username: "{{ hostvars[inventory_hostname]['openvpn_mail_username'] |
       default(omit) }}"
