@@ -15,9 +15,9 @@ dynamic work with push routes to client. Role tested only with OpenLDAP.
 
 * Ansible 2.5+;
 * OpenVPN 2.4+ with builtin `openvpn-client`/`openvpn-server` systemd services.
-* LDAP User Directory;
 * SMTP server for send to end-users configuration;
-* OpenLDAP (ldapsearch binary) on instance which execute Role, for queries;
+* [ansible-plugin-lookup_ldap](//github.com/quinot/ansible-plugin-lookup_ldap)
+lookup modules;
 
 ###### openvpn-auth-ldap plugin with RFC2307 patch:
 

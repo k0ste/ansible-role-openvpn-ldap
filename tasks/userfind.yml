@@ -1,16 +1,32 @@
 ---
+- name: openvpn | Set LDAP facts
+  set_fact:
+    ldap_lookup_config:
+      url: "{{ hostvars[inventory_hostname]['openvpn_ldap_host'] }}"
+      base: "{{ hostvars[inventory_hostname]['openvpn_ldap_basedn'] }}"
+      binddn: "{{ hostvars[inventory_hostname]['openvpn_ldap_binddn'] }}"
+      bindpw: "{{ hostvars[inventory_hostname]['openvpn_ldap_password'] }}"
+      scope: 'subtree'
+      filter: "{{ '(' ~
+        hostvars[inventory_hostname]['openvpn_ldap_user_filter'] ~ '=' ~
+        vars['openvpn_instance_name'] ~ ')' }}"
+    openvpn_mailaddr_regex: '^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'
+- name: openvpn | Get user mail address
+  set_fact:
+    openvpn_ldap_user_mail: "{{ item }}"
+  with_ldap:
+  - value:
+    - "{{ hostvars[inventory_hostname]['openvpn_ldap_mail_filter'] }}"
 - name: openvpn | Check user is present on LDAP
-  local_action:
-    module: shell {{ 'ldapsearch -x -LLL -H ' ~
-      hostvars[inventory_hostname]['openvpn_ldap_host'] ~ ' -D ' ~
-      hostvars[inventory_hostname]['openvpn_ldap_binddn'] ~ ' -w ' ~
-      hostvars[inventory_hostname]['openvpn_ldap_password'] ~ ' -b ' ~
-      hostvars[inventory_hostname]['openvpn_ldap_basedn'] ~ ' ' ~
-      hostvars[inventory_hostname]['openvpn_ldap_user_filter'] ~ '=' ~
-      vars['openvpn_instance_name'] ~ ' ' ~
-      hostvars[inventory_hostname]['openvpn_ldap_mail_filter'] }}
-  register: "openvpn_ldap_result"
-  failed_when:
-  - "openvpn_ldap_result.stdout is defined"
-  - "openvpn_ldap_result.stdout == ''"
+  assert:
+    that:
+    - "vars['openvpn_ldap_user_mail'] is defined"
+    msg: "{{ 'User' ~ ' ' ~ vars['openvpn_instance_name'] ~ ' ' ~
+             'not found' }}"
+- name: openvpn | Check user mail is valid e-mail address
+  assert:
+    that:
+    - "vars['openvpn_ldap_user_mail'] is match(vars['openvpn_mailaddr_regex'])"
+    msg: "{{ 'User' ~ ' ' ~ vars['openvpn_instance_name'] ~ ' ' ~
+             'mail address not found' }}"
 - import_tasks: "master.yml"

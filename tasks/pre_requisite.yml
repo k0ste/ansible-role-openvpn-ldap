@@ -5,18 +5,6 @@
   when:
   - "hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
   - "vars['openvpn_target_user'] == ''"
-- name: openvpn | Check for ldapsearch binary
-  local_action:
-    module: command ldapsearch -VV
-  register: "ldapsearch_rc"
-  when:
-  - "hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
-- name: openvpn | Raise OpenLDAP is not installed
-  fail:
-    msg: "OpenLDAP is not installed"
-  when:
-  - "hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
-  - "ldapsearch_rc.rc == 1"
 - name: openvpn | Set local facts
   set_fact:
     local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] ~
