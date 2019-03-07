@@ -2,29 +2,56 @@
 {{ '# ' + ansible_managed }}
 {{ '# Do not edit manually' }}
 
-
-<LDAP>
-  URL {{ openvpn_ldap_host }}
-  BindDN {{ openvpn_ldap_binddn }}
-  Password {{ openvpn_ldap_password }}
-  Timeout {{ openvpn_ldap_timeout }}
-  FollowReferrals {{ openvpn_ldap_follow_referals }}
-  TLSEnable {{ openvpn_ldap_tls_enable }}
-  TLSCACertFile /usr/local/etc/ssl/ca.pem
-  TLSCACertDir /etc/ssl/certs
-  TLSCertFile /usr/local/etc/ssl/client-cert.pem
-  TLSKeyFile /usr/local/etc/ssl/client-key.pem
-  TLSCipherSuite	ALL:!ADH:@STRENGTH
-</LDAP>
-
-<Authorization>
-  BaseDN "{{ openvpn_ldap_basedn }}"
-  SearchFilter "{{ openvpn_ldap_filter }}"
-  RequireGroup {{ openvpn_ldap_require_group }}
-  <Group>
-    RFC2307bis {{ openvpn_ldap_rfc2307 }}
-    BaseDN "{{ openvpn_ldap_group_basedn }}"
-    SearchFilter "{{ openvpn_ldap_group_filter }}"
-    MemberAttribute {{ openvpn_ldap_group_attr }}
-  </Group>
-</Authorization>
+{% for l in vars['openvpn_ldap_settings'] %}
+{{ '<LDAP>' }}
+{% if l.host is defined and l.host != '' %}
+{{ '  ' ~ 'URL ' ~ l.host }}
+{% endif %}
+{% if l.binddn is defined and l.binddn != '' %}
+{{ '  ' ~ 'BindDN \"' ~ l.binddn ~ '\"' }}
+{% endif %}
+{% if l.password is defined and l.password != '' %}
+{{ '  ' ~ 'Password \"' ~ l.password ~ '\"' }}
+{% endif %}
+{% if l.timeout is defined and l.timeout != '' %}
+{{ '  ' ~ 'Timeout ' ~ l.timeout }}
+{% endif %}
+{% if l.follow_referals is defined and l.follow_referals in ['yes', 'no'] %}
+{{ '  ' ~ 'FollowReferrals ' ~ l.follow_referals }}
+{% endif %}
+{% if l.tls_enable is defined and l.tls_enable in ['yes', 'no'] %}
+{{ '  ' ~ 'TLSEnable ' ~ l.tls_enable }}
+{% endif %}
+{#} not_implemented:
+TLSCACertFile
+TLSCACertDir
+TLSCertFile
+TLSKeyFile
+TLSCipherSuite {#}
+{{ '</LDAP>' }}
+{{ '<Authorization>' }}
+{% if l.basedn is defined and l.basedn != '' %}
+{{ '  ' ~ 'BaseDN \"' ~ l.basedn ~ '\"' }}
+{% endif %}
+{% if l.filter is defined and l.filter != '' %}
+{{ '  ' ~ 'SearchFilter \"' ~ l.filter ~ '\"' }}
+{% endif %}
+{% if l.require_group is defined and l.require_group in ['true', 'false'] %}
+{{ '  ' ~ 'RequireGroup ' ~ l.require_group }}
+{{ '    <Group>' }}
+{% if l.rfc2307 is defined and l.rfc2307 in ['true', 'false'] %}
+{{ '      ' ~ 'RFC2307bis ' ~ l.rfc2307 }}
+{% endif %}
+{% if l.group_basedn is defined and l.group_basedn != '' %}
+{{ '      ' ~ 'BaseDN \"' ~ l.group_basedn ~ '\"' }}
+{% endif %}
+{% if l.group_filter is defined and l.group_filter != '' %}
+{{ '      ' ~ 'SearchFilter \"' ~ l.group_filter ~ '\"' }}
+{% endif %}
+{% if l.group_attr is defined and l.group_attr != '' %}
+{{ '      ' ~ 'MemberAttribute \"' ~ l.group_attr ~ '\"' }}
+{% endif %}
+{{ '    </Group>' }}
+{% endif %}
+{{ '</Authorization>' }}
+{% endfor %}

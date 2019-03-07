@@ -1,79 +1,10 @@
 ---
-- name: openvpn | Deploy client configuration
-  template:
-    src: "openvpn_client.j2"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_dest'] ~ '/' ~
-      item.name ~ '.conf' }}"
-    group: "root"
-    owner: "root"
-    mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn_client'] |
-    flatten(levels=1) }}"
-  loop_control:
-    label: "{{ item.name ~ '.conf' }}"
+- include_tasks: "worker_client.yml"
   when:
-  - "hostvars[inventory_hostname]['openvpn_instance'] == 'client'"
-  notify:
-  - "Restart openvpn-client instances"
-- name: openvpn | Deploy server configuration
-  template:
-    src: "openvpn_server.j2"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_dest'] ~ '/' ~
-      item.name ~ '.conf' }}"
-    group: "root"
-    owner: "root"
-    mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn_server'] |
-    flatten(levels=1) }}"
-  loop_control:
-    label: "{{ item.name ~ '.conf' }}"
+  - "vars['openvpn_instance'] == 'client'"
+- include_tasks: "worker_server.yml"
   when:
-  - "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
-  notify:
-  - "Deploy plugin configuration"
-  - "Deploy clients configuration"
-  - "Restart openvpn-server instances"
-- name: openvpn | Enable openvpn-client services
-  systemd:
-    name: "{{
-      hostvars[inventory_hostname]['openvpn_client_service'] ~ item.name }}"
-    enabled: "yes"
-  loop: "{{ hostvars[inventory_hostname]['openvpn_client'] |
-    flatten(levels=1) }}"
-  loop_control:
-    label: "{{
-      hostvars[inventory_hostname]['openvpn_client_service'] ~ item.name }}"
+  - "vars['openvpn_instance'] == 'server'"
+- include_tasks: "worker_user.yml"
   when:
-  - "hostvars[inventory_hostname]['openvpn_instance'] == 'client'"
-  - "hostvars[inventory_hostname]['openvpn_client_enable'] is defined"
-  - "hostvars[inventory_hostname]['openvpn_client_enable'] == 'true'"
-- name: openvpn | Enable openvpn-server services
-  systemd:
-    name: "{{
-      hostvars[inventory_hostname]['openvpn_server_service'] ~ item.name }}"
-    enabled: "yes"
-  loop: "{{ hostvars[inventory_hostname]['openvpn_server'] |
-    flatten(levels=1) }}"
-  loop_control:
-    label: "{{
-      hostvars[inventory_hostname]['openvpn_server_service'] ~ item.name }}"
-  when:
-  - "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
-  - "hostvars[inventory_hostname]['openvpn_server_enable'] is defined"
-  - "hostvars[inventory_hostname]['openvpn_server_enable'] == 'true'"
-- name: openvpn | Deploy user configuration
-  local_action:
-    module: "template"
-    src: "openvpn_client.j2"
-    dest: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '/' ~ vars['openvpn_instance_name'] ~ '.conf' }}"
-    mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn_client'] |
-    flatten(levels=1) }}"
-  loop_control:
-    label: "{{ vars['openvpn_instance_name'] ~ '.conf' }}"
-  when:
-  - "hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
-- include_tasks: "mail.yml"
-  when:
-  - "hostvars[inventory_hostname]['openvpn_instance'] == 'user'"
+  - "vars['openvpn_instance'] == 'user'"

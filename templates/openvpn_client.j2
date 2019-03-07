@@ -1,77 +1,86 @@
+{% if vars['openvpn_instance'] == 'client' %}
 {{ '## openvpn@' ~ item.name ~ '.conf' }}
+{% elif vars['openvpn_instance'] == 'user' %}
+{{ '## openvpn@' ~ vars['openvpn_instance_name'] ~ '.conf' }}
+{% endif %}
 {{ '# ' + ansible_managed }}
 {{ '# Do not edit manually' }}
 
-client
-remote {{ item.remote }}
-proto {{ item.proto }}
-{% if item.dev is defined %}
-dev {{ item.dev }}
+{{ 'client' }}
+{{ 'remote' ~ ' ' ~ item.remote }}
+{{ 'proto' ~ ' ' ~ item.proto }}
+{% if item.dev is defined and item.dev != '' %}
+{{ 'dev' ~ ' ' ~ item.dev }}
 {% endif %}
-{% if item.tls_auth is defined %}
-{{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.tls_auth ~ ' 1' }}
+{% if item.tls_auth is defined and item.tls_auth != '' %}
+{{ 'tls-auth' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
+    vars['openvpn_env_settings']['takey_file'] ~ ' 1' }}
 {% endif %}
-{{ 'ca' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.ca }}
-{% if item.persist_key == 'true' %}
-persist-key
+{{ 'ca' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
+    vars['openvpn_ca_settings']['file'] }}
+{% if item.persist_key is defined and item.persist_key == 'true' %}
+{{ 'persist-key' }}
 {% endif %}
-{% if item.user is defined %}
-user {{ item.user }}
+{% if item.user is defined and item.user != '' %}
+{{ 'user' ~ ' ' ~ item.user }}
 {% endif %}
-{% if item.group is defined %}
-group {{ item.group }}
+{% if item.group is defined and item.group != '' %}
+{{ 'group' ~ ' ' ~ item.group }}
 {% endif %}
-{% if item.resolv_retry is defined %}
-resolv-retry {{ item.resolv_retry }}
+{% if item.resolv_retry is defined and item.resolv_retry != '' %}
+{{ 'resolv-retry' ~ ' ' ~ item.resolv_retry }}
 {% endif %}
 {% if item.explicit_exit_notify is defined and item.explicit_exit_notify != '' %}
-{{ 'explicit-exit-notify ' + item.explicit_exit_notify }}
+{{ 'explicit-exit-notify' ~ ' ' ~ item.explicit_exit_notify }}
 {% endif %}
-{% if item.nobind == 'true' %}
-nobind
+{% if item.nobind is defined and item.nobind == 'true' %}
+{{ 'nobind' }}
 {% endif %}
-{% if item.persist_tun == 'true' %}
-persist-tun
+{% if item.persist_tun is defined and item.persist_tun == 'true' %}
+{{ 'persist-tun' }}
 {% endif %}
-{% if item.remote_random == 'true' %}
-remote-random
+{% if item.remote_random and item.remote_random == 'true' %}
+{{ 'remote-random' }}
 {% endif %}
 {% if item.auth_nocache is defined and item.auth_nocache == 'true' %}
-auth-nocache
+{{ 'auth-nocache' }}
 {% endif %}
-{% if item.reneg_sec is defined %}
-reneg-sec {{ item.reneg_sec }}
+{% if item.reneg_sec is defined and item.reneg_sec != '' %}
+{{ 'reneg-sec' ~ ' ' ~ item.reneg_sec }}
 {% endif %}
-{% if item.comp_lzo is defined %}
-comp-lzo {{ item.comp_lzo }}
+{% if item.comp_lzo is defined and item.comp_lzo != '' %}
+{{ 'comp-lzo' + ' ' + item.comp_lzo }}
 {% endif %}
-{% if item.verbosity is defined %}
-verb {{ item.verbosity }}
+{% if item.verbosity is defined and item.verbosity != '' %}
+{{ 'verb' ~ ' ' ~ item.verbosity }}
 {% endif %}
-{% if item.mute is defined %}
-mute {{ item.mute }}
+{% if item.mute is defined and item.mute != '' %}
+{{ 'mute' ~ ' ' ~ item.mute }}
 {% endif %}
-{% if item.log is defined %}
-{% if item.log_append == 'true' %}
-{{ 'log-append' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~ item.log }}
+{% if item.log is defined and item.log != '' %}
+{% if item.log_append is defined and item.log_append == 'true' %}
+{{ 'log-append' ~ ' ' ~ vars['openvpn_env_settings']['log_dest'] ~ '/' ~
+    item.log }}
 {% else %}
-{{ 'log' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~ item.log }}
+{{ 'log' ~ ' ' ~ vars['openvpn_env_settings']['log_dest'] ~ '/' ~ item.log }}
 {% endif %}
 {% endif %}
-{% if item.tls_client is defined %}
-tls-client
-{% if item.tls_version_min is defined %}
-tls-version-min {{ item.tls_version_min }}
+{% if item.tls_client is defined and item.tls_client == 'true' %}
+{{ 'tls-client' }}
+{% if item.tls_version_min is defined and item.tls_version_min != '' %}
+{{ 'tls-version-min' ~ ' ' ~ item.tls_version_min }}
 {% endif %}
-{{ 'cert' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.cert }}
-{{ 'key' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.key }}
-{% if item.cipher is defined %}
-cipher {{ item.cipher }}
+{{ 'cert' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
+    vars['openvpn_instance_name'] ~ '.crt' }}
+{{ 'key' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
+    vars['openvpn_instance_name'] ~ '.key' }}
+{% if item.cipher is defined and item.cipher != '' %}
+{{ 'cipher' ~ ' ' ~ item.cipher }}
 {% endif %}
-{% if item.keysize is defined %}
-keysize {{ item.keysize }}
+{% if item.keysize is defined and item.keysize != '' %}
+{{ 'keysize' ~ ' ' ~ item.keysize }}
 {% endif %}
-{% if item.auth is defined %}
-auth {{ item.auth }}
+{% if item.auth is defined and item.auth != '' %}
+{{ 'auth' ~ ' ' ~ item.auth }}
 {% endif %}
 {% endif %}

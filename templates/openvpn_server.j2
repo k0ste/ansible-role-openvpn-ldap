@@ -6,149 +6,163 @@
 {{ 'proto' ~ ' ' ~ item.proto }}
 {{ 'dev' ~ ' ' ~ item.dev }}
 {{ 'server' ~ ' ' ~ item.server }}
-{{ 'dh' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.dh }}
-{{ 'ca' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.ca }}
-{{ 'cert' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.cert }}
-{{ 'key' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.key }}
-{% if item.tls_auth is defined %}
-{{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.tls_auth ~ ' 0' }}
+{{ 'dh' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~ item.dh }}
+{{ 'ca' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
+    vars['openvpn_ca_settings']['file'] }}
+{{ 'cert' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
+    vars['openvpn_instance_name'] ~ '.crt' }}
+{{ 'key' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
+    vars['openvpn_instance_name'] ~ '.key' }}
+{% if item.tls_auth is defined and item.tls_auth != '' %}
+{{ 'tls-auth' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
+    vars['openvpn_env_settings']['takey_file'] ~ ' 0' }}
 {% endif %}
-{% if item.crl_verify is defined %}
-{{ 'crl-verify' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_tls_dest'] ~ '/' ~ item.crl_verify }}
+{% if item.crl_verify is defined and item.crl_verify != '' %}
+{{ 'crl-verify' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
+    item.crl_verify }}
 {% endif %}
-{% if item.route is defined %}
-route {{ item.route }}
+{% if item.route is defined and item.route != '' %}
+{{ 'route' ~ ' ' ~ item.route }}
 {% endif %}
-{% if item.user is defined %}
-user {{ item.user }}
+{% if item.user is defined and item.user != '' %}
+{{ 'user' ~ ' ' ~ item.user }}
 {% endif %}
-{% if item.group is defined %}
-group {{ item.group }}
+{% if item.group is defined and item.group != '' %}
+{{ 'group' ~ ' ' ~ item.group }}
 {% endif %}
 {% if item.verify_client_cert is defined and
       item.verify_client_cert in ['none', 'optional', 'require'] %}
 {{ 'verify-client-cert' + ' ' + item.verify_client_cert }}
 {% endif %}
 {% if item.duplicate_cn is defined and item.duplicate_cn == 'true' %}
-duplicate-cn
+{{ 'duplicate-cn' }}
 {% endif %}
 {% if item.multihome is defined and item.multihome == 'true' %}
 {{ 'multihome' }}
 {% endif %}
 {% if item.management is defined and item.management != '' %}
-{{ 'management ' + item.management }}
+{{ 'management' + ' ' + item.management }}
 {% endif %}
-{% if item.username_as_common_name == 'true' %}
-username-as-common-name
+{% if item.username_as_common_name and item.username_as_common_name == 'true' %}
+{{ 'username-as-common-name' }}
 {% endif %}
-{% if item.persist_key == 'true' %}
-persist-key
+{% if item.persist_key is defined and item.persist_key == 'true' %}
+{{ 'persist-key' }}
 {% endif %}
-{% if item.persist_tun == 'true' %}
-persist-tun
+{% if item.persist_tun is defined and item.persist_tun == 'true' %}
+{{ 'persist-tun' }}
 {% endif %}
-keepalive {{ item.keepalive }}
-max-clients {{ item.max_clients }}
-{% if item.reneg_sec is defined %}
-reneg-sec {{ item.reneg_sec }}
+{% if item.keepalive is defined and item.keepalive != '' %}
+{{ 'keepalive' ~ ' ' ~ item.keepalive }}
 {% endif %}
-{% if item.replay_window is defined %}
-replay-window {{ item.replay_window }}
+{% if item.max_clients is defined and item.max_clients != '' %}
+{{ 'max-clients' ~ ' ' ~ item.max_clients }}
 {% endif %}
-{% if item.client_to_client == 'true' %}
-client-to-client
+{% if item.reneg_sec is defined and item.reneg_sec != '' %}
+{{ 'reneg-sec' ~ ' ' ~ item.reneg_sec }}
 {% endif %}
-{% if item.comp_lzo is defined %}
-comp-lzo {{ item.comp_lzo }}
+{% if item.replay_window is defined and item.replay_window != '' %}
+{{ 'replay-window' ~ ' ' ~ item.replay_window }}
 {% endif %}
-{% if item.verbosity is defined %}
-verb {{ item.verbosity }}
+{% if item.client_to_client is defined and item.client_to_client == 'true' %}
+{{ 'client-to-client' }}
 {% endif %}
-{% if item.mute is defined %}
-mute {{ item.mute }}
+{% if item.comp_lzo is defined and item.comp_lzo != '' %}
+{{ 'comp-lzo' + ' ' + item.comp_lzo }}
 {% endif %}
-{% if item.mute_replay_warnings is defined %}
-mute-replay-warnings
+{% if item.verbosity is defined and item.verbosity != '' %}
+{{ 'verb' ~ ' ' ~ item.verbosity }}
 {% endif %}
-{% if item.ifconfig_pool_persist is defined %}
-{{ 'ifconfig-pool-persist' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_pool_dest'] ~ '/' ~ item.ifconfig_pool_persist }}
+{% if item.mute is defined and item.mute != '' %}
+{{ 'mute' ~ ' ' ~ item.mute }}
 {% endif %}
-{% if item.status is defined %}
-{{ 'status' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_pool_dest'] ~ '/' ~ item.status }}
+{% if item.mute_replay_warnings is defined and
+      item.mute_replay_warnings == 'true' %}
+{{ 'mute-replay-warnings' }}
 {% endif %}
-{% if item.log is defined %}
-{% if item.log_append == 'true' %}
-{{ 'log-append' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~ item.log }}
+{% if item.ifconfig_pool_persist is defined and
+      item.ifconfig_pool_persist != '' %}
+{{ 'ifconfig-pool-persist' ~ ' ' ~ vars['openvpn_env_settings']['pool_dest'] ~
+   '/' ~ item.ifconfig_pool_persist }}
+{% endif %}
+{% if item.status is defined and item.status != '' %}
+{{ 'status' ~ ' ' ~ vars['openvpn_env_settings']['pool_dest'] ~ '/' ~
+    item.status }}
+{% endif %}
+{% if item.log is defined and item.log != '' %}
+{% if item.log_append is defined and item.log_append == 'true' %}
+{{ 'log-append' ~ ' ' ~ vars['openvpn_env_settings']['log_dest'] ~ '/' ~
+    item.log }}
 {% else %}
-{{ 'log' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~ item.log }}
+{{ 'log' ~ ' ' ~ vars['openvpn_env_settings']['log_dest'] ~ '/' ~ item.log }}
 {% endif %}
 {% endif %}
 {% if item.push == 'true' %}
-{% if item.push_route is defined %}
-push "route {{ item.push_route }}"
+{% if item.push_route is defined and item.push_route != '' %}
+{{ 'push \"route' + ' ' + item.push_route + '\"' }}
 {% endif %}
-{% if item.push_route_geteway is defined %}
-push "route-gateway {{ item.push_route_gateway }}"
+{% if item.push_route_geteway is defined and item.push_route_geteway != '' %}
+{{ 'push \"route-gateway' + ' ' + item.push_route_gateway + '\"' }}
 {% endif %}
-{% if item.push_route_delay is defined %}
-push "route-delay {{ item.push_route_delay }}"
+{% if item.push_route_delay is defined and item.push_route_delay != '' %}
+{{ 'push \"route-delay' + ' ' + item.push_route_delay + '\"' }}
 {% endif %}
-{% if item.push_redirect_gateway is defined %}
-push "redirect-gateway {{ item.push_redirect_gateway }}"
+{% if item.push_redirect_gateway is defined and
+      item.push_redirect_gateway != '' %}
+{{ 'push \"redirect-gateway' + ' ' + item.push_redirect_gateway + '\"' }}
 {% endif %}
-{% if item_push_inactive is defined %}
-push "inactive {{ item.push_inactive }}"
+{% if item.push_inactive is defined and item.push_inactive != '' %}
+{{ 'push \"inactive' ~ ' ' ~ item.push_inactive + '\"' }}
 {% endif %}
-{% if item.push_persist_key == 'true' %}
-push "persist-key"
+{% if item.push_persist_key is defined and item.push_persist_key == 'true' %}
+{{ 'push \"persist-key\"' }}
 {% endif %}
-{% if item.push_persist_tun == 'true' %}
-push "persist-tun"
+{% if item.push_persist_tun is defined and item.push_persist_tun == 'true' %}
+{{ 'push \"persist-tun\"' }}
 {% endif %}
-{% if item.push_comp_lzo is defined %}
-push "comp-lzo {{ item.push_comp_lzo }}"
+{% if item.push_comp_lzo is defined and item.push_comp_lzo != '' %}
+{{ 'push \"comp-lzo' + ' ' + item.push_comp_lzo + '\"' }}
 {% endif %}
-{% if item.push_ping is defined %}
-push "ping {{ item.push_ping }}"
+{% if item.push_ping is defined and item.push_ping != '' %}
+{{ 'push \"ping' + ' ' + item.push_ping + '\"' }}
 {% endif %}
-{% if item.push_ping_exit is defined %}
-push "ping-exit {{ item.push_ping_exit }}"
+{% if item.push_ping_exit is defined and item.push_ping_exit != '' %}
+{{ 'push \"ping-exit' + ' ' + item.push_ping_exit + '\"' }}
 {% endif %}
-{% if item.push_ping_restart is defined %}
-push "ping-restart {{ item.push_ping_restart }}"
+{% if item.push_ping_restart is defined and item.push_ping_restart != '' %}
+{{ 'push \"ping-restart' + ' ' + item.push_ping_restart + '\"' }}
 {% endif %}
-{% if item.push_ip_win32 is defined %}
-push "ip-win32 {{ item.push_ip_win32 }}"
+{% if item.push_ip_win32 is defined and item.push_ip_win32 != '' %}
+{{ 'push \"ip-win32' + ' ' + item.push_ip_win32 + '\"' }}
 {% endif %}
-{% if item.push_dhcp_option is defined %}
-push "dhcp-option {{ item.push_dhcp_option }}"
+{% if item.push_dhcp_option is defined and item.push_dhcp_option != '' %}
+{{ 'push \"dhcp-option' + ' ' + item.push_dhcp_option + '\"' }}
 {% endif %}
 {% endif %}
-{% if item.tls_server is defined %}
-tls-server
-{% if item.tls_version_min is defined %}
-tls-version-min {{ item.tls_version_min }}
+{% if item.tls_server is defined and item.tls_server == 'true' %}
+{{ 'tls-server' }}
+{% if item.tls_version_min is defined and item.tls_version_min != '' %}
+{{ 'tls-version-min' ~ ' ' ~ item.tls_version_min }}
 {% endif %}
-{% if item.cipher is defined %}
-cipher {{ item.cipher }}
+{% if item.cipher is defined and item.cipher != '' %}
+{{ 'cipher' ~ ' ' ~ item.cipher }}
 {% endif %}
-{% if item.keysize is defined %}
-keysize {{ item.keysize }}
+{% if item.keysize is defined and item.keysize != '' %}
+{{ 'keysize' ~ ' ' ~ item.keysize }}
 {% endif %}
-{% if item.auth is defined %}
-auth {{ item.auth }}
+{% if item.auth is defined and item.auth != '' %}
+{{ 'auth' ~ ' ' ~ item.auth }}
 {% endif %}
 {% endif %}
 {% if item.client_config_dir is defined and item.client_config_dir != '' %}
-{{ 'client-config-dir ' + item.client_config_dir }}
+{{ 'client-config-dir' ~ ' ' ~ vars['openvpn_env_settings']['dest'] ~
+   '/server/' ~ item.name }}
 {% endif %}
 {% if item.ccd_exclusive is defined and item.ccd_exclusive == 'true' %}
 {{ 'ccd-exclusive' }}
 {% endif %}
-{% if item.plugin is defined %}
-{% if item.plugin == 'true' %}
-{{ 'plugin ' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~ '/' ~
-    item.plugin_name ~ ' ' ~ hostvars[inventory_hostname]['openvpn_dest'] ~
-    '/' ~ item.plugin_conf }}
-{% endif %}
+{% if item.plugin is defined and item.plugin == 'true' %}
+{{ 'plugin' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~ '/' ~
+    item.plugin_name ~ ' ' ~ vars['openvpn_env_settings']['dest'] ~ '/server/' ~
+    item.plugin_conf }}
 {% endif %}

@@ -1,0 +1,34 @@
+---
+- name: openvpn | Deploy server configuration
+  template:
+    src: "openvpn_server.j2"
+    dest: "{{ vars['openvpn_env_settings']['dest'] ~ '/server/' ~ item.name ~
+      '.conf' }}"
+    group: "root"
+    owner: "root"
+    mode: "0400"
+  loop: "{{ vars['openvpn_server'] | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ item.name ~ '.conf' }}"
+  notify:
+  - "Deploy plugin configuration"
+  - "Deploy clients configuration"
+  - "Restart openvpn-server instances"
+- name: openvpn | Enable openvpn-server services
+  systemd:
+    name: "{{ hostvars[inventory_hostname]['openvpn_server_service'] ~
+      item.name }}"
+    enabled: "yes"
+  loop: "{{ vars['openvpn_server'] | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ hostvars[inventory_hostname]['openvpn_server_service'] ~
+      item.name }}"
+  when:
+  - "hostvars[inventory_hostname]['openvpn'] is defined"
+  - "hostvars[inventory_hostname]['openvpn'] != ''"
+  - "hostvars[inventory_hostname]['openvpn'] |
+     json_query(vars['openvpn_enable']) is defined"
+  - "hostvars[inventory_hostname]['openvpn'] |
+     json_query(vars['openvpn_enable']) == 'true'"
+  vars:
+    openvpn_enable: "[] | map(&enable || 'false', @) | [0]"

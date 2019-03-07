@@ -1,5 +1,28 @@
 ---
-- name: Raise user is not defined
+- name: openvpn | Set facts about ???
+  set_fact:
+    openvpn_email_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].global_settings[].email[] | [0]') }}"
+    openvpn_env_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].global_settings[].env[] | [0]') }}"
+    openvpn_ca_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].global_settings[].ca[] | [0]') }}"
+    openvpn_csr_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].global_settings[].csr[] | [0]') }}"
+    openvpn_ldap_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].global_settings[].ldap[] | [0]') }}"
+    openvpn_instance: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].instance_type | [0]') }}"
+    openvpn_server: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].server_settings[]') }}"
+    openvpn_client: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].client_settings[]') }}"
+- name: openvpn | Assert that openvpn_instance is defined
+  assert:
+    that:
+    - "vars['openvpn_instance'] in ['server', 'client', 'user']"
+    msg: "openvpn_instance have unknown value"
+- name: openvpn | Raise user is not defined
   fail:
     msg: "User is not defined"
   when:
@@ -9,10 +32,14 @@
   set_fact:
     local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] ~
       '_' ~ lookup('env', 'USER') }}"
+
 - name: openvpn | Gather facts about CA master
   setup:
-  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
+  delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   delegate_facts: "false"
+  remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
+
+
 - name: openvpn | Check CA master facts
   assert:
     that:
@@ -27,7 +54,8 @@
       hostvars[inventory_hostname]['ansible_os_family'] }}"
     local_packages_master: "{{
       hostvars[inventory_hostname]['openvpn_packages_master'] }}"
-  delegate_to: "{{ hostvars[inventory_hostname]['openvpn_ca_master'] }}"
+  delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
+  remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
 - meta: "clear_facts"
 - name: openvpn | Gather instance facts
   setup:
@@ -40,20 +68,17 @@
     - "hostvars[inventory_hostname]['facter_facterversion'] is defined"
     msg: "Facter facts not found. Please install facter."
   when:
-  - "(hostvars[inventory_hostname]['openvpn_instance'] == 'server' or
-      hostvars[inventory_hostname]['openvpn_instance'] == 'client')"
+  - "vars['openvpn_instance'] in ['server', 'client']"
 - name: openvpn | Set facts about client/server instance [Facter 2]
   set_fact:
     openvpn_instance_name: "{{ hostvars[inventory_hostname]['facter_fqdn'] }}"
   when:
    - "hostvars[inventory_hostname]['ansible_os_family'] == 'RedHat'"
-   - "(hostvars[inventory_hostname]['openvpn_instance'] == 'server' or
-       hostvars[inventory_hostname]['openvpn_instance'] == 'client')"
+   - "vars['openvpn_instance'] in ['server', 'client']"
 - name: openvpn | Set facts about client/server instance [Facter 3]
   set_fact:
     openvpn_instance_name: "{{
       hostvars[inventory_hostname]['facter_networking']['fqdn'] }}"
   when:
    - "hostvars[inventory_hostname]['ansible_os_family'] != 'RedHat'"
-   - "(hostvars[inventory_hostname]['openvpn_instance'] == 'server' or
-       hostvars[inventory_hostname]['openvpn_instance'] == 'client')"
+   - "vars['openvpn_instance'] in ['server', 'client']"

@@ -1,14 +1,12 @@
-{{ '[ ca ]'}}
+{{ '[ ca ]' }}
 {{ 'default_ca = CA_default' }}
 
 {{ '[ CA_default ]' }}
-{{ 'crl_dir = ' + hostvars[inventory_hostname]['openvpn_ca_crl_path'] }}
-{{ 'database = ' + hostvars[inventory_hostname]['openvpn_ca_crl_path'] +
-   '/index' }}
-{{ 'crlnumber = ' + hostvars[inventory_hostname]['openvpn_ca_crl_path'] +
-   '/crlnumber' }}
-{{ 'crl = ' + hostvars[inventory_hostname]['openvpn_ca_crl_path'] + '/' +
-   hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}
+{{ 'crl_dir = ' ~ vars['openvpn_ca_settings']['crl_path'] }}
+{{ 'database = ' ~ vars['openvpn_ca_settings']['crl_path'] ~ '/index' }}
+{{ 'crlnumber = ' ~ vars['openvpn_ca_settings']['crl_path'] ~ '/crlnumber' }}
+{{ 'crl = ' ~ vars['openvpn_ca_settings']['crl_path'] ~ '/' ~
+   vars['openvpn_ca_settings']['crl_file'] }}
 {{ 'default_md = default' }}
 {{ 'default_days = 365' }}
-{{ 'default_crl_days = ' ~ hostvars[inventory_hostname]['openvpn_crl_days'] }}
+{{ 'default_crl_days = ' ~ vars['openvpn_ca_settings']['crl_days'] }}

@@ -1,0 +1,35 @@
+---
+- name: openvpn | Deploy user configuration
+  local_action:
+    module: "template"
+    src: "openvpn_client.j2"
+    dest: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
+      '/' ~ vars['openvpn_instance_name'] ~ '.conf' }}"
+    mode: "0400"
+  loop: "{{ vars['openvpn_client'] | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ vars['openvpn_instance_name'] ~ '.conf' }}"
+- name: openvpn | Make archive for mail message
+  local_action:
+    module: "archive"
+    path: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] }}"
+    dest: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
+      '/' ~ vars['openvpn_instance_name'] ~ '.gz' }}"
+  notify:
+  - "Delete fetched files"
+- name: openvpn | Send mail to client
+  local_action:
+    module: "mail"
+    attach: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
+      '/' ~ vars['openvpn_instance_name'] ~ '.gz' }}"
+    body: "{{ vars['openvpn_email_settings']['body'] | default(omit) }}"
+    charset: "{{ vars['openvpn_email_settings']['charset'] | default(omit) }}"
+    from: "{{ vars['openvpn_email_settings']['from'] | default(omit) }}"
+    headers: "{{ vars['openvpn_email_settings']['headers'] | default(omit) }}"
+    host: "{{ vars['openvpn_email_settings']['host'] | default(omit) }}"
+    password: "{{ vars['openvpn_email_settings']['password'] | default(omit) }}"
+    port: "{{ vars['openvpn_email_settings']['port'] | default(omit) }}"
+    subject: "{{ vars['openvpn_email_settings']['subject'] | default(omit) }}"
+    timeout: "{{ vars['openvpn_email_settings']['timeout'] | default(omit) }}"
+    to: "{{ vars['openvpn_ldap_user_mail'] }}"
+    username: "{{ vars['openvpn_email_settings']['username'] | default(omit) }}"

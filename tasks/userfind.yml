@@ -2,13 +2,12 @@
 - name: openvpn | Set LDAP facts
   set_fact:
     ldap_lookup_config:
-      url: "{{ hostvars[inventory_hostname]['openvpn_ldap_host'] }}"
-      base: "{{ hostvars[inventory_hostname]['openvpn_ldap_basedn'] }}"
-      binddn: "{{ hostvars[inventory_hostname]['openvpn_ldap_binddn'] }}"
-      bindpw: "{{ hostvars[inventory_hostname]['openvpn_ldap_password'] }}"
+      url: "{{ vars['openvpn_ldap_settings']['host'] }}"
+      base: "{{ vars['openvpn_ldap_settings']['basedn'] }}"
+      binddn: "{{ vars['openvpn_ldap_settings']['binddn'] }}"
+      bindpw: "{{ vars['openvpn_ldap_settings']['password'] }}"
       scope: 'subtree'
-      filter: "{{ '(' ~
-        hostvars[inventory_hostname]['openvpn_ldap_user_filter'] ~ '=' ~
+      filter: "{{ '(' ~ vars['openvpn_ldap_settings']['user_filter'] ~ '=' ~
         vars['openvpn_instance_name'] ~ ')' }}"
     openvpn_mailaddr_regex: '^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'
 - name: openvpn | Get user mail address
@@ -16,7 +15,7 @@
     openvpn_ldap_user_mail: "{{ item }}"
   with_ldap:
   - value:
-    - "{{ hostvars[inventory_hostname]['openvpn_ldap_mail_filter'] }}"
+    - "{{ vars['openvpn_ldap_settings']['mail_filter'] }}"
 - name: openvpn | Check user is present on LDAP
   assert:
     that:
