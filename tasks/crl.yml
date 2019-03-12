@@ -1,16 +1,16 @@
 ---
 - name: openvpn | Check availability key on master
   stat:
-    path: "{{ hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
+    path: "{{ vars['openvpn_ca_settings']['path'] ~ '/' ~
       vars['openvpn_revoke_target'] ~ '.crt' }}"
-  register: "cert_stat_result"
+  register: "openvpn_cert_result"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-- name: "{{ 'openvpn | Cert ' ~ vars['openvpn_revoke_target'] ~ ' not found' }}"
-  fail:
+- name: openvpn | Assert that revoke target is exists
+  assert:
+    that:
+    - "openvpn_cert_result.stat.exists == True"
     msg: "{{ 'Cert for ' ~ vars['openvpn_revoke_target'] ~ ' not found' }}"
-  when:
-  - "cert_stat_result.stat.exists == False"
 - name: openvpn | Deploy temp openssl.conf
   template:
     src: "openssl_conf.j2"
@@ -18,54 +18,47 @@
     group: "root"
     owner: "root"
     mode: "0400"
-  when:
-  - "cert_stat_result.stat.exists == True"
   notify:
   - "Delete temp openssl.conf"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-- name: "{{ 'openvpn | Revoke ' ~ vars['openvpn_revoke_target'] ~ ' cert' }}"
+- name: openvpn | Revoke target cert
   shell: "{{ 'openssl ca -config /tmp/openssl.conf -keyfile ' ~
-    hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
-    hostvars[inventory_hostname]['openvpn_ca_rootkey'] ~ ' -cert ' ~
-    hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
-    hostvars[inventory_hostname]['openvpn_ca_rootcrt'] ~ ' -revoke ' ~
-    hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
+    vars['openvpn_ca_settings']['path'] ~ '/' ~
+    vars['openvpn_ca_settings']['rootkey'] ~ ' -cert ' ~
+    vars['openvpn_ca_settings']['path'] ~ '/' ~
+    vars['openvpn_ca_settings']['rootcrt'] ~ ' -revoke ' ~
+    vars['openvpn_ca_settings']['path'] ~ '/' ~
     vars['openvpn_revoke_target'] ~ '.crt' }}"
-  when:
-  - "cert_stat_result.stat.exists == True"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
 - name: openvpn | Generate CRL
   shell: "{{ 'openssl ca -config /tmp/openssl.conf -keyfile ' ~
-    hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
-    hostvars[inventory_hostname]['openvpn_ca_rootkey'] ~ ' -cert ' ~
-    hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
-    hostvars[inventory_hostname]['openvpn_ca_rootcrt'] ~
-    ' -gencrl -out ' ~
-    hostvars[inventory_hostname]['openvpn_ca_crl_path'] ~ '/' ~
-    hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}"
-  when:
-  - "cert_stat_result.stat.exists == True"
+    vars['openvpn_ca_settings']['path'] ~ '/' ~
+    vars['openvpn_ca_settings']['rootkey'] ~ ' -cert ' ~
+    vars['openvpn_ca_settings']['path'] ~ '/' ~
+    vars['openvpn_ca_settings']['rootcrt'] ~ ' -gencrl -out ' ~
+    vars['openvpn_ca_settings']['crl_path'] ~ '/' ~
+    vars['openvpn_ca_settings']['crl_file'] }}"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
 - name: openvpn | Delete revoked cert
   file:
-    path: "{{ hostvars[inventory_hostname]['openvpn_ca_path'] ~ '/' ~
+    path: "{{ vars['openvpn_ca_settings']['path'] ~ '/' ~
       vars['openvpn_revoke_target'] ~ item }}"
     state: "absent"
   loop:
-   - '.csr'
-   - '.crt'
-   - '.key'
+  - '.csr'
+  - '.crt'
+  - '.key'
   loop_control:
     label: "{{ vars['openvpn_revoke_target'] ~ item }}"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
 - name: openvpn | Fetch CRL from master
   fetch:
-    src: "{{ hostvars[inventory_hostname]['openvpn_ca_crl_path'] ~ '/' ~
-      hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}"
+    src: "{{ vars['openvpn_ca_settings']['crl_path'] ~ '/' ~
+      vars['openvpn_ca_settings']['crl_file'] }}"
     dest: "{{ vars['local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' }}"
     flat: "yes"
@@ -76,10 +69,10 @@
 - name: openvpn | Update CRL
   copy:
     src: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '/' ~ hostvars[inventory_hostname]['openvpn_ca_crl_file'] }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_tls_dest'] }}"
-    group: "{{ hostvars[inventory_hostname]['openvpn_instance_group'] }}"
-    owner: "{{ hostvars[inventory_hostname]['openvpn_instance_user'] }}"
+      '/' ~ vars['openvpn_ca_settings']['crl_file'] }}"
+    dest: "{{ vars['openvpn_env_settings']['tls_dest'] }}"
+    group: "{{ vars['openvpn_env_settings']['group'] }}"
+    owner: "{{ vars['openvpn_env_settings']['user'] }}"
     mode: "0400"
   notify:
   - "Delete fetched files"

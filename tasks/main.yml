@@ -30,5 +30,7 @@
   - "vars['openvpn_instance'] == 'user'"
 - include_tasks: "crl.yml"
   when:
-  - "vars['openvpn_revoke_target'] is defined"
-  - "hostvars[inventory_hostname]['openvpn_instance'] == 'server'"
+  - "(vars['openvpn_revoke_target'] is defined and
+      vars['openvpn_revoke_target'] != '')"
+  - "(vars['openvpn_instance'] is defined and
+      vars['openvpn_instance'] == 'server')"

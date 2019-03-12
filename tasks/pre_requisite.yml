@@ -1,5 +1,5 @@
 ---
-- name: openvpn | Set facts about ???
+- name: openvpn | Set facts about OpenVPN instance
   set_fact:
     openvpn_email_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
       json_query('[].global_settings[].email[] | [0]') }}"
@@ -32,14 +32,11 @@
   set_fact:
     local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] ~
       '_' ~ lookup('env', 'USER') }}"
-
 - name: openvpn | Gather facts about CA master
   setup:
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   delegate_facts: "false"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-
-
 - name: openvpn | Check CA master facts
   assert:
     that:
