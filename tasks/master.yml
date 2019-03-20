@@ -3,92 +3,14 @@
   stat:
     path: "{{ vars['openvpn_ca_settings']['path'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.crt' }}"
-  register: "master_stat_result"
+  register: "openvpn_master_result"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-- name: openvpn | Generate private key on master
-  openssl_privatekey:
-    type: "RSA"
-    path: "{{ vars['openvpn_ca_settings']['path'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '.key' }}"
+- import_tasks: "master/openvpn_master_generate_certs.yml"
   when:
-  - "master_stat_result.stat.exists == False"
+  - "openvpn_master_result.stat.exists == False"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-- name: openvpn | Generate certificate signing request on master
-  openssl_csr:
-    common_name: "{{ vars['openvpn_instance_name'] }}"
-    country_name: "{{ vars['openvpn_csr_settings']['country_name'] |
-      default(omit) }}"
-    state_or_province_name: "{{
-      vars['openvpn_csr_settings']['openvpn_csr_state'] | default(omit) }}"
-    locality_name: "{{ vars['openvpn_csr_settings']['locality_name'] |
-      default(omit) }}"
-    organization_name: "{{ vars['openvpn_csr_settings']['organization_name'] |
-      default(omit) }}"
-    organizational_unit_name: "{{
-      vars['openvpn_csr_settings']['organization_unit'] | default(omit) }}"
-    path: "{{ vars['openvpn_ca_settings']['path'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '.csr' }}"
-    privatekey_path: "{{ vars['openvpn_ca_settings']['path'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '.key' }}"
-  when:
-  - "master_stat_result.stat.exists == False"
+- import_tasks: "master/openvpn_master_fetch_certs.yml"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-- name: openvpn | Generate certificate on master
-  shell: "{{ 'openssl x509 -req -in ' ~
-    vars['openvpn_ca_settings']['path'] ~ '/' ~
-    vars['openvpn_instance_name'] ~ '.csr' ~ ' -CA ' ~
-    vars['openvpn_ca_settings']['path'] ~ '/' ~
-    vars['openvpn_ca_settings']['rootcrt'] ~ ' -CAkey ' ~
-    vars['openvpn_ca_settings']['path'] ~ '/' ~
-    vars['openvpn_ca_settings']['rootkey'] ~ ' -CAcreateserial -out ' ~
-    vars['openvpn_ca_settings']['path'] ~ '/' ~
-    vars['openvpn_instance_name'] ~ '.crt' ~ ' -days 5000' }}"
-  when:
-  - "master_stat_result.stat.exists == False"
-  delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-- name: openvpn | Fetch cert from master
-  fetch:
-    src: "{{ item }}"
-    dest: "{{ vars['local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' }}"
-    flat: "yes"
-    validate_checksum: "yes"
-    fail_on_missing: "no"
-  loop:
-  - "{{ vars['openvpn_ca_settings']['path'] ~ '/' ~
-        vars['openvpn_instance_name'] ~ '.key' }}"
-  - "{{ vars['openvpn_ca_settings']['path'] ~ '/' ~
-        vars['openvpn_instance_name'] ~ '.crt' }}"
-  - "{{ vars['openvpn_ca_settings']['path'] ~ '/' ~
-        vars['openvpn_ca_settings']['file'] }}"
-  - "{{ vars['openvpn_env_settings']['src'] ~ '/' ~
-        vars['openvpn_env_settings']['takey_file'] }}"
-  delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-- name: openvpn | Fetch CRL and DHPARAM from master
-  fetch:
-    src: "{{ item }}"
-    dest: "{{ vars['local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' }}"
-    flat: "yes"
-    validate_checksum: "yes"
-    fail_on_missing: "no"
-  loop:
-  - "{{ vars['openvpn_env_settings']['src'] ~ '/' ~
-        vars['openvpn_env_settings']['dhparam_file'] }}"
-  - "{{ vars['openvpn_ca_settings']['crl_path'] ~ '/' ~
-        vars['openvpn_ca_settings']['crl_file'] }}"
-  when:
-  - "vars['openvpn_instance'] == 'server'"
-  delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-- include_tasks: "prepare.yml"
-  when:
-  - "vars['openvpn_instance'] in ['server', 'client']"
-- include_tasks: "worker.yml"
-  when:
-  - "vars['openvpn_instance'] == 'user'"

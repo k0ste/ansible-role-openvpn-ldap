@@ -1,75 +1,32 @@
 ---
-- name: openvpn | Delete catalogs (clean up before deploy)
+- name: openvpn | Create OpenVPN configuration dir
   file:
-    name: "{{ item }}"
-    state: "absent"
-  loop:
-  - "{{ vars['openvpn_env_settings']['dest'] }}"
-  - "{{ vars['openvpn_env_settings']['tls_dest'] }}"
-  - "{{ vars['openvpn_env_settings']['log_dest'] }}"
-  - "{{ vars['openvpn_env_settings']['pool_dest'] }}"
-- name: openvpn | Create catalogs
-  file:
-    path: "{{ item }}"
+    path: "{{ hostvars[inventory_hostname]['openvpn_' + item + '_conf_dest'] }}"
     state: "directory"
     group: "root"
     owner: "root"
     mode: "0755"
-    recurse: "yes"
-  loop:
-  - "{{ vars['openvpn_env_settings']['dest'] ~ '/server' }}"
-  - "{{ vars['openvpn_env_settings']['dest'] ~ '/client' }}"
-  - "{{ vars['openvpn_env_settings']['tls_dest'] }}"
-  - "{{ vars['openvpn_env_settings']['log_dest'] }}"
-  - "{{ vars['openvpn_env_settings']['pool_dest'] }}"
-- name: openvpn | Create client config catalogs
-  file:
-    path: "{{ vars['openvpn_env_settings']['dest'] ~ '/server/' ~
-      item.name }}"
-    state: "directory"
-    group: "root"
-    owner: "root"
-    mode: "0755"
-    recurse: "yes"
-  loop: "{{ vars['openvpn_server'] | flatten(levels=1) }}"
+  loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
   loop_control:
-    label: "{{ item.name }}"
+    label: "{{ hostvars[inventory_hostname]['openvpn_' + item +
+      '_conf_dest'] }}"
+- name: openvpn | Create OpenVPN static pool dir
+  file:
+    path: "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
+    state: "directory"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
   when:
-  - "vars['openvpn_instance'] == 'server'"
-  - "item.client_config_dir is defined"
-  - "item.client_config_dir == 'true'"
-- name: openvpn | Copy TLS files for client instance
-  copy:
-    src: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '/' ~ item }}"
-    dest: "{{ vars['openvpn_env_settings']['tls_dest'] }}"
-    group: "{{ vars['openvpn_env_settings']['group'] }}"
-    owner: "{{ vars['openvpn_env_settings']['user'] }}"
-    mode: "0400"
-  loop:
-  - "{{ vars['openvpn_instance_name'] ~ '.crt' }}"
-  - "{{ vars['openvpn_instance_name'] ~ '.key' }}"
-  - "{{ vars['openvpn_ca_settings']['file'] }}"
-  - "{{ vars['openvpn_env_settings']['takey_file'] }}"
-  diff: "false"
+  - "item == 'server'"
+- name: openvpn | Create OpenVPN status dir
+  file:
+    path: "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
+    state: "directory"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
   when:
-  - "vars['openvpn_instance'] == 'client'"
-- name: openvpn | Copy TLS files for server instance
-  copy:
-    src: "{{ vars['local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '/' ~ item }}"
-    dest: "{{ vars['openvpn_env_settings']['tls_dest'] }}"
-    group: "{{ vars['openvpn_env_settings']['group'] }}"
-    owner: "{{ vars['openvpn_env_settings']['user'] }}"
-    mode: "0400"
-  loop:
-  - "{{ vars['openvpn_instance_name'] ~ '.crt' }}"
-  - "{{ vars['openvpn_instance_name'] ~ '.key' }}"
-  - "{{ vars['openvpn_ca_settings']['file'] }}"
-  - "{{ vars['openvpn_env_settings']['takey_file'] }}"
-  - "{{ vars['openvpn_env_settings']['dhparam_file'] }}"
-  - "{{ vars['openvpn_ca_settings']['crl_file'] }}"
-  diff: "false"
-  when:
-  - "vars['openvpn_instance'] == 'server'"
-- import_tasks: "worker.yml"
+  - "item == 'server'"

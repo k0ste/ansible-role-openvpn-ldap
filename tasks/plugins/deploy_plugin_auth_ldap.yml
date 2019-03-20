@@ -1,0 +1,17 @@
+---
+- name: openvpn | Deploy openvpn-auth-ldap plugin configuration
+  template:
+    src: "openvpn_plugin_auth_ldap.j2"
+    dest: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/'
+      ~ item.name ~ '/' ~ 'auth_ldap.conf' }}"
+    owner: "{{ item.user | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "0400"
+  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+    json_query(\"[].openvpn_settings[?name=='\" ~
+    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
+  when:
+  - "vars['outer_item'].plugin_openvpn is defined"
+  - "vars['outer_item'].plugin_openvpn == 'true'"

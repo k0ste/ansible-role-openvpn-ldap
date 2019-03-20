@@ -2,7 +2,7 @@
 - name: Delete fetched files
   local_action:
     module: "file"
-    path: "{{ vars['local_fetch_dir'] }}"
+    path: "{{ vars['openvpn_local_fetch_dir'] }}"
     state: "absent"
 - name: Delete temp openssl.conf
   file:
@@ -10,62 +10,14 @@
     state: "absent"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-- name: Deploy plugin configuration
-  template:
-    src: "auth_ldap.j2"
-    dest: "{{ vars['openvpn_env_settings']['dest'] ~ '/server/' ~
-      item.plugin_conf }}"
-    group: "{{ item.group }}"
-    owner: "{{ item.user }}"
-    mode: "0400"
-  loop: "{{ vars['openvpn_server'] | flatten(levels=1) }}"
-  loop_control:
-    label: "{{ item.plugin }}"
-  when:
-  - "item.plugin is defined"
-  - "item.plugin == 'true'"
-- name: Deploy clients configuration
-  template:
-    src: "client_config_dir.j2"
-    dest: "{{ vars['openvpn_env_settings']['dest'] ~ '/server/' ~
-      item.instance ~ '/' ~ item.cn }}"
-    group: "{{ vars['openvpn_env_settings']['group'] }}"
-    owner: "{{ vars['openvpn_env_settings']['user'] }}"
-    mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn_clients_conf'] |
-    flatten(levels=1) }}"
-  loop_control:
-    label: "{{ item.cn }}"
-  when:
-  - "vars['openvpn_env_settings']['client_config_mgmt'] is defined"
-  - "vars['openvpn_env_settings']['client_config_mgmt'] == 'true'"
-- name: Restart openvpn-client instances
+- name: Restart OpenVPN
   systemd:
-    name: "{{
-      hostvars[inventory_hostname]['openvpn_client_service'] ~ item.name }}"
+    name: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
+      '_service'] ~ item.name }}"
     state: "restarted"
-  loop: "{{ vars['openvpn_client'] | flatten(levels=1) }}"
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
-    label: "{{
-      hostvars[inventory_hostname]['openvpn_client_service'] ~ item.name }}"
-  when:
-  - "hostvars[inventory_hostname]['openvpn'] is defined"
-  - "hostvars[inventory_hostname]['openvpn'] != ''"
-  - "hostvars[inventory_hostname]['openvpn'] |
-     json_query(vars['openvpn_restart']) is defined"
-  - "hostvars[inventory_hostname]['openvpn'] |
-     json_query(vars['openvpn_restart']) == 'true'"
-  vars:
-    openvpn_restart: "[] | map(&restart || 'false', @) | [0]"
-- name: Restart openvpn-server instances
-  systemd:
-    name: "{{ hostvars[inventory_hostname]['openvpn_server_service'] ~
-      item.name }}"
-    state: "restarted"
-  loop: "{{ vars['openvpn_server'] | flatten(levels=1) }}"
-  loop_control:
-    label: "{{ hostvars[inventory_hostname]['openvpn_server_service'] ~
-      item.name }}"
+    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
   when:
   - "hostvars[inventory_hostname]['openvpn'] is defined"
   - "hostvars[inventory_hostname]['openvpn'] != ''"

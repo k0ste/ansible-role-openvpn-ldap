@@ -48,8 +48,6 @@ openvpn:
       log_dest: '/var/log/openvpn'
       pool_dest: '/var/lib/openvpn'
       src: '/srv/ca/openvpn'
-      group: 'nobody'
-      user: 'nobody'
       dhparam_file: 'dhparam.pem'
       takey_file: 'ta.key'
       client_config_mgmt: 'true'
@@ -73,21 +71,12 @@ openvpn:
     - host: 'ldap://example.com:389'
       binddn: 'cn=user,ou=people,dc=example,dc=com'
       password: 'secret'
-      timeout: '10'
-      follow_referals: 'no'
-      tls_enable: 'no'
       basedn: 'ou=people,dc=example,dc=com'
-      filter: '(uid=%u)'
-      require_group: 'true'
-      rfc2307: 'false'
-      group_basedn: 'ou=groups,dc=example,dc=com'
-      group_filter: '(cn=vpn_users)'
-      group_attr: 'memberUid'
-      user_filter: 'uid'
-      mail_filter: 'mail'
-  instance_type: 'server'
-  server_settings:
+      filter: 'uid'
+      mail_field: 'mail'
+  openvpn_settings:
   - name: 'openvpn1194'
+    type: 'server'
     port: '1194'
     proto: 'udp'
     dev: 'tap0'
@@ -112,18 +101,42 @@ openvpn:
     verbosity: '4'
     mute: '10'
     mute_replay_warnings: 'true'
-    ifconfig_pool_persist: 'pool1194.txt'
-    status: 'status1194.log'
+    ifconfig_pool_persist: 'true'
+    status: 'true'
     push: 'true'
     push_comp_lzo: 'adaptive'
     push_persist_key: 'true'
     push_persist_tun: 'true'
     push_dhcp_option: 'DNS 100.100.101.1'
     client_config_dir: 'true'
-    plugin: 'true'
-    plugin_name: 'openvpn-auth-ldap.so'
-    plugin_conf: 'auth-ldap.conf'
+    ccd_settings:
+    - cn: 'DEFAULT'
+      options:
+      - action: 'push'
+        data: 'route 10.9.0.0 255.255.255.0'
+      - action: 'push'
+        data: 'route 10.10.0.0 255.255.255.0'
+      - action: 'push'
+        data: 'route 10.11.0.0 255.255.255.0'
+    plugins:
+    - auth_ldap:
+      - enabled: 'true'
+        options:
+        - host: 'ldap://example.com:389'
+          binddn: 'cn=user,ou=people,dc=example,dc=com'
+          password: 'secret'
+          timeout: '10'
+          follow_referals: 'no'
+          tls_enable: 'no'
+          basedn: 'ou=people,dc=example,dc=com'
+          filter: '(uid=%u)'
+          require_group: 'true'
+          rfc2307: 'false'
+          group_basedn: 'ou=groups,dc=example,dc=com'
+          group_filter: '(cn=vpn_users)'
+          group_attr: 'memberUid'
   - name: 'openvpn1195'
+    type: 'server'
     port: '1195'
     proto: 'udp'
     dev: 'tap1'
@@ -147,18 +160,21 @@ openvpn:
     verbosity: '4'
     mute: '10'
     mute_replay_warnings: 'true'
-    status: 'status1195.log'
+    status: 'true'
     push: 'true'
     push_comp_lzo: 'adaptive'
     push_persist_key: 'true'
     push_persist_tun: 'true'
-    client_config_dir: 'true'
-    ccd_exclusive: 'true'
     tls_server: 'true'
     tls_version_min: '1.2'
     persist_key: 'true'
-    plugin: 'false'
+    client_config_dir: 'true'
+    ccd_exclusive: 'true'
+    ccd_settings:
+    - cn: 'dallas'
+      options: 'ifconfig-push 10.15.0.2 255.255.255.0'
   - name: 'openvpn1196'
+    type: 'server'
     port: '1196'
     proto: 'udp'
     dev: 'tap2'
@@ -182,18 +198,22 @@ openvpn:
     verbosity: '4'
     mute: '10'
     mute_replay_warnings: 'true'
-    status: 'status1196.log'
+    status: 'true'
     push: 'true'
     push_comp_lzo: 'adaptive'
     push_persist_key: 'true'
     push_persist_tun: 'true'
-    client_config_dir: 'true'
-    ccd_exclusive: 'true'
     tls_server: 'true'
     tls_version_min: '1.2'
     persist_key: 'true'
     plugin: 'false'
+    client_config_dir: 'true'
+    ccd_exclusive: 'true'
+    ccd_settings:
+    - cn: 'boston'
+      options: 'ifconfig-push 10.15.0.3 255.255.255.0'
   - name: 'openvpn1197'
+    type: 'server'
     port: '1197'
     proto: 'udp'
     dev: 'tap3'
@@ -218,7 +238,7 @@ openvpn:
     verbosity: '4'
     mute: '10'
     mute_replay_warnings: 'true'
-    status: 'status1197.log'
+    status: 'true'
     push: 'true'
     push_comp_lzo: 'adaptive'
     push_persist_key: 'true'
@@ -230,6 +250,7 @@ openvpn:
     persist_key: 'true'
     plugin: 'false'
   - name: 'openvpn1198'
+    type: 'server'
     port: '1198'
     proto: 'udp'
     dev: 'tap4'
@@ -254,42 +275,25 @@ openvpn:
     verbosity: '4'
     mute: '10'
     mute_replay_warnings: 'true'
-    status: 'status1198.log'
+    status: 'true'
     push: 'true'
     push_comp_lzo: 'adaptive'
     push_persist_key: 'true'
     push_persist_tun: 'true'
     push_dhcp_option: 'DNS 100.100.101.1'
-    client_config_dir: 'true'
-    ccd_exclusive: 'true'
     tls_server: 'true'
     tls_version_min: '1.2'
     persist_key: 'true'
     plugin: 'false'
-
-openvpn_openvpn1194_DEFAULT:
-- 'push "route 10.9.0.0 255.255.255.0"'
-- 'push "route 10.10.0.0 255.255.255.0"'
-- 'push "route 10.11.0.0 255.255.255.0"'
-
-openvpn_openvpn1198_user1:
-- 'ifconfig-push "10.19.0.2 255.255.255.0"'
-- 'push "route 192.168.128.0 255.255.255.0"'
-
-openvpn_clients_conf:
-- instance: 'openvpn1194'
-  cn: 'DEFAULT'
-  options: "{{ hostvars[inventory_hostname]['openvpn_openvpn1194_DEFAULT'] }}"
-- instance: 'openvpn1195'
-  cn: 'dallas'
-  options: 'ifconfig-push 10.15.0.2 255.255.255.0'
-- instance: 'openvpn1196'
-  cn: 'boston'
-  options: 'ifconfig-push 10.15.0.3 255.255.255.0'
-## Restricted users. Have only one connection
-- instance: 'openvpn1198'
-  cn: 'user1'
-  options: "{{ hostvars[inventory_hostname]['openvpn_openvpn1198_user1'] }}"
+    client_config_dir: 'true'
+    ccd_exclusive: 'true'
+    ccd_settings:
+    - cn: 'user1'
+      options:
+      - action: 'ifconfig-push'
+        data: '10.12.0.2 255.255.255.0'
+      - action: 'push'
+        data: 'route 192.168.128.0 255.255.255.0'
 ```
 
 ## Example configuration of client with 2 tunnels
@@ -297,9 +301,9 @@ openvpn_clients_conf:
 ```yaml
 ---
 openvpn:
-- instance_type: 'client'
-  client_settings:
+- openvpn_settings:
   - name: 'tap0'
+    type: 'client'
     remote: '10.15.0.1 1195'
     proto: 'udp'
     dev: 'tap0'
@@ -317,6 +321,7 @@ openvpn:
     mute: '5'
     mute_replay_warnings: 'true'
   - name: 'tap1'
+    type: 'client'
     remote: '10.16.0.1 1196'
     proto: 'udp'
     dev: 'tap1'
@@ -340,9 +345,9 @@ openvpn:
 ```yaml
 ---
 openvpn:
-- instance_type: 'user'
-  client_settings:
+- openvpn_settings:
   - name: "{{ vars['openvpn_instance_name'] }}"
+    type: 'user'
     remote: "openvpnserver.com 1197"
     proto: 'udp'
     dev: 'tap0'
@@ -367,17 +372,16 @@ openvpn:
 
 ```yaml
 ---
-- name: Deploy OpenVPN Client Instance
+- name: Deploy OpenVPN Instance [Cleint\Server]
   become: true
   gather_facts: true
   remote_user: ansible
   no_log: false
   strategy: free
-  vars:
-    openvpn_target_port: ''
   roles:
   - openvpn_ldap
-  hosts: target-client
+  hosts:
+  - vpn.example.com
 ```
 
 ```yaml
@@ -397,21 +401,6 @@ openvpn:
      prompt: 'What instance name should be revoked?'
      private: no
   hosts: target-sever
-```
-
-```yaml
----
-- name: Deploy OpenVPN Server Instance
-  become: true
-  gather_facts: true
-  remote_user: ansible
-  no_log: false
-  strategy: free
-  vars:
-    openvpn_target_port: ''
-  roles:
-  - openvpn_ldap
-  hosts: target-server
 ```
 
 ```yaml

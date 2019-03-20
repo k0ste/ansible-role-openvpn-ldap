@@ -1,0 +1,16 @@
+---
+- include_tasks: 'deploy_openvpn.yml'
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop_control:
+    loop_var: "outer_item"
+- include_tasks: 'copy_openvpn_files.yml'
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop_control:
+    loop_var: "outer_item"
+- include_tasks: 'plugins/deploy_plugin_auth_ldap.yml'
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop_control:
+    loop_var: "outer_item"
+  when:
+  - "outer_item.type == 'server'"
+  - "outer_item.plugin_openvpn == 'true'"

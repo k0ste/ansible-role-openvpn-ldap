@@ -1,8 +1,4 @@
-{% if vars['openvpn_instance'] == 'client' %}
 {{ '## openvpn@' ~ item.name ~ '.conf' }}
-{% elif vars['openvpn_instance'] == 'user' %}
-{{ '## openvpn@' ~ vars['openvpn_instance_name'] ~ '.conf' }}
-{% endif %}
 {{ '# ' + ansible_managed }}
 {{ '# Do not edit manually' }}
 
@@ -13,11 +9,12 @@
 {{ 'dev' ~ ' ' ~ item.dev }}
 {% endif %}
 {% if item.tls_auth is defined and item.tls_auth != '' %}
-{{ 'tls-auth' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
-    vars['openvpn_env_settings']['takey_file'] ~ ' 1' }}
+{{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_client_conf_dest'] ~
+    '/' ~ item.name ~ '/tls/' ~ vars['openvpn_env_settings']['takey_file'] ~
+    ' 1' }}
 {% endif %}
-{{ 'ca' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
-    vars['openvpn_ca_settings']['file'] }}
+{{ 'ca' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_client_conf_dest'] ~ '/' ~
+    item.name ~ '/tls/' ~ vars['openvpn_ca_settings']['file'] }}
 {% if item.persist_key is defined and item.persist_key == 'true' %}
 {{ 'persist-key' }}
 {% endif %}
@@ -70,10 +67,10 @@
 {% if item.tls_version_min is defined and item.tls_version_min != '' %}
 {{ 'tls-version-min' ~ ' ' ~ item.tls_version_min }}
 {% endif %}
-{{ 'cert' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
-    vars['openvpn_instance_name'] ~ '.crt' }}
-{{ 'key' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
-    vars['openvpn_instance_name'] ~ '.key' }}
+{{ 'cert' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_client_conf_dest'] ~
+    '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~ '.crt' }}
+{{ 'key' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_client_conf_dest'] ~
+    '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~ '.key' }}
 {% if item.cipher is defined and item.cipher != '' %}
 {{ 'cipher' ~ ' ' ~ item.cipher }}
 {% endif %}

@@ -1,4 +1,4 @@
-{{ '## client_config_dir@' + item.instance + ': ' + item.cn }}
+{{ '## client_config_dir@' + outer_item.name + ': ' + item.cn }}
 {{ '# ' + ansible_managed }}
 {{ '# Do not edit manually' }}
 
@@ -6,8 +6,11 @@
 {% if item.options is string %}
 {{ item.options }}
 {% elif item.options is sequence %}
-{% for opt in item.options %}
-{{ opt }}
+{% for o in item.options %}
+{% if (o.action is defined and o.action != '') and
+      (o.data is defined and o.data != '') %}
+{{ o.action ~ ' \"' ~ o.data ~ '\"' }}
+{% endif %}
 {% endfor %}
 {% endif %}
 {% endif %}

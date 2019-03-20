@@ -1,0 +1,78 @@
+---
+- name: openvpn | Deploy OpenVPN configuration
+  template:
+    src: "{{ 'openvpn_' + item.type + '.j2' }}"
+    dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
+      '_conf_dest'] ~ '/' ~ item.name ~ '.conf' }}"
+    owner: "{{ item.user | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "0644"
+  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+    json_query(\"[].openvpn_settings[?name=='\" ~
+    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
+  notify:
+  - "Restart OpenVPN"
+- name: openvpn | Create client config catalogs
+  file:
+    path: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
+      vars['outer_item'].name }}"
+    state: "directory"
+    group: "root"
+    owner: "root"
+    mode: "0755"
+  when:
+  - "vars['outer_item'].type == 'server'"
+  - "vars['outer_item'].ccd is defined"
+  - "vars['outer_item'].ccd == 'true'"
+- name: openvpn | Create tls catalogs
+  file:
+    path: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
+      '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
+    state: "directory"
+    group: "root"
+    owner: "root"
+    mode: "0755"
+  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+    json_query(\"[].openvpn_settings[?name=='\" ~
+    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
+- name: openvpn | Deploy clients configuration
+  template:
+    src: "client_config_dir.j2"
+    dest: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
+      vars['outer_item'].name ~ '/' ~ item.cn }}"
+    owner: "{{ item.user | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "0400"
+  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+    json_query(\"[].openvpn_settings[?name=='\" ~ vars['outer_item'].name ~
+    \"'].ccd_settings[]\") | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ 'openvpn-' ~ vars['outer_item'].type ~ ': ' ~
+      vars['outer_item'].name ~ ': ' ~ item.cn }}"
+  when:
+  - "vars['outer_item'].type == 'server'"
+  - "vars['outer_item'].ccd is defined"
+  - "vars['outer_item'].ccd == 'true'"
+- name: openvpn | Enable OpenVPN service
+  systemd:
+    name: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~ '_service']
+      ~ item.name }}"
+    enabled: "yes"
+  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+    json_query(\"[].openvpn_settings[?name=='\" ~
+    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
+  when:
+  - "hostvars[inventory_hostname]['openvpn'] is defined"
+  - "hostvars[inventory_hostname]['openvpn'] != ''"
+  - "hostvars[inventory_hostname]['openvpn'] |
+     json_query(vars['openvpn_enable']) is defined"
+  - "hostvars[inventory_hostname]['openvpn'] |
+     json_query(vars['openvpn_enable']) == 'true'"
+  vars:
+    openvpn_enable: "[] | map(&enable || 'false', @) | [0]"

@@ -2,7 +2,10 @@
 {{ '# ' + ansible_managed }}
 {{ '# Do not edit manually' }}
 
-{% for l in vars['openvpn_ldap_settings'] %}
+{% for p in item.plugins %}
+{% for pal in p.auth_ldap %}
+{% if pal.options is defined and pal.options != '' %}
+{% for l in pal.options %}
 {{ '<LDAP>' }}
 {% if l.host is defined and l.host != '' %}
 {{ '  ' ~ 'URL ' ~ l.host }}
@@ -54,4 +57,7 @@ TLSCipherSuite {#}
 {{ '    </Group>' }}
 {% endif %}
 {{ '</Authorization>' }}
+{% endfor %}
+{% endif %}
+{% endfor %}
 {% endfor %}

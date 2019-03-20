@@ -6,20 +6,23 @@
 {{ 'proto' ~ ' ' ~ item.proto }}
 {{ 'dev' ~ ' ' ~ item.dev }}
 {{ 'server' ~ ' ' ~ item.server }}
-{{ 'dh' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~ item.dh }}
-{{ 'ca' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
-    vars['openvpn_ca_settings']['file'] }}
-{{ 'cert' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
-    vars['openvpn_instance_name'] ~ '.crt' }}
-{{ 'key' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
-    vars['openvpn_instance_name'] ~ '.key' }}
+{{ 'dh' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
+    item.name ~ '/tls/' ~ item.dh }}
+{{ 'ca' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
+    item.name ~ '/tls/' ~ vars['openvpn_ca_settings']['file'] }}
+{{ 'cert' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~
+    '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~ '.crt' }}
+{{ 'key' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~
+    '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~ '.key' }}
 {% if item.tls_auth is defined and item.tls_auth != '' %}
-{{ 'tls-auth' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
-    vars['openvpn_env_settings']['takey_file'] ~ ' 0' }}
+{{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~
+    '/' ~ item.name ~ '/tls/' ~ vars['openvpn_env_settings']['takey_file'] ~
+    ' 0' }}
 {% endif %}
 {% if item.crl_verify is defined and item.crl_verify != '' %}
-{{ 'crl-verify' ~ ' ' ~ vars['openvpn_env_settings']['tls_dest'] ~ '/' ~
-    item.crl_verify }}
+{{ 'crl-verify' ~ ' ' ~
+    hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
+    item.name ~ '/tls/' ~ item.crl_verify }}
 {% endif %}
 {% if item.route is defined and item.route != '' %}
 {{ 'route' ~ ' ' ~ item.route }}
@@ -81,13 +84,15 @@
 {{ 'mute-replay-warnings' }}
 {% endif %}
 {% if item.ifconfig_pool_persist is defined and
-      item.ifconfig_pool_persist != '' %}
-{{ 'ifconfig-pool-persist' ~ ' ' ~ vars['openvpn_env_settings']['pool_dest'] ~
-   '/' ~ item.ifconfig_pool_persist }}
+      item.ifconfig_pool_persist == 'true' %}
+{{ 'ifconfig-pool-persist' ~ ' ' ~
+    hostvars[inventory_hostname]['openvpn_pool_dest'] ~ '/' ~ item.name ~
+    '.pool' }}
 {% endif %}
-{% if item.status is defined and item.status != '' %}
-{{ 'status' ~ ' ' ~ vars['openvpn_env_settings']['pool_dest'] ~ '/' ~
-    item.status }}
+{% if item.status is defined and
+      item.status != '' %}
+{{ 'status' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_status_dest'] ~ '/' ~
+    item.name ~ '.status' }}
 {% endif %}
 {% if item.log is defined and item.log != '' %}
 {% if item.log_append is defined and item.log_append == 'true' %}
@@ -155,14 +160,16 @@
 {% endif %}
 {% endif %}
 {% if item.client_config_dir is defined and item.client_config_dir != '' %}
-{{ 'client-config-dir' ~ ' ' ~ vars['openvpn_env_settings']['dest'] ~
-   '/server/' ~ item.name }}
+{{ 'client-config-dir' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_' ~
+    item.type ~ '_conf_dest'] ~ '/' ~ item.name }}
 {% endif %}
 {% if item.ccd_exclusive is defined and item.ccd_exclusive == 'true' %}
 {{ 'ccd-exclusive' }}
 {% endif %}
-{% if item.plugin is defined and item.plugin == 'true' %}
+{% if vars['outer_item'].plugin_openvpn is defined and
+      vars['outer_item'].plugin_openvpn == 'true' %}
 {{ 'plugin' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~ '/' ~
-    item.plugin_name ~ ' ' ~ vars['openvpn_env_settings']['dest'] ~ '/server/' ~
-    item.plugin_conf }}
+    hostvars[inventory_hostname]['openvpn_plugin_auth_ldap_name'] ~ ' ' ~
+    hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
+    item.name ~ '/' ~ 'auth_ldap.conf' }}
 {% endif %}

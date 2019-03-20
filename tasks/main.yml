@@ -1,9 +1,9 @@
 ---
 - import_tasks: "pre_requisite.yml"
-- include_tasks: "packages_ca_master.yml"
+- import_tasks: "packages_master.yml"
   when:
   - "vars['openvpn_revoke_target'] is not defined"
-- include_tasks: "packages_client.yml"
+- import_tasks: "packages_host.yml"
   when:
   - "hostvars[inventory_hostname]['openvpn'] is defined"
   - "hostvars[inventory_hostname]['openvpn'] != ''"
@@ -11,26 +11,51 @@
      json_query(vars['openvpn_install_package']) is defined"
   - "hostvars[inventory_hostname]['openvpn'] |
      json_query(vars['openvpn_install_package']) == 'true'"
-  - "vars['openvpn_instance'] == 'client'"
+  - "vars['openvpn_instances_types'] in ['server', 'client']"
   vars:
     openvpn_install_package: "[] | map(&install_package || 'false', @) | [0]"
 - include_tasks: "master.yml"
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop_control:
+    loop_var: "openvpn_fetching_type"
   when:
+  - "openvpn_fetching_type.type in ['server', 'client']"
   - "vars['openvpn_revoke_target'] is not defined"
-  - "vars['openvpn_instance'] in ['server', 'client']"
+- import_tasks: "prepare.yml"
+  when:
+  - "vars['openvpn_instances_types_bool'] is defined"
+  - "vars['openvpn_instances_types_bool'] == True"
+- debug:
+    var: "vars['openvpn_instances']"
+- import_tasks: "openvpn_executor.yml"
+  when:
+  - "vars['openvpn_instances_types_bool'] is defined"
+  - "vars['openvpn_instances_types_bool'] == True"
+- include_tasks: "worker_user.yml"
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop_control:
+    loop_var: "openvpn_fetching_type"
+  when:
+  - "openvpn_fetching_type.type == 'user'"
 - name: openvpn | Set facts about end-user instance
   set_fact:
     openvpn_instance_name: "{{ vars['openvpn_target_user'] }}"
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop_control:
+    loop_var: "openvpn_fetching_type"
   when:
-  - "vars['openvpn_instance'] is defined"
-  - "vars['openvpn_instance'] == 'user'"
+  - "openvpn_fetching_type.type == 'user'"
 - include_tasks: "userfind.yml"
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop_control:
+    loop_var: "openvpn_fetching_type"
   when:
-  - "vars['openvpn_instance'] is defined"
-  - "vars['openvpn_instance'] == 'user'"
+  - "openvpn_fetching_type.type == 'user'"
 - include_tasks: "crl.yml"
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop_control:
+    loop_var: "openvpn_fetching_type"
   when:
   - "(vars['openvpn_revoke_target'] is defined and
       vars['openvpn_revoke_target'] != '')"
-  - "(vars['openvpn_instance'] is defined and
-      vars['openvpn_instance'] == 'server')"
+  - "openvpn_fetching_type.type == 'server'"
