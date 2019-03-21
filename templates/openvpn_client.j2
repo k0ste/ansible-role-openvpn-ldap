@@ -54,6 +54,9 @@
 {% if item.mute is defined and item.mute != '' %}
 {{ 'mute' ~ ' ' ~ item.mute }}
 {% endif %}
+{% if item.static_challenge is defined and item.static_challenge != '' %}
+{{ 'static-challenge' ~ ' \"' ~ item.static_challenge ~ '\" ' ~ '1' }}
+{% endif %}
 {% if item.log is defined and item.log != '' %}
 {% if item.log_append is defined and item.log_append == 'true' %}
 {{ 'log-append' ~ ' ' ~ vars['openvpn_env_settings']['log_dest'] ~ '/' ~

@@ -21,12 +21,6 @@
   when:
   - "openvpn_fetching_type.type in ['server', 'client']"
   - "vars['openvpn_revoke_target'] is not defined"
-- import_tasks: "prepare.yml"
-  when:
-  - "vars['openvpn_instances_types_bool'] is defined"
-  - "vars['openvpn_instances_types_bool'] == True"
-- debug:
-    var: "vars['openvpn_instances']"
 - import_tasks: "openvpn_executor.yml"
   when:
   - "vars['openvpn_instances_types_bool'] is defined"

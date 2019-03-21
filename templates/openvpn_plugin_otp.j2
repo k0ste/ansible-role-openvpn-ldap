@@ -1,0 +1,45 @@
+{% for po in vars['openvpn_otp_settings'] %}
+{% if loop.first %}
+{{ 'plugin' ~ ' \"' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~
+    '/' ~ hostvars[inventory_hostname]['openvpn_plugin_otp_name'] ~
+    '\" \"otp_secrets=' ~
+    hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
+    item.name ~ '/' ~ 'otp_secrets' -}}
+{% endif %}
+{% if po.otp_slop is defined and po.otp_slop != '' %}
+{{ ' ' ~ 'otp_slop' ~ '=' ~ po.otp_slop -}}
+{% endif %}
+{% if po.totp_t0 is defined and po.totp_t0 != '' %}
+{{ ' ' ~ 'totp_t0' ~ '=' ~ po.totp_t0 -}}
+{% endif %}
+{% if po.totp_step is defined and po.totp_step != '' %}
+{{ ' ' ~ 'totp_step' ~ '=' ~ po.totp_step -}}
+{% endif %}
+{% if po.totp_digits is defined and po.totp_digits != '' %}
+{{ ' ' ~ 'totp_digits' ~ '=' ~ po.totp_digits -}}
+{% endif %}
+{% if po.motp_step is defined and po.motp_step != '' %}
+{{ ' ' ~ 'motp_step' ~ '=' ~ po.motp_step -}}
+{% endif %}
+{% if po.hotp_syncwindow is defined and po.hotp_syncwindow != '' %}
+{{ ' ' ~ 'hotp_syncwindow' ~ '=' ~ po.hotp_syncwindow -}}
+{% endif %}
+{% if po.debug is defined and po.debug in ['true', 'false', 1, 0] %}
+{% if po.debug in ['true', 1] %}
+{{ ' ' ~ 'debug=1' -}}
+{% elif po.debug in ['false', 0] %}
+{{ ' ' ~ 'debug=0' -}}
+{% endif %}
+{% endif %}
+{% if po.password_is_cr is defined and
+      po.password_is_cr in ['true', 'false', 1, 0] %}
+{% if po.password_is_cr in ['true', 1] %}
+{{ ' ' ~ 'password_is_cr=1' -}}
+{% elif po.password_is_cr in ['false', 0] %}
+{{ ' ' ~ 'password_is_cr=0' -}}
+{% endif %}
+{% endif %}
+{% if loop.last %}
+{{ '\"' }}
+{% endif %}
+{% endfor %}

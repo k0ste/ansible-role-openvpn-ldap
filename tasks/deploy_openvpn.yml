@@ -1,4 +1,12 @@
 ---
+- name: openvpn | Set fact about OpenVPN OTP support
+  set_fact:
+    openvpn_otp_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query(\"[].openvpn_settings[?name=='\" ~ vars['outer_item'].name ~
+      \"'].plugins[][].otp[].options\") | flatten(levels=1) }}"
+  when:
+  - "vars['outer_item'].plugin_otp is defined"
+  - "vars['outer_item'].plugin_otp == 'true'"
 - name: openvpn | Deploy OpenVPN configuration
   template:
     src: "{{ 'openvpn_' + item.type + '.j2' }}"

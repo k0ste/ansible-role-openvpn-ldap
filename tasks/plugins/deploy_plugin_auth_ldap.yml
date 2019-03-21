@@ -13,5 +13,5 @@
   loop_control:
     label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
   when:
-  - "vars['outer_item'].plugin_openvpn is defined"
-  - "vars['outer_item'].plugin_openvpn == 'true'"
+  - "vars['outer_item'].plugin_auth_ldap is defined"
+  - "vars['outer_item'].plugin_auth_ldap == 'true'"

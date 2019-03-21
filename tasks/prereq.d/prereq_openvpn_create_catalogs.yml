@@ -30,3 +30,13 @@
   loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
   when:
   - "item == 'server'"
+- name: openvpn | Create OpenVPN OTP counters dir
+  file:
+    path: "{{ hostvars[inventory_hostname]['openvpn_plugin_otp_dest'] }}"
+    state: "directory"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
+  when:
+  - "item == 'server'"

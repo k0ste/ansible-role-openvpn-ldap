@@ -2,10 +2,12 @@
 - name: openvpn | Set facts about OpenVPN instances
   set_fact:
     openvpn_instances: "{{ hostvars[inventory_hostname]['openvpn'] |
-      json_query('[].openvpn_settings[].{name: name,
-      type: type,
-      ccd: client_config_dir,
-      plugin_openvpn: plugins[].auth_ldap[].enabled | [0]}') }}"
+      json_query('[].openvpn_settings[].{
+        name: name,
+        type: type,
+        ccd: client_config_dir,
+        plugin_auth_ldap: plugins[].auth_ldap[].enabled | [0],
+        plugin_otp: plugins[].otp[].enabled | [0]}') }}"
 - name: openvpn | Assert that every OpenVPN instance have not null values
   assert:
     that:
@@ -64,6 +66,10 @@
   - "vars['openvpn_instances_types_bool'] == True"
   run_once: "true"
 - include_tasks: 'prereq.d/prereq_openvpn_instance_facts.yml'
+  when:
+  - "vars['openvpn_instances_types_bool'] is defined"
+  - "vars['openvpn_instances_types_bool'] == True"
+- include_tasks: 'prereq.d/prereq_openvpn_create_catalogs.yml'
   when:
   - "vars['openvpn_instances_types_bool'] is defined"
   - "vars['openvpn_instances_types_bool'] == True"

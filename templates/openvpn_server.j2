@@ -159,6 +159,9 @@
 {{ 'auth' ~ ' ' ~ item.auth }}
 {% endif %}
 {% endif %}
+{% if item.auth_nocache is defined and item.auth_nocache in ['true', 'false'] %}
+{{ 'auth-nocache' }}
+{% endif %}
 {% if item.client_config_dir is defined and item.client_config_dir != '' %}
 {{ 'client-config-dir' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_' ~
     item.type ~ '_conf_dest'] ~ '/' ~ item.name }}
@@ -166,10 +169,14 @@
 {% if item.ccd_exclusive is defined and item.ccd_exclusive == 'true' %}
 {{ 'ccd-exclusive' }}
 {% endif %}
-{% if vars['outer_item'].plugin_openvpn is defined and
-      vars['outer_item'].plugin_openvpn == 'true' %}
-{{ 'plugin' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~ '/' ~
-    hostvars[inventory_hostname]['openvpn_plugin_auth_ldap_name'] ~ ' ' ~
-    hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
-    item.name ~ '/' ~ 'auth_ldap.conf' }}
+{% if vars['outer_item'].plugin_auth_ldap is defined and
+      vars['outer_item'].plugin_auth_ldap == 'true' %}
+{{ 'plugin' ~ ' \"' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~
+    '/' ~ hostvars[inventory_hostname]['openvpn_plugin_auth_ldap_name'] ~
+    '\" \"' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
+    item.name ~ '/' ~ 'auth_ldap.conf\"' }}
+{% endif %}
+{% if vars['openvpn_otp_settings'] is defined and
+      vars['openvpn_otp_settings'] != '' %}
+{% include 'openvpn_plugin_otp.j2' %}
 {% endif %}

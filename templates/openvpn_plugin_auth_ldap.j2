@@ -39,6 +39,9 @@ TLSCipherSuite {#}
 {% if l.filter is defined and l.filter != '' %}
 {{ '  ' ~ 'SearchFilter \"' ~ l.filter ~ '\"' }}
 {% endif %}
+{% if l.password_is_cr is defined and l.password_is_cr in ['true', 'false'] %}
+{{ '  ' ~ 'PasswordIsCR ' ~ l.password_is_cr }}
+{% endif %}
 {% if l.require_group is defined and l.require_group in ['true', 'false'] %}
 {{ '  ' ~ 'RequireGroup ' ~ l.require_group }}
 {{ '    <Group>' }}

@@ -89,6 +89,7 @@ openvpn:
     verify_client_cert: 'none'
     username_as_common_name: 'true'
     multihome: 'true'
+    auth_nocache: 'true'
     management: '127.0.0.1 7505'
     persist_key: 'true'
     persist_tun: 'true'
@@ -119,6 +120,17 @@ openvpn:
       - action: 'push'
         data: 'route 10.11.0.0 255.255.255.0'
     plugins:
+    - otp:
+      - enabled: 'true'
+        options:
+        - debug: 'true'
+          password_is_cr: 'true'
+          otp_slop: '180'
+          totp_t0: '0'
+          totp_step: '30'
+          totp_digits: '6'
+          motp_step: '10'
+          hotp_syncwindow: '2'
     - auth_ldap:
       - enabled: 'true'
         options:
@@ -366,6 +378,7 @@ openvpn:
     tls_version_min: '1.2'
     tls_auth: 'ta.key'
     persist_key: 'true'
+    static_challenge: 'Enter Google Authenticator Token'
 ```
 
 ## Example playbooks

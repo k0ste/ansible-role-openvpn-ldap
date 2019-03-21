@@ -13,4 +13,4 @@
     loop_var: "outer_item"
   when:
   - "outer_item.type == 'server'"
-  - "outer_item.plugin_openvpn == 'true'"
+  - "outer_item.plugin_auth_ldap == 'true'"
