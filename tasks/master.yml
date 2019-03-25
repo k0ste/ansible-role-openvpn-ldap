@@ -6,11 +6,11 @@
   register: "openvpn_master_result"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-- import_tasks: "master/openvpn_master_generate_certs.yml"
+- import_tasks: "master.d/openvpn_master_generate_certs.yml"
   when:
   - "openvpn_master_result.stat.exists == False"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
-- import_tasks: "master/openvpn_master_fetch_certs.yml"
+- import_tasks: "master.d/openvpn_master_fetch_certs.yml"
   delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"

@@ -1,4 +1,7 @@
-{% for po in vars['openvpn_otp_settings'] %}
+{% for p in item.plugins %}
+{% for potp in p.otp %}
+{% if potp.options is defined and potp.options != '' %}
+{% for po in potp.options %}
 {% if loop.first %}
 {{ 'plugin' ~ ' \"' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~
     '/' ~ hostvars[inventory_hostname]['openvpn_plugin_otp_name'] ~
@@ -42,4 +45,7 @@
 {% if loop.last %}
 {{ '\"' }}
 {% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
 {% endfor %}

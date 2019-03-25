@@ -1,0 +1,26 @@
+---
+- name: openvpn | Create client config catalogs
+  file:
+    path: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
+      vars['outer_item'].name }}"
+    state: "directory"
+    group: "root"
+    owner: "root"
+    mode: "0755"
+  when:
+  - "vars['outer_item'].type == 'server'"
+  - "vars['outer_item'].ccd is defined"
+  - "vars['outer_item'].ccd == 'true'"
+- name: openvpn | Create tls catalogs
+  file:
+    path: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
+      '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
+    state: "directory"
+    group: "root"
+    owner: "root"
+    mode: "0755"
+  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+    json_query(\"[].openvpn_settings[?name=='\" ~
+    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"

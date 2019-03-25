@@ -176,7 +176,7 @@
     '\" \"' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
     item.name ~ '/' ~ 'auth_ldap.conf\"' }}
 {% endif %}
-{% if vars['openvpn_otp_settings'] is defined and
-      vars['openvpn_otp_settings'] != '' %}
+{% if vars['outer_item'].plugin_otp is defined and
+      vars['outer_item'].plugin_otp == 'true' %}
 {% include 'openvpn_plugin_otp.j2' %}
 {% endif %}

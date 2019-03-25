@@ -1,9 +1,9 @@
 ---
 - import_tasks: "pre_requisite.yml"
-- import_tasks: "packages_master.yml"
+- import_tasks: "packages.d/openvpn_packages_filestore_master.yml"
   when:
   - "vars['openvpn_revoke_target'] is not defined"
-- import_tasks: "packages_host.yml"
+- import_tasks: "packages.d/openvpn_packages_host.yml"
   when:
   - "hostvars[inventory_hostname]['openvpn'] is defined"
   - "hostvars[inventory_hostname]['openvpn'] != ''"
