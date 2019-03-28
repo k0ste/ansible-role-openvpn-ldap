@@ -10,23 +10,23 @@
   - "Delete temp openssl.conf"
 - name: openvpn | Revoke target cert
   shell: "{{ 'openssl ca -config /tmp/openssl.conf -keyfile ' ~
-    vars['openvpn_ca_settings']['path'] ~ '/' ~
-    vars['openvpn_ca_settings']['rootkey'] ~ ' -cert ' ~
-    vars['openvpn_ca_settings']['path'] ~ '/' ~
-    vars['openvpn_ca_settings']['rootcrt'] ~ ' -revoke ' ~
-    vars['openvpn_ca_settings']['path'] ~ '/' ~
+    vars['openvpn_ca_storage_source']['path'] ~ '/' ~
+    vars['openvpn_ca_storage_source']['rootkey'] ~ ' -cert ' ~
+    vars['openvpn_ca_storage_source']['path'] ~ '/' ~
+    vars['openvpn_ca_storage_source']['rootcrt'] ~ ' -revoke ' ~
+    vars['openvpn_ca_storage_source']['path'] ~ '/' ~
     vars['openvpn_revoke_target'] ~ '.crt' }}"
 - name: openvpn | Generate CRL
   shell: "{{ 'openssl ca -config /tmp/openssl.conf -keyfile ' ~
-    vars['openvpn_ca_settings']['path'] ~ '/' ~
-    vars['openvpn_ca_settings']['rootkey'] ~ ' -cert ' ~
-    vars['openvpn_ca_settings']['path'] ~ '/' ~
-    vars['openvpn_ca_settings']['rootcrt'] ~ ' -gencrl -out ' ~
-    vars['openvpn_ca_settings']['crl_path'] ~ '/' ~
-    vars['openvpn_ca_settings']['crl_file'] }}"
+    vars['openvpn_ca_storage_source']['path'] ~ '/' ~
+    vars['openvpn_ca_storage_source']['rootkey'] ~ ' -cert ' ~
+    vars['openvpn_ca_storage_source']['path'] ~ '/' ~
+    vars['openvpn_ca_storage_source']['rootcrt'] ~ ' -gencrl -out ' ~
+    vars['openvpn_ca_storage_source']['crl_path'] ~ '/' ~
+    vars['openvpn_ca_storage_source']['crl_file'] }}"
 - name: openvpn | Delete revoked cert
   file:
-    path: "{{ vars['openvpn_ca_settings']['path'] ~ '/' ~
+    path: "{{ vars['openvpn_ca_storage_source']['path'] ~ '/' ~
       vars['openvpn_revoke_target'] ~ item }}"
     state: "absent"
   loop:
@@ -37,8 +37,8 @@
     label: "{{ vars['openvpn_revoke_target'] ~ item }}"
 - name: openvpn | Fetch CRL from master
   fetch:
-    src: "{{ vars['openvpn_ca_settings']['crl_path'] ~ '/' ~
-      vars['openvpn_ca_settings']['crl_file'] }}"
+    src: "{{ vars['openvpn_ca_storage_source']['crl_path'] ~ '/' ~
+      vars['openvpn_ca_storage_source']['crl_file'] }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' }}"
     flat: "yes"

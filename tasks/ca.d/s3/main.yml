@@ -1,0 +1,38 @@
+---
+- name: openvpn | Check availability cert on CA (S3)
+  aws_s3:
+    aws_access_key: "{{
+      vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"
+    aws_secret_key: "{{
+      vars['openvpn_ca_storage_source']['aws_secret_key'] | default(omit) }}"
+    bucket: "{{ vars['openvpn_ca_storage_source']['bucket'] | default(omit) }}"
+    expiration: "{{
+      vars['openvpn_ca_storage_source']['expiration'] | default(omit) }}"
+    ignore_nonexistent_bucket: "true"
+    rgw: "{{ vars['openvpn_ca_storage_source']['rgw'] | default(omit) }}"
+    s3_url: "{{ vars['openvpn_ca_storage_source']['s3_url'] | default(omit) }}"
+    validate_certs: "{{
+      vars['openvpn_ca_storage_source']['validate_certs'] | default(omit) }}"
+    region: "{{ vars['openvpn_ca_storage_source']['region'] | default(omit) }}"
+    profile: "{{
+      vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"
+    mode: "geturl"
+    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+      vars['openvpn_instance_name'] ~ '.crt' }}"
+  register: "openvpn_master_result"
+# Ignore because aws_s3 have not any "check object exists in bucket" mode.
+  ignore_errors: "true"
+  become: "false"
+  delegate_to: "localhost"
+- import_tasks: "ca.d/s3/openvpn_s3_get_root.yml"
+  become: "false"
+- import_tasks: "ca.d/s3/openvpn_s3_generate_certs.yml"
+  when:
+  - "vars['openvpn_master_result']['failed'] == True"
+  become: "false"
+- import_tasks: "ca.d/s3/openvpn_s3_put_ca.yml"
+  when:
+  - "vars['openvpn_master_result']['failed'] == True"
+  become: "false"
+- import_tasks: "ca.d/s3/openvpn_s3_fetch_certs.yml"
+  become: "false"

@@ -1,4 +1,15 @@
 ---
+- name: openvpn | Create local catalog for fetched files
+  file:
+    path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
+      vars['openvpn_instance_name'] }}"
+    state: "directory"
+    owner: "{{ lookup('env', 'USER') }}"
+    mode: "0755"
+  delegate_to: "localhost"
+  become: "false"
+  notify:
+  - "Delete fetched files"
 - name: openvpn | Create OpenVPN configuration dir
   file:
     path: "{{ hostvars[inventory_hostname]['openvpn_' + item + '_conf_dest'] }}"
@@ -18,6 +29,9 @@
     group: "root"
     mode: "0755"
   loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ hostvars[inventory_hostname]['openvpn_' + item +
+      '_conf_dest'] }}"
   when:
   - "item == 'server'"
 - name: openvpn | Create OpenVPN status dir
@@ -28,6 +42,9 @@
     group: "root"
     mode: "0755"
   loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ hostvars[inventory_hostname]['openvpn_' + item +
+      '_conf_dest'] }}"
   when:
   - "item == 'server'"
 - name: openvpn | Create OpenVPN OTP counters dir
@@ -38,5 +55,8 @@
     group: "root"
     mode: "0755"
   loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
+  loop_control:
+    label: "{{ hostvars[inventory_hostname]['openvpn_' + item +
+      '_conf_dest'] }}"
   when:
   - "item == 'server'"

@@ -1,7 +1,6 @@
 ---
 - name: openvpn | Deploy user configuration
-  local_action:
-    module: "template"
+  template:
     src: "openvpn_client.j2"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
@@ -10,19 +9,21 @@
   loop: "{{ vars['openvpn_client'] | flatten(levels=1) }}"
   loop_control:
     label: "{{ vars['openvpn_instance_name'] ~ '.conf' }}"
+  become: "false"
+  delegate_to: "localhost"
 - name: openvpn | Make archive for mail message
-  local_action:
-    module: "archive"
+  archive:
     path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
       '.gz' }}"
+  become: "false"
+  delegate_to: "localhost"
   notify:
   - "Delete fetched files"
 - name: openvpn | Send mail to client
-  local_action:
-    module: "mail"
+  mail:
     attach: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
       '.gz' }}"
@@ -37,3 +38,5 @@
     timeout: "{{ vars['openvpn_email_settings']['timeout'] | default(omit) }}"
     to: "{{ vars['openvpn_ldap_user_mail'] }}"
     username: "{{ vars['openvpn_email_settings']['username'] | default(omit) }}"
+  become: "false"
+  delegate_to: "localhost"

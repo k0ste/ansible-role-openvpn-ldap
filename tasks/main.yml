@@ -1,26 +1,10 @@
 ---
 - import_tasks: "pre_requisite.yml"
-- import_tasks: "packages.d/openvpn_packages_filestore_master.yml"
+- import_tasks: 'packages.yml'
+- import_tasks: "openvpn_ca.yml"
   when:
-  - "vars['openvpn_revoke_target'] is not defined"
-- import_tasks: "packages.d/openvpn_packages_host.yml"
-  when:
-  - "hostvars[inventory_hostname]['openvpn'] is defined"
-  - "hostvars[inventory_hostname]['openvpn'] != ''"
-  - "hostvars[inventory_hostname]['openvpn'] |
-     json_query(vars['openvpn_install_package']) is defined"
-  - "hostvars[inventory_hostname]['openvpn'] |
-     json_query(vars['openvpn_install_package']) == 'true'"
-  - "vars['openvpn_instances_types'] in ['server', 'client']"
-  vars:
-    openvpn_install_package: "[] | map(&install_package || 'false', @) | [0]"
-- include_tasks: "master.yml"
-  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
-  loop_control:
-    loop_var: "openvpn_fetching_type"
-  when:
-  - "openvpn_fetching_type.type in ['server', 'client']"
-  - "vars['openvpn_revoke_target'] is not defined"
+  - "vars['openvpn_instances_types_bool'] is defined"
+  - "vars['openvpn_instances_types_bool'] == True"
 - import_tasks: "openvpn_executor.yml"
   when:
   - "vars['openvpn_instances_types_bool'] is defined"

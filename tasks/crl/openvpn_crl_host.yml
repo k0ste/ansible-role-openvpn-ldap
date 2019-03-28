@@ -3,7 +3,7 @@
   copy:
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~
-      vars['openvpn_ca_settings']['crl_file'] }}"
+      vars['openvpn_ca_storage_source']['crl_file'] }}"
     dest: "{{ vars['openvpn_env_settings']['tls_dest'] }}"
     group: "{{ vars['openvpn_env_settings']['group'] }}"
     owner: "{{ vars['openvpn_env_settings']['user'] }}"

@@ -1,17 +1,17 @@
 ---
 - name: openvpn | Check availability key on master
   stat:
-    path: "{{ vars['openvpn_ca_settings']['path'] ~ '/' ~
+    path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_revoke_target'] ~ '.crt' }}"
   register: "openvpn_cert_result"
-  delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
+  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
+  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
 - name: openvpn | Assert that revoke target is exists
   assert:
     that:
     - "openvpn_cert_result.stat.exists == True"
     msg: "{{ 'Cert for ' ~ vars['openvpn_revoke_target'] ~ ' not found' }}"
 - import_tasks: "crl/openvpn_crl_master.yml"
-  delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
+  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
+  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
 - import_tasks: "crl/openvpn_crl_host.yml"

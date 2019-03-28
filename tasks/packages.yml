@@ -1,0 +1,16 @@
+---
+- import_tasks: "packages.d/openvpn_packages_filestore_master.yml"
+  when:
+  - "vars['openvpn_revoke_target'] is not defined"
+  - "vars['openvpn_ca_storage_type'] == 'file'"
+- import_tasks: "packages.d/openvpn_packages_host.yml"
+  when:
+  - "hostvars[inventory_hostname]['openvpn'] is defined"
+  - "hostvars[inventory_hostname]['openvpn'] != ''"
+  - "hostvars[inventory_hostname]['openvpn'] |
+     json_query(vars['openvpn_install_package']) is defined"
+  - "hostvars[inventory_hostname]['openvpn'] |
+     json_query(vars['openvpn_install_package']) == 'true'"
+  - "vars['openvpn_instances_types'] in ['server', 'client']"
+  vars:
+    openvpn_install_package: "[] | map(&install_package || 'false', @) | [0]"

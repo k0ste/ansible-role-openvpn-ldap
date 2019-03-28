@@ -1,0 +1,73 @@
+---
+- name: openvpn | Set facts about OpenVPN instances
+  set_fact:
+    openvpn_instances: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].openvpn_settings[].{
+        name: name,
+        type: type,
+        ccd: client_config_dir,
+        plugin_auth_ldap: plugins[].auth_ldap[].enabled | [0],
+        plugin_otp: plugins[].otp[].enabled | [0]}') }}"
+- name: openvpn | Assert that every OpenVPN instance have not null values
+  assert:
+    that:
+    - "item.name != ''"
+    - "item.type in ['client', 'server', 'user']"
+    msg: "Some instance have not defined 'name' or 'type' fields."
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop_control:
+    label: "{{
+      'check fields: ' ~ 'name: ' ~ item.name ~ ', type: ' ~ item.type }}"
+  when:
+  - "vars['openvpn_instances'] is defined"
+  - "vars['openvpn_instances'] != []"
+- name: openvpn | Set facts about OpenVPN instances types
+  set_fact:
+    openvpn_instances_types: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].openvpn_settings[].type[]') | unique }}"
+  when:
+  - "vars['openvpn_instances'] is defined"
+  - "vars['openvpn_instances'] != []"
+- name: openvpn | Set bool fact that instances is server or client
+  set_fact:
+    openvpn_instances_types_bool: True
+  loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
+  loop_control:
+    loop_var: "openvpn_instances_items"
+  when:
+  - "openvpn_instances_items in ['server', 'client']"
+- name: openvpn | Set facts about CA storage
+  set_fact:
+    openvpn_ca_storage_type: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].ca_storage[].storage_type | [0]') }}"
+    openvpn_ca_storage_source: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].ca_storage[].storage_source[] | [0]') }}"
+- name: openvpn | Assert that storage type have proper value
+  assert:
+    that: "vars['openvpn_ca_storage_type'] in ['file', 's3']"
+    msg: "
+      'ca_storage.storage_type' have unknown value. Should be 'file' or 's3'"
+- name: openvpn | Set facts about OpenVPN environment
+  set_fact:
+    openvpn_email_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].global_settings[].email[] | [0]') }}"
+    openvpn_env_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].global_settings[].env[] | [0]') }}"
+    # openvpn_ca_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+    #   json_query('[].global_settings[].ca[] | [0]') }}"
+    openvpn_csr_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].global_settings[].csr[] | [0]') }}"
+    openvpn_ldap_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+      json_query('[].global_settings[].ldap[] | [0]') }}"
+- name: openvpn | Assert that user is defined when instance type is user
+  assert:
+    that:
+    - "vars['openvpn_target_user'] is defined"
+    - "vars['openvpn_target_user'] != ''"
+    msg: "User is not defined"
+  when:
+  - "vars['openvpn_instances_types'] == 'user'"
+- name: openvpn | Set local facts
+  set_fact:
+    openvpn_local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] ~
+      '_' ~ lookup('env', 'USER') }}"

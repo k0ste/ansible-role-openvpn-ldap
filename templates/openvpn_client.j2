@@ -10,11 +10,10 @@
 {% endif %}
 {% if item.tls_auth is defined and item.tls_auth != '' %}
 {{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_client_conf_dest'] ~
-    '/' ~ item.name ~ '/tls/' ~ vars['openvpn_env_settings']['takey_file'] ~
-    ' 1' }}
+    '/' ~ item.name ~ '/tls/' ~ item.tls_auth ~ ' 1' }}
 {% endif %}
 {{ 'ca' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_client_conf_dest'] ~ '/' ~
-    item.name ~ '/tls/' ~ vars['openvpn_ca_settings']['file'] }}
+    item.name ~ '/tls/' ~ vars['openvpn_ca_storage_source']['root_crt'] }}
 {% if item.persist_key is defined and item.persist_key == 'true' %}
 {{ 'persist-key' }}
 {% endif %}
@@ -27,7 +26,8 @@
 {% if item.resolv_retry is defined and item.resolv_retry != '' %}
 {{ 'resolv-retry' ~ ' ' ~ item.resolv_retry }}
 {% endif %}
-{% if item.explicit_exit_notify is defined and item.explicit_exit_notify != '' %}
+{% if item.explicit_exit_notify is defined and
+      item.explicit_exit_notify != '' %}
 {{ 'explicit-exit-notify' ~ ' ' ~ item.explicit_exit_notify }}
 {% endif %}
 {% if item.nobind is defined and item.nobind == 'true' %}

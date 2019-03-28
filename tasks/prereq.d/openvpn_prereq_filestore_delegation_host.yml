@@ -1,9 +1,9 @@
 ---
 - name: openvpn | Gather facts about CA master
   setup:
-  delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
+  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
   delegate_facts: "false"
-  remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
+  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
 - name: openvpn | Check CA master facts
   assert:
     that:
@@ -18,6 +18,6 @@
       hostvars[inventory_hostname]['ansible_os_family'] }}"
     local_packages_master: "{{
       hostvars[inventory_hostname]['openvpn_packages_master'] }}"
-  delegate_to: "{{ vars['openvpn_ca_settings']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_settings']['delegate_user'] }}"
+  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
+  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
 - meta: "clear_facts"

@@ -9,15 +9,14 @@
 {{ 'dh' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
     item.name ~ '/tls/' ~ item.dh }}
 {{ 'ca' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
-    item.name ~ '/tls/' ~ vars['openvpn_ca_settings']['file'] }}
+    item.name ~ '/tls/' ~ vars['openvpn_ca_storage_source']['root_crt'] }}
 {{ 'cert' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~
     '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~ '.crt' }}
 {{ 'key' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~
     '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~ '.key' }}
 {% if item.tls_auth is defined and item.tls_auth != '' %}
 {{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~
-    '/' ~ item.name ~ '/tls/' ~ vars['openvpn_env_settings']['takey_file'] ~
-    ' 0' }}
+    '/' ~ item.name ~ '/tls/' ~ item.tls_auth ~ ' 0' }}
 {% endif %}
 {% if item.crl_verify is defined and item.crl_verify != '' %}
 {{ 'crl-verify' ~ ' ' ~
