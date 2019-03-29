@@ -1,0 +1,12 @@
+---
+- name: openvpn | Create local catalog for fetched files
+  file:
+    path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
+      vars['openvpn_instance_name'] }}"
+    state: "directory"
+    owner: "{{ lookup('env', 'USER') }}"
+    mode: "0755"
+  delegate_to: "localhost"
+  become: "false"
+  notify:
+  - "Delete fetched files"

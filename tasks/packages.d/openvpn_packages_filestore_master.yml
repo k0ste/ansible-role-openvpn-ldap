@@ -5,8 +5,6 @@
     state: "installed"
   when:
   - "vars['local_ca_master_os'] == 'RedHat'"
-  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
 - name: openvpn | Install the required packages in Debian derivatives (CA)
   apt:
     name: "{{ vars['local_packages_master'] }}"
@@ -14,8 +12,6 @@
     update_cache: "yes"
   when:
   - "vars['local_ca_master_os'] == 'Debian'"
-  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
 - name: openvpn | Install the required packages in ArchLinux derivatives (CA)
   pacman:
     name: "{{ vars['local_packages_master'] }}"
@@ -23,5 +19,3 @@
     update_cache: "yes"
   when:
   - "vars['local_ca_master_os'] == 'Archlinux'"
-  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"

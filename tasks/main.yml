@@ -1,39 +1,18 @@
 ---
-- import_tasks: "pre_requisite.yml"
-- import_tasks: 'packages.yml'
-- import_tasks: "openvpn_ca.yml"
+- assert:
+    that:
+    - "hostvars[inventory_hostname]['openvpn_scenario'] is defined"
+    - "hostvars[inventory_hostname]['openvpn_scenario'] in ['deploy_user',
+      'deploy_instance', 'crl']"
+    msg: "'openvpn_scenario' is undefined or have unknown value."
+- assert:
+    that:
+    - "hostvars[inventory_hostname]['openvpn'] is defined"
+    - "hostvars[inventory_hostname]['openvpn'] != []"
+    msg: "'openvpn' settings is not defined or empty."
+- import_tasks: "scenarios.d/openvpn_deploy_instance.yml"
   when:
-  - "vars['openvpn_instances_types_bool'] is defined"
-  - "vars['openvpn_instances_types_bool'] == True"
-- import_tasks: "openvpn_executor.yml"
+  - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_instance'"
+- import_tasks: "scenarios.d/openvpn_deploy_user.yml"
   when:
-  - "vars['openvpn_instances_types_bool'] is defined"
-  - "vars['openvpn_instances_types_bool'] == True"
-- include_tasks: "worker_user.yml"
-  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
-  loop_control:
-    loop_var: "openvpn_fetching_type"
-  when:
-  - "openvpn_fetching_type.type == 'user'"
-- name: openvpn | Set facts about end-user instance
-  set_fact:
-    openvpn_instance_name: "{{ vars['openvpn_target_user'] }}"
-  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
-  loop_control:
-    loop_var: "openvpn_fetching_type"
-  when:
-  - "openvpn_fetching_type.type == 'user'"
-- include_tasks: "userfind.yml"
-  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
-  loop_control:
-    loop_var: "openvpn_fetching_type"
-  when:
-  - "openvpn_fetching_type.type == 'user'"
-- include_tasks: "crl.yml"
-  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
-  loop_control:
-    loop_var: "openvpn_fetching_type"
-  when:
-  - "(vars['openvpn_revoke_target'] is defined and
-      vars['openvpn_revoke_target'] != '')"
-  - "openvpn_fetching_type.type == 'server'"
+  - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_user'"

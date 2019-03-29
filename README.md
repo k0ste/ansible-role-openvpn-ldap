@@ -2,7 +2,7 @@
 
 Role for deploy OpenVPN server with AD/LDAP and/or OTP plugins support.
 
-## Requirements for usage with LDAP
+## Requirements
 
 * Ansible 2.7+
 * OpenVPN 2.4+ with builtin `openvpn-client`/`openvpn-server` systemd services.
@@ -15,6 +15,17 @@ will be maked on this host.
  * `s3` - Amazon S3 bucket. All certificate issuing will be maked on
 deployment host.
 
+## Scenarios:
+
+***openvpn_scenario*** variable should be defined, it can be:
+* `deploy_instance` - this scenario is for client/server (or both) deployment;
+* `deploy_user` - this scenario is for end user, plays like:
+  * checks user is present in LDAP;
+  * asserts that user `mail` field is e-mail;
+  * generates configuration and certs for this user;
+  * makes archive;
+  * sends archive to user e-mail address.
+
 ## Example configuration of server with 4 tunnels
 
 - First instance (openvpn1194) have client-config-dir.
@@ -24,6 +35,7 @@ deployment host.
 
 ```yaml
 ---
+openvpn_scenario: 'deploy_instance'
 openvpn:
 - enable: 'true'
   restart: 'true'
@@ -392,7 +404,7 @@ openvpn:
 ---
 openvpn:
 - openvpn_settings:
-  - name: "{{ vars['openvpn_instance_name'] }}"
+  - name: "tap0"
     type: 'user'
     remote: "openvpnserver.com 1197"
     proto: 'udp'
@@ -447,26 +459,23 @@ openvpn:
    - name: 'openvpn_revoke_target'
      prompt: 'What instance name should be revoked?'
      private: no
-  hosts: target-sever
+  hosts:
+  - target-sever
 ```
 
 ```yaml
 ---
-- name: Deploy OpenVPN User Instance
-  hosts: 127.0.0.1
-  become: true
-  gather_facts: true
+- name: Deploy OpenVPN User
+  hosts: localhost
+  become: false
+  gather_facts: false
   remote_user: ansible
   no_log: false
-  strategy: free
+  strategy: linear
   roles:
   - openvpn_ldap
   vars_prompt:
    - name: 'openvpn_target_user'
      prompt: 'What user name?'
      private: no
-   - name: 'openvpn_target_port'
-     prompt: 'What port (1197 for users, 1198 for restricted_users)?'
-     private: no
-     default: '1197'
 ```

@@ -1,0 +1,15 @@
+---
+- name: openvpn | Assert that user is defined
+  assert:
+    that:
+    - "vars['openvpn_target_user'] is defined"
+    - "vars['openvpn_target_user'] != ''"
+    msg: "User is not defined"
+- name: openvpn | Set facts about end-user instance
+  set_fact:
+    openvpn_instance_name: "{{ vars['openvpn_target_user'] }}"
+- import_tasks: "pre_requisite.yml"
+- import_tasks: "user.d/openvpn_find_user.yml"
+- import_tasks: 'packages.d/main.yml'
+- import_tasks: "ca.d/main.yml"
+- import_tasks: "user.d/openvpn_deploy_user.yml"
