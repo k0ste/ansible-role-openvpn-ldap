@@ -9,8 +9,6 @@
   file:
     path: "/tmp/openssl.conf"
     state: "absent"
-  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
 - name: Restart OpenVPN
   systemd:
     name: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~

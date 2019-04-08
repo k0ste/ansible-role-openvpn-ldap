@@ -26,6 +26,29 @@ deployment host.
   * makes archive;
   * sends archive to user e-mail address.
 
+## Certificate Revocation List (CRL) support (only when CA storage is S3)
+
+Optionally with this role is possible to revoke generated certs, playbooks
+should look like this:
+
+```yaml
+---
+- name: Deploy Certificate Revocation List
+  become: false
+  gather_facts: false
+  remote_user: ansible
+  no_log: false
+  strategy: free
+  roles:
+  - /home/k0ste/sandbox/GIT/ansible-role-openvpn-ldap
+  vars_prompt:
+   - name: 'openvpn_revoke_target'
+     prompt: 'What instance name should be revoked?'
+     private: no
+  hosts:
+  - localhost
+```
+
 ## Example configuration of server with 4 tunnels
 
 - First instance (openvpn1194) have client-config-dir.
@@ -441,26 +464,6 @@ openvpn:
   - openvpn_ldap
   hosts:
   - vpn.example.com
-```
-
-```yaml
----
-- name: Deploy Certificate Revocation List
-  become: true
-  gather_facts: true
-  remote_user: ansible
-  no_log: false
-  strategy: free
-  roles:
-  - openvpn_ldap
-  vars:
-    openvpn_target_port: ''
-  vars_prompt:
-   - name: 'openvpn_revoke_target'
-     prompt: 'What instance name should be revoked?'
-     private: no
-  hosts:
-  - target-sever
 ```
 
 ```yaml

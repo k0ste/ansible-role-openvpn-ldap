@@ -1,0 +1,18 @@
+---
+- import_tasks: "crl.d/openvpn_crl_prereq.yml"
+- import_tasks: "crl.d/openvpn_crl_check_s3_object.yml"
+- name: openvpn | Assert that
+  debug:
+    msg: "Target certificate does not exits"
+  when:
+  - "vars['openvpn_revoke_target_s3_object']['failed'] == True"
+- meta: "end_play"
+  when: "vars['openvpn_revoke_target_s3_object']['failed'] == True"
+- import_tasks: "prereq.d/openvpn_prereq_create_deployment_host_catalogs.yml"
+- import_tasks: "ca.d/s3/openvpn_s3_fetch_certs.yml"
+- import_tasks: "ca.d/s3/openvpn_s3_get_root.yml"
+- import_tasks: "crl.d/openvpn_crl_get_index.yml"
+- import_tasks: "crl.d/openvpn_crl_prepare_openssl_conf.yml"
+- import_tasks: "crl.d/openvpn_crl_revoke_target.yml"
+- import_tasks: "crl.d/openvpn_crl_update_bucket.yml"
+- import_tasks: "crl.d/openvpn_crl_delete_cert_from_ca.yml"

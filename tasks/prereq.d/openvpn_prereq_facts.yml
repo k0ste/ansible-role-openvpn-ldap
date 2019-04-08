@@ -49,7 +49,3 @@
       json_query('[].global_settings[].csr[] | [0]') }}"
     openvpn_ldap_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
       json_query('[].global_settings[].ldap[] | [0]') }}"
-- name: openvpn | Set local facts
-  set_fact:
-    openvpn_local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] ~
-      '_' ~ lookup('env', 'USER') }}"

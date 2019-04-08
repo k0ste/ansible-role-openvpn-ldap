@@ -1,5 +1,5 @@
 ---
-- import_tasks: "pre_requisite.yml"
+- import_tasks: "prereq.d/main.yml"
 - import_tasks: 'packages.d/main.yml'
 - import_tasks: "ca.d/main.yml"
 - import_tasks: "deploy.d/main.yml"

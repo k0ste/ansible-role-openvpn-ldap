@@ -3,7 +3,7 @@
     that:
     - "hostvars[inventory_hostname]['openvpn_scenario'] is defined"
     - "hostvars[inventory_hostname]['openvpn_scenario'] in ['deploy_user',
-      'deploy_instance', 'crl']"
+      'deploy_instance']"
     msg: "'openvpn_scenario' is undefined or have unknown value."
 - assert:
     that:
@@ -13,6 +13,11 @@
 - import_tasks: "scenarios.d/openvpn_deploy_instance.yml"
   when:
   - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_instance'"
+  - "vars['openvpn_revoke_target'] is not defined"
 - import_tasks: "scenarios.d/openvpn_deploy_user.yml"
   when:
   - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_user'"
+  - "vars['openvpn_revoke_target'] is not defined"
+- import_tasks: "scenarios.d/openvpn_deploy_crl.yml"
+  when:
+  - "vars['openvpn_revoke_target'] is defined"

@@ -1,4 +1,8 @@
 ---
+- name: openvpn | Set local facts
+  set_fact:
+    openvpn_local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] ~
+      '_' ~ lookup('env', 'USER') }}"
 - name: openvpn | Create local catalog for fetched files
   file:
     path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~

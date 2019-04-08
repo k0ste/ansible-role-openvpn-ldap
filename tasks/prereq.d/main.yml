@@ -1,0 +1,17 @@
+---
+- include_tasks: "prereq.d/openvpn_prereq_facts.yml"
+- include_tasks: "prereq.d/openvpn_prereq_create_deployment_host_catalogs.yml"
+- include_tasks: "prereq.d/openvpn_prereq_filestore_delegation_host.yml"
+  when:
+  - "vars['openvpn_ca_storage_type'] is defined"
+  - "vars['openvpn_ca_storage_type'] == 'file'"
+  run_once: "true"
+- include_tasks: "prereq.d/openvpn_prereq_instance_facts.yml"
+  when:
+  - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_instance'"
+- include_tasks: "prereq.d/openvpn_prereq_create_catalogs.yml"
+  when:
+  - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_instance'"
+- include_tasks: "prereq.d/openvpn_prereq_deployment_host_facts.yml"
+  when:
+  - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_user'"
