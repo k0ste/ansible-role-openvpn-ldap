@@ -43,8 +43,6 @@
   set_fact:
     openvpn_email_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
       json_query('[].global_settings[].email[] | [0]') }}"
-    openvpn_env_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
-      json_query('[].global_settings[].env[] | [0]') }}"
     openvpn_csr_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
       json_query('[].global_settings[].csr[] | [0]') }}"
     openvpn_ldap_settings: "{{ hostvars[inventory_hostname]['openvpn'] |

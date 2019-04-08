@@ -125,11 +125,6 @@ openvpn:
       charset: 'utf8'
       body: 'Phoney smile and fake hello'
       timeout: '10'
-    env:
-    - dest: '/etc/openvpn'
-      log_dest: '/var/log/openvpn'
-      group: 'nobody'
-      user: 'nobody'
     csr:
     - country_name: 'US'
       state: 'MA'

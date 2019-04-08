@@ -59,10 +59,11 @@
 {% endif %}
 {% if item.log is defined and item.log != '' %}
 {% if item.log_append is defined and item.log_append == 'true' %}
-{{ 'log-append' ~ ' ' ~ vars['openvpn_env_settings']['log_dest'] ~ '/' ~
-    item.log }}
+{{ 'log-append' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~
+    '/' ~ item.log }}
 {% else %}
-{{ 'log' ~ ' ' ~ vars['openvpn_env_settings']['log_dest'] ~ '/' ~ item.log }}
+{{ 'log' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~
+    item.log }}
 {% endif %}
 {% endif %}
 {% if item.tls_client is defined and item.tls_client == 'true' %}

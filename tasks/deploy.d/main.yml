@@ -1,104 +1,27 @@
 ---
-- name: openvpn | Copy instance cert
-  copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.crt' }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
-      '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
-    mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+- include_tasks: 'deploy.d/openvpn_deploy_instance_catalogs.yml'
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
-  diff: "false"
-- name: openvpn | Copy instance key
-  copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.key' }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
-      '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
-    mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
-  loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
-  diff: "false"
-- name: openvpn | Copy root certificate to instance
-  copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~
-      vars['openvpn_ca_storage_source']['root_crt'] }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
-      '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
-    mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
-  loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
-  diff: "false"
-- name: openvpn | Copy takey to instance
-  copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ item.tls_auth }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
-      '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
-    mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
-  loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
-  diff: "false"
+    loop_var: "outer_item"
   when:
-  - "item.tls_auth is defined"
-- name: openvpn | Copy DH to instance
-  copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ item.dh }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
-      '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
-    mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+  - "outer_item.name != None"
+- include_tasks: 'deploy.d/openvpn_deploy_configuration.yml'
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
-  diff: "false"
+    loop_var: "outer_item"
   when:
-  - "vars['outer_item'].type == 'server'"
-  - "item.dh is defined"
-  - "item.dh != ''"
-- name: openvpn | Copy TLS files for server instance
-  copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ item.crl_verify }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
-      '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
-    mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+  - "outer_item.name != None"
+- include_tasks: 'deploy.d/openvpn_deploy_copy_files.yml'
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
-  diff: "false"
+    loop_var: "outer_item"
   when:
-  - "vars['outer_item'].type == 'server'"
-  - "item.crl_verify is defined"
-  - "item.crl_verify != ''"
+  - "outer_item.name != None"
+- include_tasks: 'plugins.d/openvpn_deploy_plugin_auth_ldap.yml'
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop_control:
+    loop_var: "outer_item"
+  when:
+  - "outer_item.type == 'server'"
+  - "outer_item.plugin_auth_ldap == 'true'"
+  - "outer_item.name != None"
