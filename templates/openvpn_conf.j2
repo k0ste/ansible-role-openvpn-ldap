@@ -1,0 +1,10 @@
+{{ '## openvpn@' ~ item.name ~ '.conf' }}
+{{ '# ' + ansible_managed }}
+{{ '# Do not edit manually' }}
+
+{% include 'openvpn_global.j2' %}
+{% if item.type == 'client' %}
+{% include 'openvpn_client.j2' %}
+{% elif item.type == 'server' %}
+{% include 'openvpn_server.j2' %}
+{% endif %}

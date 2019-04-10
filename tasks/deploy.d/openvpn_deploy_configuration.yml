@@ -1,7 +1,7 @@
 ---
 - name: openvpn | Deploy OpenVPN configuration
   template:
-    src: "{{ 'openvpn_' + item.type + '.j2' }}"
+    src: "openvpn_conf.j2"
     dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
       '_conf_dest'] ~ '/' ~ item.name ~ '.conf' }}"
     owner: "{{ item.user | default('root') }}"

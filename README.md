@@ -147,32 +147,99 @@ openvpn:
     server: '10.15.0.0 255.255.255.0'
     tls_auth: 'ta.key'
     dh: 'dhparam.pem'
+# Check peer certificate against the file crl in PEM format. A CRL (certificate
+# revocation list) is used when a particular key is compromised but when the
+# overall PKI is still intact. Suppose you had a PKI consisting of a CA, root
+# certificate, and a number of client certificates. Suppose a laptop computer
+# containing a client key and certificate was stolen. By adding the stolen
+# certificate to the CRL file, you could reject any connection which attempts
+# to use it, while preserving the overall integrity of the PKI. The only time
+# when it would be necessary to rebuild the entire PKI from scratch would be if
+# the root certificate key itself was compromised.
     crl_verify: 'crl.pem'
     user: 'nobody'
     group: 'nobody'
+# Specify whether the client is required to supply a valid certificate.
+# Possible options are
+#
+# 'none' - a client certificate is not required. The client need to
+# authenticate using username/password only. Be aware that using this directive
+# is less secure than requiring certificates from all clients.
+# 'optional' - a client may present a certificate but it is not required to do
+# so.
+# 'require' - this is the default option. A client is required to present a
+# certificate, otherwise VPN access is refused.
     verify_client_cert: 'none'
+# Use the authenticated username as the common name, rather than the common name
+# from the client cert.
     username_as_common_name: 'true'
     multihome: 'true'
     auth_nocache: 'true'
+# Enable a management server on a socket-name Unix socket on those platforms
+# supporting it, or on a designated TCP port. For unix sockets, the default
+# behaviour is to create a unix domain socket that may be connected to by any
+# process. The management interface provides a special mode where the TCP
+# management link can operate over the tunnel itself. To enable this mode, set
+# IP to tunnel. Tunnel mode will cause the management interface to listen for a
+# TCP connection on the local VPN address of the TUN/TAP interface. While the
+# management port is designed for programmatic control of OpenVPN by other
+# applications, it is possible to telnet to the port, using a telnet client in
+# "raw" mode. Once connected, type "help" for a list of commands.
     management: '127.0.0.1 7505'
     persist_key: 'true'
     persist_tun: 'true'
+# A helper directive designed to simplify the expression of 'ping' and
+# 'ping-restart'. This option can be used on both client and server side, but
+# it is enough to add this on the server side as it will push appropriate –ping and –ping-restart options to the client. If used on both server and client, the values pushed from server will override the client local values. The timeout argument
+# will be twice as long on the server side. This ensures that a timeout is
+# detected on client side before the server side drops the connection. For
+# example, "keepalive: 10 60" expands as follows:
+ # if mode server:
+ #   ping 10                    # Argument: interval
+ #   ping-restart 120           # Argument: timeout*2
+ #   push "ping 10"             # Argument: interval
+ #   push "ping-restart 60"     # Argument: timeout
+ # else
+ #   ping 10                    # Argument: interval
+ #   ping-restart 60            # Argument: timeout
     keepalive: '10 60'
+# Limit server to a maximum of concurrent clients.
     max_clients: '250'
     reneg_sec: '86400'
     replay_window: '64'
+# Because the OpenVPN server mode handles multiple clients through a single tun
+# or tap interface, it is effectively a router. The 'client_to_client' flag
+# tells OpenVPN to internally route client-to-client traffic rather than
+# pushing all client-originating traffic to the TUN/TAP interface. When this
+# option is used, each client will 'see' the other clients which are currently
+# connected. Otherwise, each client will only see the server. Don't use this
+# option if you want to firewall tunnel traffic using custom, per-client rules.
     client_to_client: 'true'
-    comp_lzo: 'adaptive'
+    compress: 'lzo'
     verbosity: '4'
     mute: '10'
+# Silence the output of replay warnings, which are a common false alarm on WiFi
+# networks. This option preserves the security of the replay protection code
+# without the verbosity associated with warnings about duplicate packets.
     mute_replay_warnings: 'true'
+# The goal of this option is to provide a long-term association between clients
+# (denoted by their common name) and the virtual IP address assigned to them
+# from the ifconfig-pool. Maintaining a long-term association is good for
+# clients because it allows them to effectively use the –persist-tun option.
+# Note that the entries in this file are treated by OpenVPN as suggestions only,
+# based on past associations between a common name and IP address. They do not
+# guarantee that the given common name will always receive the given IP address.
     ifconfig_pool_persist: 'true'
     status: 'true'
-    push: 'true'
-    push_comp_lzo: 'adaptive'
-    push_persist_key: 'true'
-    push_persist_tun: 'true'
-    push_dhcp_option: 'DNS 100.100.101.1'
+    push:
+    - action: 'compress'
+      data: 'lzo'
+    - action: 'persist-key'
+      data: 'true'
+    - action: 'persist-tun'
+      data: 'true'
+    - action: 'dhcp-option'
+      data: 'DNS 100.100.101.1'
     client_config_dir: 'true'
     ccd_settings:
     - cn: 'DEFAULT'
@@ -232,19 +299,42 @@ openvpn:
     reneg_sec: '86400'
     replay_window: '64'
     client_to_client: 'true'
-    comp_lzo: 'adaptive'
+    compress: 'lzo'
     verbosity: '4'
     mute: '10'
     mute_replay_warnings: 'true'
     status: 'true'
-    push: 'true'
-    push_comp_lzo: 'adaptive'
-    push_persist_key: 'true'
-    push_persist_tun: 'true'
+    push:
+    - action: 'compress'
+      data: 'lzo'
+    - action: 'persist-key'
+      data: 'true'
+    - action: 'persist-tun'
+      data: 'true'
+# Enable TLS and assume server role during TLS handshake. Note that OpenVPN is
+# designed as a peer-to-peer application. The designation of client or server
+# is only for the purpose of negotiating the TLS control channel.
     tls_server: 'true'
     tls_version_min: '1.2'
     persist_key: 'true'
+# Specify a directory dir for custom client config files. After a connecting
+# client has been authenticated, OpenVPN will look in this directory for a file
+# having the same name as the client’s X509 common name. If a matching file
+# exists, it will be opened and parsed for client-specific configuration
+# options. If no matching file is found, OpenVPN will instead try to open and
+# parse a default file called 'DEFAULT', which may be provided but is not
+# required. Note that the configuration files must be readable by the OpenVPN
+# process after it has dropped it's root privileges. This file can specify a
+# fixed IP address for a given client using 'ifconfig-push', as well as fixed
+# subnets owned by the client using 'iroute'. One of the useful properties of
+# this option is that it allows client configuration files to be conveniently
+# created, edited, or removed while the server is live, without needing to
+# restart the server. The following options are legal in a client-specific
+# context: 'push', 'push-reset', 'push-remove', 'iroute', 'ifconfig-push',
+# config.
     client_config_dir: 'true'
+# Require, as a condition of authentication, that a connecting client has a
+# 'client_config_dir' file.
     ccd_exclusive: 'true'
     ccd_settings:
     - cn: 'dallas'
@@ -270,15 +360,18 @@ openvpn:
     reneg_sec: '86400'
     replay_window: '64'
     client_to_client: 'true'
-    comp_lzo: 'adaptive'
+    compress: 'lzo'
     verbosity: '4'
     mute: '10'
     mute_replay_warnings: 'true'
     status: 'true'
-    push: 'true'
-    push_comp_lzo: 'adaptive'
-    push_persist_key: 'true'
-    push_persist_tun: 'true'
+    push:
+    - action: 'compress'
+      data: 'lzo'
+    - action: 'persist-key'
+      data: 'true'
+    - action: 'persist-tun'
+      data: 'true'
     tls_server: 'true'
     tls_version_min: '1.2'
     persist_key: 'true'
@@ -302,7 +395,18 @@ openvpn:
     group: 'nobody'
     verify_client_cert: 'require'
     username_as_common_name: 'false'
+# Allow multiple clients with the same common name to concurrently connect. In
+# the absence of this option, OpenVPN will disconnect a client instance upon
+# connection of a new client having the same common name.
     duplicate_cn: 'true'
+# Configure a multi-homed UDP server. This option needs to be used when a
+# server has more than one IP address (e.g. multiple interfaces, or secondary
+# IP addresses), and is not using 'local' to force binding to one specific
+# address only. This option will add some extra lookups to the packet path to
+# ensure that the UDP reply packets are always sent from the address that the
+# client is talking to. This is not supported on all platforms, and it adds
+# more processing, so it's not enabled by default. Note: this option is only
+# relevant for UDP servers.
     multihome: 'true'
     persist_tun: 'true'
     keepalive: '10 60'
@@ -310,16 +414,20 @@ openvpn:
     reneg_sec: '86400'
     replay_window: '64'
     client_to_client: 'true'
-    comp_lzo: 'adaptive'
+    compress: 'lzo'
     verbosity: '4'
     mute: '10'
     mute_replay_warnings: 'true'
     status: 'true'
-    push: 'true'
-    push_comp_lzo: 'adaptive'
-    push_persist_key: 'true'
-    push_persist_tun: 'true'
-    push_dhcp_option: 'DNS 100.100.101.1'
+    push:
+    - action: 'compress'
+      data: 'lzo'
+    - action: 'persist-key'
+      data: 'true'
+    - action: 'persist-tun'
+      data: 'true'
+    - action: 'dhcp-option'
+      data: 'DNS 100.100.101.1'
     client_config_dir: 'true'
     tls_server: 'true'
     tls_version_min: '1.2'
@@ -347,16 +455,20 @@ openvpn:
     reneg_sec: '86400'
     replay_window: '64'
     client_to_client: 'true'
-    comp_lzo: 'adaptive'
+    compress: 'lzo'
     verbosity: '4'
     mute: '10'
     mute_replay_warnings: 'true'
     status: 'true'
-    push: 'true'
-    push_comp_lzo: 'adaptive'
-    push_persist_key: 'true'
-    push_persist_tun: 'true'
-    push_dhcp_option: 'DNS 100.100.101.1'
+    push:
+    - action: 'compress'
+      data: 'lzo'
+    - action: 'persist-key'
+      data: 'true'
+    - action: 'persist-tun'
+      data: 'true'
+    - action: 'dhcp-option'
+      data: 'DNS 100.100.101.1'
     tls_server: 'true'
     tls_version_min: '1.2'
     persist_key: 'true'
@@ -384,6 +496,7 @@ openvpn:
     proto: 'udp'
     dev: 'tap0'
     tls_auth: 'ta.key'
+# Enable TLS and assume client role during TLS handshake.
     tls_client: 'true'
     tls_version_min: '1.2'
     resolv_retry: 'infinite'
@@ -392,7 +505,7 @@ openvpn:
     persist_key: 'true'
     remote_random: 'false'
     reneg_sec: '0'
-    comp_lzo: 'adaptive'
+    compress: 'lzo'
     verbosity: '4'
     mute: '5'
     mute_replay_warnings: 'true'
@@ -410,7 +523,7 @@ openvpn:
     persist_key: 'true'
     remote_random: 'false'
     reneg_sec: '0'
-    comp_lzo: 'adaptive'
+    compress: 'lzo'
     verbosity: '4'
     mute: '5'
     mute_replay_warnings: 'true'
@@ -428,20 +541,76 @@ openvpn:
     proto: 'udp'
     dev: 'tap0'
     resolv_retry: 'infinite'
+# In UDP client mode or point-to-point mode, send server/peer an exit
+# notification if tunnel is restarted or OpenVPN process is exited. In client
+# mode, on exit/restart, this option will tell the server to immediately close
+# its client instance object rather than waiting for a timeout. The parameter
+# (default is '1') controls the maximum number of attempts that the client will
+# try to resend the exit notification message. In UDP server mode, send RESTART
+# control channel command to connected clients. The parameter (default is '1')
+# controls client behavior. With '1' client will attempt to reconnect to the
+# same server, with '2' client will advance to the next server. OpenVPN will
+# not send any exit notifications unless this option is enabled.
     explicit_exit_notify: '2'
+# Do not bind to local address and port. The IP stack will allocate a dynamic
+# port for returning packets. Since the value of the dynamic port could not be
+# known in advance by a peer, this option is only suitable for peers which will
+# be initiating connections by using the 'remote' option.
     nobind: 'true'
     persist_tun: 'true'
+# When multiple 'remote' address/ports are specified, or if connection profiles
+# are being used, initially randomize the order of the list as a kind of basic
+# load-balancing measure.
     remote_random: 'false'
+# If specified, this directive will cause OpenVPN to immediately forget
+# username/password inputs after they are used. As a result, when OpenVPN needs
+# a username/password, it will prompt for input from stdin, which may be
+# multiple times during the duration of an OpenVPN session. When using in
+# combination with a user/password file and 'chroot' or 'daemon', make sure to
+# use an absolute path.
     auth_nocache: 'true'
+# Renegotiate data channel key after n seconds (default is '3600)'. When using
+# dual-factor authentication, note that this default value may cause the end
+# user to be challenged to reauthorize once per hour. Also, keep in mind that
+# this option can be used on both the client and server, and whichever uses the
+# lower value will be the one to trigger the renegotiation. A common mistake is
+# to set 'reneg_sec' to a higher value on either the client or server, while
+# the other side of the connection is still using the default value of '3600'
+# seconds, meaning that the renegotiation will still occur once per 3600
+# seconds. The solution is to increase 'reneg_sec' on both the client and
+# server, or set it to 0 on one side of the connection (to disable), and to
+# your chosen value on the other side.
     reneg_sec: '0'
-    comp_lzo: 'adaptive'
+# Enable a compression algorithm. The algorithm parameter may be 'lzo', 'lz4'.
+# LZO and LZ4 are different compression algorithms, with LZ4 generally offering
+# the best performance with least CPU usage. For backwards compatibility with
+# OpenVPN versions before v2.4, use 'lzo'.
+    compress: 'lzo'
+# Set output verbosity (default is '1'). Each level shows all info from the
+# previous levels. Level '3' is recommended if you want a good summary of
+# what’s happening without being swamped by output. '0' — no output except
+# fatal errors.
+# '1' to '4' — Normal usage range.
+# '5' - output R and W characters to the console for each packet read and
+# write, uppercase is used for TCP/UDP packets and lowercase is used for
+# TUN/TAP packets.
+# '6' to '11' - Debug info range.
     verbosity: '4'
+# Log at most n consecutive messages in the same category. This is useful to
+# limit repetitive logging of similar message types.
     mute: '5'
     mute_replay_warnings: 'true'
     tls_client: 'true'
     tls_version_min: '1.2'
     tls_auth: 'ta.key'
+# Don't re-read key files across SIGUSR1 or 'ping-restart'. This option can be
+# combined with "user: 'nobody' to allow restarts triggered by the SIGUSR1
+# signal. Normally if you drop root privileges in OpenVPN, the daemon cannot be
+# restarted since it will now be unable to re-read protected key files.
+# This option solves the problem by persisting keys across SIGUSR1 resets, so
+# they don't need to be re-read.
     persist_key: 'true'
+# Enable static challenge/response protocol using challenge text.
     static_challenge: 'Enter Google Authenticator Token'
 ```
 

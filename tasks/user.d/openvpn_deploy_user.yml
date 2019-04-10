@@ -1,7 +1,7 @@
 ---
 - name: openvpn | Deploy OpenVPN user configuration
   template:
-    src: "openvpn_client.j2"
+    src: "openvpn_conf.j2"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
       '.conf' }}"

@@ -1,0 +1,64 @@
+{{ 'ca' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_client_conf_dest'] ~ '/' ~
+    item.name ~ '/tls/' ~ vars['openvpn_ca_storage_source']['root_crt'] }}
+{{ 'cert' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~
+    '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~ '.crt' }}
+{{ 'key' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~
+    '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~ '.key' }}
+{% if item.proto is defined and item.proto in ['tcp', 'udp'] %}
+{{ 'proto' + ' ' + item.proto }}
+{% endif %}
+{% if item.dev is defined and item.dev != '' %}
+{{ 'dev' ~ ' ' ~ item.dev }}
+{% endif %}
+{% if item.tls_auth is defined and item.tls_auth != '' %}
+{% if item.type == 'client' %}
+{{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_client_conf_dest'] ~
+    '/' ~ item.name ~ '/tls/' ~ item.tls_auth ~ ' 1' }}
+{% elif item.type == 'server' %}
+{{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~
+    '/' ~ item.name ~ '/tls/' ~ item.tls_auth ~ ' 0' }}
+{% endif %}
+{% endif %}
+{% if item.user is defined and item.user != '' %}
+{{ 'user' ~ ' ' ~ item.user }}
+{% endif %}
+{% if item.group is defined and item.group != '' %}
+{{ 'group' ~ ' ' ~ item.group }}
+{% endif %}
+{% if item.persist_key is defined and item.persist_key == 'true' %}
+{{ 'persist-key' }}
+{% endif %}
+{% if item.persist_tun is defined and item.persist_tun == 'true' %}
+{{ 'persist-tun' }}
+{% endif %}
+{% if item.explicit_exit_notify is defined and
+      item.explicit_exit_notify != '' %}
+{{ 'explicit-exit-notify' ~ ' ' ~ item.explicit_exit_notify }}
+{% endif %}
+{% if item.nobind is defined and item.nobind == 'true' %}
+{{ 'nobind' }}
+{% endif %}
+{% if item.reneg_sec is defined and item.reneg_sec != '' %}
+{{ 'reneg-sec' ~ ' ' ~ item.reneg_sec }}
+{% endif %}
+{% if item.compress is defined and item.compress in ['lzo', 'lz4'] %}
+{{ 'compress' + ' ' + item.compress }}
+{% endif %}
+{% if item.verbosity is defined and item.verbosity != '' %}
+{{ 'verb' ~ ' ' ~ item.verbosity }}
+{% endif %}
+{% if item.mute is defined and item.mute != '' %}
+{{ 'mute' ~ ' ' ~ item.mute }}
+{% endif %}
+{% if item.log is defined and item.log != '' %}
+{% if item.log_append is defined and item.log_append == 'true' %}
+{{ 'log-append' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~
+    '/' ~ item.log }}
+{% else %}
+{{ 'log' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~
+    item.log }}
+{% endif %}
+{% endif %}
+{% if item.keepalive is defined and item.keepalive != '' %}
+{{ 'keepalive' ~ ' ' ~ item.keepalive }}
+{% endif %}
