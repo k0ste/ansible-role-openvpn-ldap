@@ -2,17 +2,19 @@
 - name: openvpn | Set facts about OpenVPN instances
   set_fact:
     openvpn_instances: "{{ hostvars[inventory_hostname]['openvpn'] |
-      json_query('[].openvpn_settings[].{
+      json_query(\"[].openvpn_settings[].{
         name: name,
         type: type,
+        group: group || 'root',
+        user: user || 'root',
         ccd: client_config_dir,
         plugin_auth_ldap: plugins[].auth_ldap[].enabled | [0],
-        plugin_otp: plugins[].otp[].enabled | [0]}') }}"
+        plugin_otp: plugins[].otp[].enabled | [0]}\") }}"
 - name: openvpn | Assert that every OpenVPN instance have not null values
   assert:
     that:
     - "item.name != ''"
-    - "item.type in ['client', 'server', 'user']"
+    - "item.type in ['client', 'server']"
     msg: "Some instance have not defined 'name' or 'type' fields."
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:

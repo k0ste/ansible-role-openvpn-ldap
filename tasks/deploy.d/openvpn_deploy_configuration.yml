@@ -19,8 +19,8 @@
     src: "client_config_dir.j2"
     dest: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
       vars['outer_item'].name ~ '/' ~ item.cn }}"
-    owner: "{{ item.user | default('root') }}"
-    group: "{{ item.group | default('root') }}"
+    owner: "{{ vars['outer_item'].user }}"
+    group: "{{ vars['outer_item'].group }}"
     mode: "0400"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     json_query(\"[].openvpn_settings[?name=='\" ~ vars['outer_item'].name ~
