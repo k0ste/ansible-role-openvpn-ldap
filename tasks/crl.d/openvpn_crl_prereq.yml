@@ -4,6 +4,7 @@
     that:
     - "vars['openvpn_revoke_target'] != ''"
     msg: "Revoke target is not defined"
+    quiet: "true"
 - name: openvpn | Set facts about OpenVPN environment
   set_fact:
     openvpn_csr_settings: "{{ hostvars[inventory_hostname]['openvpn'] |

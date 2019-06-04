@@ -5,6 +5,7 @@
     - "vars['openvpn_target_user'] is defined"
     - "vars['openvpn_target_user'] != ''"
     msg: "User is not defined"
+    quiet: "true"
 - name: openvpn | Set facts about end-user instance
   set_fact:
     openvpn_instance_name: "{{ vars['openvpn_target_user'] }}"

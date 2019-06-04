@@ -9,6 +9,7 @@
     that:
     - "hostvars[inventory_hostname]['facter_facterversion'] is defined"
     msg: "Facter facts not found. Please install facter."
+    quiet: "true"
 - name: openvpn | Set facts about client/server instance [Facter 2]
   set_fact:
     openvpn_instance_name: "{{ hostvars[inventory_hostname]['facter_fqdn'] }}"

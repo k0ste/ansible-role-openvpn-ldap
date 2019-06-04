@@ -4,16 +4,16 @@ Role for deploy OpenVPN server with AD/LDAP and/or OTP plugins support.
 
 ## Requirements
 
-* Ansible 2.7+
-* OpenVPN 2.4+ with builtin `openvpn-client`/`openvpn-server` systemd services.
+* Ansible 2.8+;
+* OpenVPN 2.4+ with builtin `openvpn-client`/`openvpn-server` systemd services;
 * SMTP server for send to end-users configuration;
 * [ansible-plugin-lookup_ldap](//github.com/quinot/ansible-plugin-lookup_ldap)
-lookup modules.
+lookup modules;
 * CA storage, is two options:
  * `file` - this may be tiny Linux VM as delegated host. All certificate issuing
-will be maked on this host.
+will be maked on this host;
  * `s3` - Amazon S3 bucket. All certificate issuing will be maked on
-deployment host.
+deployment host;
 
 ## Scenarios:
 

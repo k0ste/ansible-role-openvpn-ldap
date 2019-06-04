@@ -5,11 +5,13 @@
     - "hostvars[inventory_hostname]['openvpn_scenario'] in ['deploy_user',
       'deploy_instance']"
     msg: "'openvpn_scenario' is undefined or have unknown value."
+    quiet: "true"
 - assert:
     that:
     - "hostvars[inventory_hostname]['openvpn'] is defined"
     - "hostvars[inventory_hostname]['openvpn'] != []"
     msg: "'openvpn' settings is not defined or empty."
+    quiet: "true"
 - import_tasks: "scenarios.d/openvpn_deploy_instance.yml"
   when:
   - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_instance'"

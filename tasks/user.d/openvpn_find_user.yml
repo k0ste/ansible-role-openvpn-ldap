@@ -22,9 +22,11 @@
     - "vars['openvpn_ldap_user_mail'] is defined"
     msg: "{{ 'User' ~ ' ' ~ vars['openvpn_instance_name'] ~ ' ' ~
              'not found' }}"
+    quiet: "true"
 - name: openvpn | Check user mail is valid e-mail address
   assert:
     that:
     - "vars['openvpn_ldap_user_mail'] is match(vars['openvpn_mailaddr_regex'])"
     msg: "{{ 'User' ~ ' ' ~ vars['openvpn_instance_name'] ~ ' ' ~
              'mail address not found' }}"
+    quiet: "true"
