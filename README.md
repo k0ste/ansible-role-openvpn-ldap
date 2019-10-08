@@ -132,12 +132,24 @@ openvpn:
       organization_name: 'Org'
       organization_unit: 'IT'
     ldap:
-    - host: 'ldap://example.com:389'
-      binddn: 'cn=user,ou=people,dc=example,dc=com'
+    # LDAP URI
+    - host: 'ldap://ipa.example.com:389'
+    # DN to use for simple binding.
+      binddn: 'uid=user,cn=users,cn=accounts,dc=example,dc=com'
+    # Password to use for simple binding.
       password: 'secret'
-      basedn: 'ou=people,dc=example,dc=com'
+    # Base DN for all queries.
+      base: 'cn=users,cn=accounts,dc=opentech,dc=local'
+    # Scope of queries (one of "base", "onelevel", or "subtree")
+      scope: 'subtree'
+    # Filter, default is '(objectClass=*)'.
       filter: 'uid'
       mail_field: 'mail'
+    # Use STARTTLS after connecting.
+      tls: 'true'
+    # Peer certificate verification strategy. One of 'never', 'hard', 'demand',
+    # 'allow', or 'try'.  See 'TLS_REQCERT' in the ldap.conf(5) manual page.
+      tls_reqcert: 'never'
   openvpn_settings:
   - name: 'openvpn1194'
     type: 'server'
@@ -265,19 +277,20 @@ openvpn:
     - auth_ldap:
       - enabled: 'true'
         options:
-        - host: 'ldap://example.com:389'
-          binddn: 'cn=user,ou=people,dc=example,dc=com'
+        - host: 'ldap://ipa.example.com:389'
+          binddn: 'cn=user,cn=users,cn=accounts,dc=example,dc=com'
           password: 'secret'
           timeout: '10'
           follow_referals: 'no'
-          tls_enable: 'no'
-          basedn: 'ou=people,dc=example,dc=com'
+          tls_enable: 'yes'
+          tls_require_cert: 'no'
+          base: 'cn=users,cn=accounts,dc=example,dc=com'
           filter: '(uid=%u)'
           require_group: 'true'
           rfc2307: 'false'
-          group_basedn: 'ou=groups,dc=example,dc=com'
+          group_base: 'cn=groups,cn=accounts,dc=example,dc=com'
           group_filter: '(cn=vpn_users)'
-          group_attr: 'memberUid'
+          group_attr: 'member'
   - name: 'openvpn1195'
     type: 'server'
     port: '1195'
