@@ -15,13 +15,12 @@
     path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.gz' }}"
+      vars['openvpn_instance_name'] ~ '.zip' }}"
+    format: "zip"
 - name: openvpn | Send mail to client
   mail:
     attach: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.gz' }}"
+      vars['openvpn_instance_name'] ~ '.zip' }}"
     body: "{{ vars['openvpn_email_settings']['body'] | default(omit) }}"
     charset: "{{ vars['openvpn_email_settings']['charset'] | default(omit) }}"
     from: "{{ vars['openvpn_email_settings']['from'] | default(omit) }}"
