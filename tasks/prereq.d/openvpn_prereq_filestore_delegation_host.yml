@@ -17,6 +17,8 @@
   set_fact:
     local_ca_master_os: "{{
       hostvars[inventory_hostname]['ansible_os_family'] }}"
+    local_ca_master_pkg_mgr: "{{
+      hostvars[inventory_hostname]['ansible_pkg_mgr'] }}"
     local_packages_master: "{{
       hostvars[inventory_hostname]['openvpn_packages_master'] }}"
   delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"

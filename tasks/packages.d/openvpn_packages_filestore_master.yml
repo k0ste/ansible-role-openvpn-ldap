@@ -1,21 +1,33 @@
 ---
-- name: openvpn | Install the required packages in Redhat derivatives (CA)
-  yum:
-    name: "{{ vars['local_packages_master'] }}"
-    state: "installed"
+- name: openvpn | Install the required packages in Redhat derivatives
+  block:
+  - name: openvpn | Install the required packages for RedHat via yum
+    yum:
+      name: "{{ vars['local_packages_master'] }}"
+      state: "present"
+      update_cache: "yes"
+    when:
+    - "vars['local_ca_master_pkg_mgr'] == 'yum'"
+  - name: openvpn | Install the required packages for RedHat via dnf
+    dnf:
+      name: "{{ vars['local_packages_master'] }}"
+      state: "present"
+      update_cache: "yes"
+    when:
+    - "vars['local_ca_master_pkg_mgr'] == 'dnf'"
   when:
   - "vars['local_ca_master_os'] == 'RedHat'"
 - name: openvpn | Install the required packages in Debian derivatives (CA)
   apt:
     name: "{{ vars['local_packages_master'] }}"
-    state: "installed"
+    state: "present"
     update_cache: "yes"
   when:
   - "vars['local_ca_master_os'] == 'Debian'"
 - name: openvpn | Install the required packages in ArchLinux derivatives (CA)
   pacman:
     name: "{{ vars['local_packages_master'] }}"
-    state: "installed"
+    state: "present"
     update_cache: "yes"
   when:
   - "vars['local_ca_master_os'] == 'Archlinux'"
