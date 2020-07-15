@@ -1,12 +1,36 @@
+{% if vars['openvpn_inline_profile'] is defined and vars['openvpn_inline_profile'] == 'true' %}
+{{ '<ca>' }}
+{{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
+  vars['openvpn_instance_name'] ~ '/' ~
+  vars['openvpn_ca_storage_source']['root_crt']) }}
+{{ '</ca>' }}
+{% else %}
 {{ 'ca' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
    '_conf_dest'] ~ '/' ~ item.name ~ '/tls/' ~
    vars['openvpn_ca_storage_source']['root_crt'] }}
+{% endif %}
+{% if vars['openvpn_inline_profile'] is defined and vars['openvpn_inline_profile'] == 'true' %}
+{{ '<cert>' }}
+{{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
+  vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
+  '.crt') }}
+{{ '</cert>' }}
+{% else %}
 {{ 'cert' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
    '_conf_dest'] ~ '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~
    '.crt' }}
+{% endif %}
+{% if vars['openvpn_inline_profile'] is defined and vars['openvpn_inline_profile'] == 'true' %}
+{{ '<key>' }}
+{{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
+  vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
+  '.key') }}
+{{ '</key>' }}
+{% else %}
 {{ 'key' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
    '_conf_dest'] ~ '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~
    '.key' }}
+{% endif %}
 {% if item.proto is defined and item.proto in ['tcp', 'udp'] %}
 {{ 'proto' + ' ' + item.proto }}
 {% endif %}
@@ -15,11 +39,27 @@
 {% endif %}
 {% if item.tls_auth is defined and item.tls_auth != '' %}
 {% if item.type == 'client' %}
+{% if vars['openvpn_inline_profile'] is defined and vars['openvpn_inline_profile'] == 'true' %}
+{{ 'key-direction 1' }}
+{{ '<tls-auth>' }}
+{{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
+   vars['openvpn_instance_name'] ~ '/' ~ item.tls_auth) }}
+{{ '</tls-auth>' }}
+{% else %}
 {{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_client_conf_dest'] ~
     '/' ~ item.name ~ '/tls/' ~ item.tls_auth ~ ' 1' }}
+{% endif %}
 {% elif item.type == 'server' %}
+{% if vars['openvpn_inline_profile'] is defined and vars['openvpn_inline_profile'] == 'true' %}
+{{ 'key-direction 0' }}
+{{ '<tls-auth>' }}
+{{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
+   vars['openvpn_instance_name'] ~ '/' ~ item.tls_auth) }}
+{{ '</tls-auth>' }}
+{% else %}
 {{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~
     '/' ~ item.name ~ '/tls/' ~ item.tls_auth ~ ' 0' }}
+{% endif %}
 {% endif %}
 {% endif %}
 {% if item.user is defined and item.user != '' %}

@@ -1,26 +1,12 @@
 ---
-- name: openvpn | Deploy OpenVPN user configuration
-  template:
-    src: "openvpn_conf.j2"
-    dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.conf' }}"
-    mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query('[].openvpn_settings[]') | flatten(levels=1) }}"
-  loop_control:
-    label: "{{ item.name }}"
-- name: openvpn | Make archive for mail message
-  archive:
-    path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] }}"
-    dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '.zip' }}"
-    format: "zip"
 - name: openvpn | Send mail to client
   mail:
-    attach: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '.zip' }}"
+    attach:
+    - "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
+          vars['openvpn_instance_name'] ~ '.zip' }}"
+    - "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
+          vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
+          '.ovpn' }}"
     body: "{{ vars['openvpn_email_settings']['body'] | default(omit) }}"
     charset: "{{ vars['openvpn_email_settings']['charset'] | default(omit) }}"
     from: "{{ vars['openvpn_email_settings']['from'] | default(omit) }}"

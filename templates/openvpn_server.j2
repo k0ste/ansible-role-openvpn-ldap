@@ -1,11 +1,25 @@
 {{ 'port' ~ ' ' ~ item.port }}
 {{ 'server' ~ ' ' ~ item.server }}
+{% if vars['openvpn_inline_profile'] is defined and vars['openvpn_inline_profile'] == 'true' %}
+{{ '<dh>' }}
+{{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
+  vars['openvpn_instance_name'] ~ '/' ~ item.dh) }}
+{{ '</dh>' }}
+{% else %}
 {{ 'dh' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
     item.name ~ '/tls/' ~ item.dh }}
+{% endif %}
 {% if item.crl_verify is defined and item.crl_verify != '' %}
+{% if vars['openvpn_inline_profile'] is defined and vars['openvpn_inline_profile'] == 'true' %}
+{{ '<crl-verify>' }}
+{{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
+  vars['openvpn_instance_name'] ~ '/' ~ item.crl_verify) }}
+{{ '</crl-verify>' }}
+{% else %}
 {{ 'crl-verify' ~ ' ' ~
     hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
     item.name ~ '/tls/' ~ item.crl_verify }}
+{% endif %}
 {% endif %}
 {% if item.verify_client_cert is defined and
       item.verify_client_cert in ['none', 'optional', 'require'] %}

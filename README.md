@@ -23,6 +23,8 @@ deployment host;
   * checks user is present in LDAP;
   * asserts that user `mail` field is e-mail;
   * generates configuration and certs for this user;
+    * optionally with inline certs/keys support in one '\*.ovpn' profile for
+      compatibility with GUI clients (profile import)
   * makes archive;
   * sends archive to user e-mail address.
 
@@ -202,18 +204,20 @@ openvpn:
     persist_tun: 'true'
 # A helper directive designed to simplify the expression of 'ping' and
 # 'ping-restart'. This option can be used on both client and server side, but
-# it is enough to add this on the server side as it will push appropriate –ping and –ping-restart options to the client. If used on both server and client, the values pushed from server will override the client local values. The timeout argument
-# will be twice as long on the server side. This ensures that a timeout is
-# detected on client side before the server side drops the connection. For
-# example, "keepalive: 10 60" expands as follows:
- # if mode server:
- #   ping 10                    # Argument: interval
- #   ping-restart 120           # Argument: timeout*2
- #   push "ping 10"             # Argument: interval
- #   push "ping-restart 60"     # Argument: timeout
- # else
- #   ping 10                    # Argument: interval
- #   ping-restart 60            # Argument: timeout
+# it is enough to add this on the server side as it will push appropriate --ping
+# and --ping-restart options to the client. If used on both server and client,
+# the values pushed from server will override the client local values. The
+# timeout argument will be twice as long on the server side. This ensures that
+# a timeout is detected on client side before the server side drops the
+# connection. For example, "keepalive: 10 60" expands as follows:
+# if mode server:
+#   ping 10                    # Argument: interval
+#   ping-restart 120           # Argument: timeout*2
+#   push "ping 10"             # Argument: interval
+#   push "ping-restart 60"     # Argument: timeout
+# else
+#   ping 10                    # Argument: interval
+#   ping-restart 60            # Argument: timeout
     keepalive: '10 60'
 # Limit server to a maximum of concurrent clients.
     max_clients: '250'

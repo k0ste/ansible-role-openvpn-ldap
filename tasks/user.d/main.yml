@@ -1,0 +1,4 @@
+---
+- import_tasks: "openvpn_user_deploy.yml"
+- import_tasks: "openvpn_user_make_archive.yml"
+- import_tasks: "openvpn_user_send_mail.yml"
