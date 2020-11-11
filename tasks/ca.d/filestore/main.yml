@@ -1,6 +1,6 @@
 ---
 - name: openvpn | Check availability cert on CA (filestore)
-  stat:
+  ansible.builtin.stat:
     path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.crt' }}"
   register: "openvpn_master_result"

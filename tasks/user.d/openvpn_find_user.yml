@@ -1,6 +1,6 @@
 ---
 - name: openvpn | Set LDAP facts
-  set_fact:
+  ansible.builtin.set_fact:
     ldap_lookup_config:
       url: "{{ vars['openvpn_ldap_settings']['host'] }}"
       base: "{{ vars['openvpn_ldap_settings']['base'] }}"
@@ -14,20 +14,20 @@
         default(omit) }}"
     openvpn_mailaddr_regex: '^[a-zA-Z0-9.!#$%&*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'
 - name: openvpn | Get user mail address
-  set_fact:
+  ansible.builtin.set_fact:
     openvpn_ldap_user_mail: "{{ item }}"
   with_ldap:
   - value:
     - "{{ vars['openvpn_ldap_settings']['mail_field'] }}"
 - name: openvpn | Check user is present on LDAP
-  assert:
+  ansible.builtin.assert:
     that:
     - "vars['openvpn_ldap_user_mail'] is defined"
     msg: "{{ 'User' ~ ' ' ~ vars['openvpn_instance_name'] ~ ' ' ~
              'not found' }}"
     quiet: "true"
 - name: openvpn | Check user mail is valid e-mail address
-  assert:
+  ansible.builtin.assert:
     that:
     - "vars['openvpn_ldap_user_mail'] is match(vars['openvpn_mailaddr_regex'])"
     msg: "{{ 'User' ~ ' ' ~ vars['openvpn_instance_name'] ~ ' ' ~

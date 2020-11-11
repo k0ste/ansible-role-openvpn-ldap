@@ -1,12 +1,12 @@
 ---
-- assert:
+- ansible.builtin.assert:
     that:
     - "hostvars[inventory_hostname]['openvpn_scenario'] is defined"
     - "hostvars[inventory_hostname]['openvpn_scenario'] in ['deploy_user',
       'deploy_instance']"
     msg: "'openvpn_scenario' is undefined or have unknown value."
     quiet: "true"
-- assert:
+- ansible.builtin.assert:
     that:
     - "hostvars[inventory_hostname]['openvpn'] is defined"
     - "hostvars[inventory_hostname]['openvpn'] != []"

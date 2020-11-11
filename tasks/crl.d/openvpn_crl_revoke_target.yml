@@ -1,6 +1,6 @@
 ---
 - name: openvpn | Revoke target cert
-  shell: "{{ 'openssl ca -config /tmp/openssl.conf -keyfile ' ~
+  ansible.builtin.shell: "{{ 'openssl ca -config /tmp/openssl.conf -keyfile ' ~
     vars['openvpn_local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
     '/' ~ vars['openvpn_ca_storage_source']['root_key'] ~ ' -cert ' ~
     vars['openvpn_local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
@@ -8,7 +8,7 @@
     vars['openvpn_local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
     '/' ~ vars['openvpn_instance_name'] ~ '.crt' }}"
 - name: openvpn | Generate CRL
-  shell: "{{ 'openssl ca -config /tmp/openssl.conf -keyfile ' ~
+  ansible.builtin.shell: "{{ 'openssl ca -config /tmp/openssl.conf -keyfile ' ~
     vars['openvpn_local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~
     '/' ~ vars['openvpn_ca_storage_source']['root_key'] ~ ' -cert ' ~
     vars['openvpn_local_fetch_dir'] ~ '/' ~ vars['openvpn_instance_name'] ~

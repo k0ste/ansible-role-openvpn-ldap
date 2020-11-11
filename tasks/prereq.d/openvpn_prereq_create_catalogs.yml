@@ -1,21 +1,21 @@
 ---
 - name: openvpn | Create OpenVPN configuration dir
-  file:
+  ansible.builtin.file:
     path: "{{ hostvars[inventory_hostname]['openvpn_' + item + '_conf_dest'] }}"
     state: "directory"
-    group: "root"
-    owner: "root"
+    owner: "{{ hostvars[inventory_hostname]['openvpn_user'] }}"
+    group: "{{ hostvars[inventory_hostname]['openvpn_group'] }}"
     mode: "0755"
   loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
   loop_control:
     label: "{{ hostvars[inventory_hostname]['openvpn_' + item +
       '_conf_dest'] }}"
 - name: openvpn | Create OpenVPN static pool dir
-  file:
+  ansible.builtin.file:
     path: "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
     state: "directory"
-    owner: "root"
-    group: "root"
+    owner: "{{ hostvars[inventory_hostname]['openvpn_user'] }}"
+    group: "{{ hostvars[inventory_hostname]['openvpn_group'] }}"
     mode: "0755"
   loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
   loop_control:
@@ -24,11 +24,11 @@
   when:
   - "item == 'server'"
 - name: openvpn | Create OpenVPN status dir
-  file:
+  ansible.builtin.file:
     path: "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
     state: "directory"
-    owner: "root"
-    group: "root"
+    owner: "{{ hostvars[inventory_hostname]['openvpn_user'] }}"
+    group: "{{ hostvars[inventory_hostname]['openvpn_group'] }}"
     mode: "0755"
   loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
   loop_control:
@@ -37,11 +37,11 @@
   when:
   - "item == 'server'"
 - name: openvpn | Create OpenVPN OTP counters dir
-  file:
+  ansible.builtin.file:
     path: "{{ hostvars[inventory_hostname]['openvpn_plugin_otp_dest'] }}"
     state: "directory"
-    owner: "root"
-    group: "root"
+    owner: "{{ hostvars[inventory_hostname]['openvpn_user'] }}"
+    group: "{{ hostvars[inventory_hostname]['openvpn_group'] }}"
     mode: "0755"
   loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
   loop_control:

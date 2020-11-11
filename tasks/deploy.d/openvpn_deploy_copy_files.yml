@@ -1,13 +1,13 @@
 ---
 - name: openvpn | Copy instance cert
-  copy:
+  ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
       '.crt' }}"
     dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
       '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
+    group: "{{ item.group | default(hostvars[inventory_hostname]['openvpn_group']) }}"
+    owner: "{{ item.user | default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0400"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     json_query(\"[].openvpn_settings[?name=='\" ~
@@ -16,14 +16,14 @@
     label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
   diff: "false"
 - name: openvpn | Copy instance key
-  copy:
+  ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
       '.key' }}"
     dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
       '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
+    group: "{{ item.group | default(hostvars[inventory_hostname]['openvpn_group']) }}"
+    owner: "{{ item.user | default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0400"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     json_query(\"[].openvpn_settings[?name=='\" ~
@@ -32,14 +32,14 @@
     label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
   diff: "false"
 - name: openvpn | Copy root certificate to instance
-  copy:
+  ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~
       vars['openvpn_ca_storage_source']['root_crt'] }}"
     dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
       '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
+    group: "{{ item.group | default(hostvars[inventory_hostname]['openvpn_group']) }}"
+    owner: "{{ item.user | default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0400"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     json_query(\"[].openvpn_settings[?name=='\" ~
@@ -48,13 +48,13 @@
     label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
   diff: "false"
 - name: openvpn | Copy takey to instance
-  copy:
+  ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ item.tls_auth }}"
     dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
       '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
+    group: "{{ item.group | default(hostvars[inventory_hostname]['openvpn_group']) }}"
+    owner: "{{ item.user | default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0400"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     json_query(\"[].openvpn_settings[?name=='\" ~
@@ -65,13 +65,13 @@
   when:
   - "item.tls_auth is defined"
 - name: openvpn | Copy DH to instance
-  copy:
+  ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ item.dh }}"
     dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
       '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
+    group: "{{ item.group | default(hostvars[inventory_hostname]['openvpn_group']) }}"
+    owner: "{{ item.user | default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0400"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     json_query(\"[].openvpn_settings[?name=='\" ~
@@ -84,13 +84,13 @@
   - "item.dh is defined"
   - "item.dh != ''"
 - name: openvpn | Copy TLS files for server instance
-  copy:
+  ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ item.crl_verify }}"
     dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
       '_conf_dest'] ~ '/' ~ item.name ~ '/tls' }}"
-    group: "{{ item.group | default('root') }}"
-    owner: "{{ item.user | default('root') }}"
+    group: "{{ item.group | default(hostvars[inventory_hostname]['openvpn_group']) }}"
+    owner: "{{ item.user | default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0400"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     json_query(\"[].openvpn_settings[?name=='\" ~

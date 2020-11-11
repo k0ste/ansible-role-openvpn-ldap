@@ -2,14 +2,14 @@
 - name: openvpn | Install the required packages in Redhat derivatives
   block:
   - name: openvpn | Install the required packages for RedHat via yum
-    yum:
+    ansible.builtin.yum:
       name: "{{ vars['local_packages_master'] }}"
       state: "present"
       update_cache: "yes"
     when:
     - "vars['local_ca_master_pkg_mgr'] == 'yum'"
   - name: openvpn | Install the required packages for RedHat via dnf
-    dnf:
+    ansible.builtin.dnf:
       name: "{{ vars['local_packages_master'] }}"
       state: "present"
       update_cache: "yes"
@@ -18,14 +18,14 @@
   when:
   - "vars['local_ca_master_os'] == 'RedHat'"
 - name: openvpn | Install the required packages in Debian derivatives (CA)
-  apt:
+  ansible.builtin.apt:
     name: "{{ vars['local_packages_master'] }}"
     state: "present"
     update_cache: "yes"
   when:
   - "vars['local_ca_master_os'] == 'Debian'"
 - name: openvpn | Install the required packages in ArchLinux derivatives (CA)
-  pacman:
+  community.general.pacman:
     name: "{{ vars['local_packages_master'] }}"
     state: "present"
     update_cache: "yes"

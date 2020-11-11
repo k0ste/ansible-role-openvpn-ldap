@@ -1,6 +1,6 @@
 ---
 - name: openvpn | Send mail to client
-  mail:
+  community.general.mail:
     attach:
     - "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
           vars['openvpn_instance_name'] ~ '.zip' }}"

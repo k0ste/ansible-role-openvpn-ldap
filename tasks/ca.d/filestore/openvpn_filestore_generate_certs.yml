@@ -1,11 +1,11 @@
 ---
 - name: openvpn | Generate private key on CA (filestore)
-  openssl_privatekey:
+  community.crypto.openssl_privatekey:
     type: "RSA"
     path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.key' }}"
 - name: openvpn | Generate certificate signing request on CA (filestore)
-  openssl_csr:
+  community.crypto.openssl_csr:
     common_name: "{{ vars['openvpn_instance_name'] }}"
     country_name: "{{ vars['openvpn_csr_settings']['country_name'] |
       default(omit) }}"
@@ -22,7 +22,7 @@
     privatekey_path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.key' }}"
 - name: openvpn | Generate certificate on CA (filestore)
-  openssl_certificate:
+  community.crypto.x509_certificate:
     csr_path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.csr' }}"
     ownca_path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~

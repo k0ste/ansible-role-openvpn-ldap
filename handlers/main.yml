@@ -1,16 +1,16 @@
 ---
 - name: Delete fetched files
-  file:
+  ansible.builtin.file:
     path: "{{ vars['openvpn_local_fetch_dir'] }}"
     state: "absent"
   become: "false"
   delegate_to: "localhost"
 - name: Delete temp openssl.conf
-  file:
+  ansible.builtin.file:
     path: "/tmp/openssl.conf"
     state: "absent"
 - name: Restart OpenVPN
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
       '_service'] ~ item.name }}"
     state: "restarted"

@@ -1,6 +1,6 @@
 ---
 - name: openvpn | Deploy OpenVPN user configuration
-  template:
+  ansible.builtin.template:
     src: "openvpn_conf.j2"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
@@ -11,7 +11,7 @@
   loop_control:
     label: "{{ item.name }}"
 - name: openvpn | Deploy OpenVPN user configuration (OVPN Profile)
-  template:
+  ansible.builtin.template:
     src: "openvpn_conf.j2"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~

@@ -1,27 +1,27 @@
 ---
 - name: openvpn | Fetch instance key from CA (filestore)
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.key' }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' }}"
     flat: "yes"
 - name: openvpn | Fetch instance cert from CA (filestore)
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.crt' }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' }}"
     flat: "yes"
 - name: openvpn | Fetch instance root from CA (filestore)
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_ca_storage_source']['root_crt'] }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' }}"
     flat: "yes"
 - name: openvpn | Fetch instance takey from CA (filestore)
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ vars['openvpn_ca_storage_source']['openvpn_path'] ~ '/' ~
       item.tls_auth }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
@@ -36,7 +36,7 @@
   - "item.tls_auth is defined"
   - "item.tls_auth != ''"
 - name: openvpn | Fetch CRL from CA (filestore)
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ vars['openvpn_ca_storage_source']['crl_path'] ~ '/' ~
       item.crl_verify }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
@@ -52,7 +52,7 @@
   - "item.crl_verify is defined"
   - "item.crl_verify != ''"
 - name: openvpn | Fetch DHPARAM from CA (filestore)
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ vars['openvpn_ca_storage_source']['openvpn_path'] ~ '/' ~
       item.dh }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
