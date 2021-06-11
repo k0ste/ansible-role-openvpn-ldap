@@ -1,9 +1,9 @@
 ---
 - name: openvpn | Make archive for mail message
   community.general.archive:
-    path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
+    path: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
       vars['openvpn_instance_name'] }}"
-    dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
+    dest: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
       vars['openvpn_instance_name'] ~ '.zip' }}"
     format: "zip"
     exclude_path: "*.ovpn"

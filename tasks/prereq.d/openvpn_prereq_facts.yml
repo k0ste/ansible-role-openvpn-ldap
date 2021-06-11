@@ -2,7 +2,7 @@
 - name: openvpn | Set facts about OpenVPN instances
   ansible.builtin.set_fact:
     openvpn_instances: "{{ hostvars[inventory_hostname]['openvpn'] |
-      json_query(\"[].openvpn_settings[].{
+      community.general.json_query(\"[].openvpn_settings[].{
         name: name,
         type: type,
         group: group || 'root',
@@ -13,8 +13,8 @@
 - name: openvpn | Assert that every OpenVPN instance have not null values
   ansible.builtin.assert:
     that:
-    - "item.name != ''"
-    - "item.type in ['client', 'server']"
+      - "item.name != ''"
+      - "item.type in ['client', 'server']"
     msg: "Some instance have not defined 'name' or 'type' fields."
     quiet: "true"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
@@ -22,21 +22,21 @@
     label: "{{
       'check fields: ' ~ 'name: ' ~ item.name ~ ', type: ' ~ item.type }}"
   when:
-  - "vars['openvpn_instances'] is defined"
-  - "vars['openvpn_instances'] != []"
+    - "vars['openvpn_instances'] is defined"
+    - "vars['openvpn_instances'] != []"
 - name: openvpn | Set facts about OpenVPN instances types
   ansible.builtin.set_fact:
     openvpn_instances_types: "{{ hostvars[inventory_hostname]['openvpn'] |
-      json_query('[].openvpn_settings[].type[]') | unique }}"
+      community.general.json_query('[].openvpn_settings[].type[]') | unique }}"
   when:
-  - "vars['openvpn_instances'] is defined"
-  - "vars['openvpn_instances'] != []"
+    - "vars['openvpn_instances'] is defined"
+    - "vars['openvpn_instances'] != []"
 - name: openvpn | Set facts about CA storage
   ansible.builtin.set_fact:
     openvpn_ca_storage_type: "{{ hostvars[inventory_hostname]['openvpn'] |
-      json_query('[].ca_storage[].storage_type | [0]') }}"
+      community.general.json_query('[].ca_storage[].storage_type | [0]') }}"
     openvpn_ca_storage_source: "{{ hostvars[inventory_hostname]['openvpn'] |
-      json_query('[].ca_storage[].storage_source[] | [0]') }}"
+      community.general.json_query('[].ca_storage[].storage_source[] | [0]') }}"
 - name: openvpn | Assert that storage type have proper value
   ansible.builtin.assert:
     that: "vars['openvpn_ca_storage_type'] in ['file', 's3']"
@@ -46,8 +46,8 @@
 - name: openvpn | Set facts about OpenVPN environment
   ansible.builtin.set_fact:
     openvpn_email_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
-      json_query('[].global_settings[].email[] | [0]') }}"
+      community.general.json_query('[].global_settings[].email[] | [0]') }}"
     openvpn_csr_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
-      json_query('[].global_settings[].csr[] | [0]') }}"
+      community.general.json_query('[].global_settings[].csr[] | [0]') }}"
     openvpn_ldap_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
-      json_query('[].global_settings[].ldap[] | [0]') }}"
+      community.general.json_query('[].global_settings[].ldap[] | [0]') }}"

@@ -1,11 +1,11 @@
 ---
 - name: openvpn | Set local facts
   ansible.builtin.set_fact:
-    openvpn_local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] ~
+    openvpn_local_fetch_dir: "{{ hostvars[inventory_hostname]['fetch_dir'] +
       '_' ~ lookup('env', 'USER') }}"
 - name: openvpn | Create local catalog for fetched files
   ansible.builtin.file:
-    path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
+    path: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
       vars['openvpn_instance_name'] }}"
     state: "directory"
     owner: "{{ lookup('env', 'USER') }}"
@@ -13,4 +13,4 @@
   delegate_to: "localhost"
   become: "false"
   notify:
-  - "Delete fetched files"
+    - "Delete fetched files"

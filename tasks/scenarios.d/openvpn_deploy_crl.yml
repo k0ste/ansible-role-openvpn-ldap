@@ -5,7 +5,7 @@
   debug:
     msg: "Target certificate does not exits"
   when:
-  - "vars['openvpn_revoke_target_s3_object']['failed'] == True"
+    - "vars['openvpn_revoke_target_s3_object']['failed'] == True"
 - meta: "end_play"
   when: "vars['openvpn_revoke_target_s3_object']['failed'] == True"
 - import_tasks: "prereq.d/openvpn_prereq_create_deployment_host_catalogs.yml"

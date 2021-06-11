@@ -7,7 +7,7 @@
 - name: openvpn | Check CA master facts
   ansible.builtin.assert:
     that:
-    - "hostvars[inventory_hostname]['ansible_os_family'] is defined"
+      - "hostvars[inventory_hostname]['ansible_os_family'] is defined"
     msg: "Can't gather facts from CA master."
     quiet: "true"
 - name: openvpn | Add the OS specific varibles

@@ -2,52 +2,56 @@
 - name: openvpn | Deploy OpenVPN configuration
   ansible.builtin.template:
     src: "openvpn_conf.j2"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
-      '_conf_dest'] ~ '/' ~ item.name ~ '.conf' }}"
-    group: "{{ item.group | default(hostvars[inventory_hostname]['openvpn_group']) }}"
-    owner: "{{ item.user | default(hostvars[inventory_hostname]['openvpn_user']) }}"
+    dest: "{{ hostvars[inventory_hostname]['openvpn_' + item.type +
+      '_conf_dest'] + '/' + item.name + '.conf' }}"
+    group: "{{ item.group |
+      default(hostvars[inventory_hostname]['openvpn_group']) }}"
+    owner: "{{ item.user |
+      default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0644"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~
+    community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
+    label: "{{ 'openvpn-' + item.type + ': ' ~ item.name }}"
   notify:
-  - "Restart OpenVPN"
+    - "Restart OpenVPN"
 - name: openvpn | Deploy clients configuration
   ansible.builtin.template:
     src: "client_config_dir.j2"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
+    dest: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] + '/' ~
       vars['outer_item'].name ~ '/' ~ item.cn }}"
-    group: "{{ item.group | default(hostvars[inventory_hostname]['openvpn_group']) }}"
-    owner: "{{ item.user | default(hostvars[inventory_hostname]['openvpn_user']) }}"
+    group: "{{ item.group |
+      default(hostvars[inventory_hostname]['openvpn_group']) }}"
+    owner: "{{ item.user |
+      default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0400"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~ vars['outer_item'].name ~
-    \"'].ccd_settings[]\") | flatten(levels=1) }}"
+    community.general.json_query(\"[].openvpn_settings[?name=='\" ~
+    vars['outer_item'].name ~ \"'].ccd_settings[]\") | flatten(levels=1) }}"
   loop_control:
     label: "{{ 'openvpn-' ~ vars['outer_item'].type ~ ': ' ~
       vars['outer_item'].name ~ ': ' ~ item.cn }}"
   when:
-  - "vars['outer_item'].type == 'server'"
-  - "vars['outer_item'].ccd is defined"
-  - "vars['outer_item'].ccd == 'true'"
+    - "vars['outer_item'].type == 'server'"
+    - "vars['outer_item'].ccd is defined"
+    - "vars['outer_item'].ccd == 'true'"
 - name: openvpn | Enable OpenVPN service
   ansible.builtin.systemd:
-    name: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~ '_service']
+    name: "{{ hostvars[inventory_hostname]['openvpn_' + item.type + '_service']
       ~ item.name }}"
     enabled: "yes"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~
+    community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
+    label: "{{ 'openvpn-' + item.type + ': ' ~ item.name }}"
   when:
-  - "hostvars[inventory_hostname]['openvpn'] is defined"
-  - "hostvars[inventory_hostname]['openvpn'] != ''"
-  - "hostvars[inventory_hostname]['openvpn'] |
-     json_query(vars['openvpn_enable']) is defined"
-  - "hostvars[inventory_hostname]['openvpn'] |
-     json_query(vars['openvpn_enable']) == 'true'"
+    - "hostvars[inventory_hostname]['openvpn'] is defined"
+    - "hostvars[inventory_hostname]['openvpn'] != ''"
+    - "hostvars[inventory_hostname]['openvpn'] |
+       community.general.json_query(vars['openvpn_enable']) is defined"
+    - "hostvars[inventory_hostname]['openvpn'] |
+       community.general.json_query(vars['openvpn_enable']) == 'true'"
   vars:
     openvpn_enable: "[] | map(&enable || 'false', @) | [0]"

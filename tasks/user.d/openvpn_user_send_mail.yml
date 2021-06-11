@@ -2,11 +2,11 @@
 - name: openvpn | Send mail to client
   community.general.mail:
     attach:
-    - "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-          vars['openvpn_instance_name'] ~ '.zip' }}"
-    - "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-          vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-          '.ovpn' }}"
+      - "{{ vars['openvpn_local_fetch_dir'] + '/' ~
+            vars['openvpn_instance_name'] ~ '.zip' }}"
+      - "{{ vars['openvpn_local_fetch_dir'] + '/' ~
+            vars['openvpn_instance_name'] ~ '/' ~
+            vars['openvpn_instance_name'] ~ '.ovpn' }}"
     body: "{{ vars['openvpn_email_settings']['body'] | default(omit) }}"
     charset: "{{ vars['openvpn_email_settings']['charset'] | default(omit) }}"
     from: "{{ vars['openvpn_email_settings']['from'] | default(omit) }}"

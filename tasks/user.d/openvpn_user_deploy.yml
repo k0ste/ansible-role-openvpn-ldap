@@ -7,7 +7,8 @@
       '.conf' }}"
     mode: "0400"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query('[].openvpn_settings[]') | flatten(levels=1) }}"
+    community.general.json_query('[].openvpn_settings[]') |
+    flatten(levels=1) }}"
   loop_control:
     label: "{{ item.name }}"
 - name: openvpn | Deploy OpenVPN user configuration (OVPN Profile)
@@ -18,7 +19,8 @@
       '.ovpn' }}"
     mode: "0400"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query('[].openvpn_settings[]') | flatten(levels=1) }}"
+    community.general.json_query('[].openvpn_settings[]') |
+    flatten(levels=1) }}"
   loop_control:
     label: "{{ item.name }}"
   vars:

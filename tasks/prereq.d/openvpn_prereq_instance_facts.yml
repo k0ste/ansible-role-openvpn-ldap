@@ -2,31 +2,34 @@
 - name: openvpn | Gather instance facts
   ansible.builtin.setup:
 - name: openvpn | Add the OS specific varibles
-  include_vars: "{{
+  ansible.builtin.include_vars: "{{
     hostvars[inventory_hostname]['ansible_os_family'] ~ '.yml' }}"
 - name: openvpn | Check facter facts
   ansible.builtin.assert:
     that:
-    - "hostvars[inventory_hostname]['facter_facterversion'] is defined"
+      - "hostvars[inventory_hostname]['facter_facterversion'] is defined"
     msg: "Facter facts not found. Please install facter."
     quiet: "true"
 - name: openvpn | Set facts about client/server instance [Facter 2]
   ansible.builtin.set_fact:
     openvpn_instance_name: "{{ hostvars[inventory_hostname]['facter_fqdn'] }}"
   when:
-  - "hostvars[inventory_hostname]['facter_facterversion'].split('.')[0] <= '2'"
+    - "
+    hostvars[inventory_hostname]['facter_facterversion'].split('.')[0] <= '2'"
 - name: openvpn | Set facts about client/server instance [Facter 3]
   ansible.builtin.set_fact:
     openvpn_instance_name: "{{
       hostvars[inventory_hostname]['facter_networking']['fqdn'] }}"
   when:
-   - "hostvars[inventory_hostname]['facter_facterversion'].split('.')[0] > '2'"
-- name: openvpn | Check users exists on target, otherwise try to install packages
+    - "hostvars[inventory_hostname]['facter_facterversion'].split('.')[0] > '2'"
+- name: openvpn |
+    Check users exists on target, otherwise try to install packages
   block:
-  - name: openvpn | Check OpenVPN user exists
-    ansible.builtin.getent:
-      key: "{{ hostvars[inventory_hostname]['openvpn_user'] }}"
-      database: "passwd"
+    - name: openvpn | Check OpenVPN user exists
+      ansible.builtin.getent:
+        key: "{{ hostvars[inventory_hostname]['openvpn_user'] }}"
+        database: "passwd"
   rescue:
-  - name: openvpn | Tries to install packages because system user doesn't exists
-    import_tasks: "packages.d/main.yml"
+    - name: openvpn |
+        Tries to install packages because system user doesn't exists
+      import_tasks: "packages.d/main.yml"

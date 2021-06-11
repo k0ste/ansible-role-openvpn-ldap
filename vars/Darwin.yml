@@ -1,0 +1,4 @@
+---
+openvpn_client_conf_dest: '/etc/openvpn/client'
+openvpn_user: 'root'
+openvpn_group: 'root'

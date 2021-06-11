@@ -22,7 +22,7 @@
     label: "{{ hostvars[inventory_hostname]['openvpn_' + item +
       '_conf_dest'] }}"
   when:
-  - "item == 'server'"
+    - "item == 'server'"
 - name: openvpn | Create OpenVPN status dir
   ansible.builtin.file:
     path: "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
@@ -35,7 +35,7 @@
     label: "{{ hostvars[inventory_hostname]['openvpn_' + item +
       '_conf_dest'] }}"
   when:
-  - "item == 'server'"
+    - "item == 'server'"
 - name: openvpn | Create OpenVPN OTP counters dir
   ansible.builtin.file:
     path: "{{ hostvars[inventory_hostname]['openvpn_plugin_otp_dest'] }}"
@@ -48,4 +48,4 @@
     label: "{{ hostvars[inventory_hostname]['openvpn_' + item +
       '_conf_dest'] }}"
   when:
-  - "item == 'server'"
+    - "item == 'server'"

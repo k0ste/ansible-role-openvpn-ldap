@@ -11,19 +11,19 @@
     state: "absent"
 - name: Restart OpenVPN
   ansible.builtin.systemd:
-    name: "{{ hostvars[inventory_hostname]['openvpn_' ~ item.type ~
+    name: "{{ hostvars[inventory_hostname]['openvpn_' + item.type +
       '_service'] ~ item.name }}"
     state: "restarted"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
+    label: "{{ 'openvpn-' + item.type + ': ' ~ item.name }}"
   when:
-  - "hostvars[inventory_hostname]['openvpn'] is defined"
-  - "hostvars[inventory_hostname]['openvpn'] != ''"
-  - "hostvars[inventory_hostname]['openvpn'] |
-     json_query(vars['openvpn_restart']) is defined"
-  - "hostvars[inventory_hostname]['openvpn'] |
-     json_query(vars['openvpn_restart']) == 'true'"
-  - "item.name != None"
+    - "hostvars[inventory_hostname]['openvpn'] is defined"
+    - "hostvars[inventory_hostname]['openvpn'] != ''"
+    - "hostvars[inventory_hostname]['openvpn'] |
+       community.general.json_query(vars['openvpn_restart']) is defined"
+    - "hostvars[inventory_hostname]['openvpn'] |
+       community.general.json_query(vars['openvpn_restart']) == 'true'"
+    - "item.name != None"
   vars:
     openvpn_restart: "[] | map(&restart || 'false', @) | [0]"

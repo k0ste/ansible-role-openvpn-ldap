@@ -3,24 +3,24 @@ galaxy_info:
   author: "Konstantin Shalygin"
   issue_tracker_url: "https://github.com/k0ste/ansible-role-openvpn-ldap"
   description: "Role for deploy openvpn server/client/user with LDAP auth and
-                Certificate relocation support."
+    Certificate relocation support."
   company: "YASB"
   license: "GPL"
-  min_ansible_version: "2.10"
+  min_ansible_version: "3.0.0"
   platforms:
-  - name: EL
-    versions:
-    - any
-  - name: Fedora
-    versions:
-    - any
-  - name: Ubuntu
-    versions:
-    - any
-  - name: Archlinux
-    versions:
-    - any
+    - name: EL
+      versions:
+        - any
+    - name: Fedora
+      versions:
+        - any
+    - name: Ubuntu
+      versions:
+        - any
+    - name: Archlinux
+      versions:
+        - any
   categories:
-   - system
-   - networking
+    - system
+    - networking
 dependencies: []

@@ -61,8 +61,8 @@
     item.name ~ '.status' }}
 {% endif %}
 {% if item.client_config_dir is defined and item.client_config_dir != '' %}
-{{ 'client-config-dir' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_' ~
-    item.type ~ '_conf_dest'] ~ '/' ~ item.name }}
+{{ 'client-config-dir ' + hostvars[inventory_hostname]['openvpn_' + item.type +
+  '_conf_dest'] + '/' ~ item.name }}
 {% endif %}
 {% if item.ccd_exclusive is defined and item.ccd_exclusive == 'true' %}
 {{ 'ccd-exclusive' }}

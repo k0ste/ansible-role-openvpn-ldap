@@ -29,12 +29,12 @@
   delegate_to: "localhost"
 - import_tasks: "ca.d/s3/openvpn_s3_generate_certs.yml"
   when:
-  - "vars['openvpn_master_result']['failed'] == True"
+    - "vars['openvpn_master_result']['failed'] == True"
   become: "false"
   delegate_to: "localhost"
 - import_tasks: "ca.d/s3/openvpn_s3_put_ca.yml"
   when:
-  - "vars['openvpn_master_result']['failed'] == True"
+    - "vars['openvpn_master_result']['failed'] == True"
   become: "false"
   delegate_to: "localhost"
 - import_tasks: "ca.d/s3/openvpn_s3_fetch_certs.yml"

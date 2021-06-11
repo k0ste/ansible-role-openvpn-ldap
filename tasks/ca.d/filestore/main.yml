@@ -9,7 +9,7 @@
   become: "true"
 - import_tasks: "ca.d/filestore/openvpn_filestore_generate_certs.yml"
   when:
-  - "openvpn_master_result.stat.exists == False"
+    - "openvpn_master_result.stat.exists == False"
   delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
   become: "true"

@@ -28,13 +28,13 @@
       vars['openvpn_instance_name'] ~ '/' }}"
     flat: "yes"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~
+    community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
+    label: "{{ 'openvpn-' + item.type + ': ' ~ item.name }}"
   when:
-  - "item.tls_auth is defined"
-  - "item.tls_auth != ''"
+    - "item.tls_auth is defined"
+    - "item.tls_auth != ''"
 - name: openvpn | Fetch CRL from CA (filestore)
   ansible.builtin.fetch:
     src: "{{ vars['openvpn_ca_storage_source']['crl_path'] ~ '/' ~
@@ -43,14 +43,14 @@
       vars['openvpn_instance_name'] ~ '/' }}"
     flat: "yes"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~
+    community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
+    label: "{{ 'openvpn-' + item.type + ': ' ~ item.name }}"
   when:
-  - "item.type == 'server'"
-  - "item.crl_verify is defined"
-  - "item.crl_verify != ''"
+    - "item.type == 'server'"
+    - "item.crl_verify is defined"
+    - "item.crl_verify != ''"
 - name: openvpn | Fetch DHPARAM from CA (filestore)
   ansible.builtin.fetch:
     src: "{{ vars['openvpn_ca_storage_source']['openvpn_path'] ~ '/' ~
@@ -59,11 +59,11 @@
       vars['openvpn_instance_name'] ~ '/' }}"
     flat: "yes"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
-    json_query(\"[].openvpn_settings[?name=='\" ~
+    community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' ~ item.type ~ ': ' ~ item.name }}"
+    label: "{{ 'openvpn-' + item.type + ': ' ~ item.name }}"
   when:
-  - "item.type == 'server'"
-  - "item.dh is defined"
-  - "item.dh != ''"
+    - "item.type == 'server'"
+    - "item.dh is defined"
+    - "item.dh != ''"

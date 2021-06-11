@@ -4,11 +4,9 @@ Role for deploy OpenVPN server with AD/LDAP and/or OTP plugins support.
 
 ## Requirements
 
-* Ansible 2.8+;
+* Ansible 3.0.0;
 * OpenVPN 2.4+ with builtin `openvpn-client`/`openvpn-server` systemd services;
 * SMTP server for send to end-users configuration;
-* [ansible-plugin-lookup_ldap](//github.com/quinot/ansible-plugin-lookup_ldap)
-lookup modules;
 * CA storage, is two options:
  * `file` - this may be tiny Linux VM as delegated host. All certificate issuing
 will be maked on this host;
@@ -143,15 +141,14 @@ openvpn:
     # Base DN for all queries.
       base: 'cn=users,cn=accounts,dc=opentech,dc=local'
     # Scope of queries (one of "base", "onelevel", or "subtree")
-      scope: 'subtree'
+      scope: 'onelevel'
     # Filter, default is '(objectClass=*)'.
       filter: 'uid'
       mail_field: 'mail'
     # Use STARTTLS after connecting.
-      tls: 'true'
-    # Peer certificate verification strategy. One of 'never', 'hard', 'demand',
-    # 'allow', or 'try'.  See 'TLS_REQCERT' in the ldap.conf(5) manual page.
-      tls_reqcert: 'never'
+      tls: 'yes'
+    # If set to 'no', SSL certificates will not be validated.
+      tls_reqcert: 'no'
   openvpn_settings:
   - name: 'openvpn1194'
     type: 'server'
