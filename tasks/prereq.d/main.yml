@@ -1,5 +1,5 @@
 ---
-- ansible.builtin.include_tasks:
+- ansible.builtin.import_tasks:
     file: "prereq.d/openvpn_prereq_facts.yml"
 - ansible.builtin.include_tasks:
     file: "prereq.d/openvpn_prereq_filestore_delegation_host.yml"

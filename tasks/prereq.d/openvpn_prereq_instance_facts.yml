@@ -2,8 +2,8 @@
 - name: openvpn | Gather instance facts
   ansible.builtin.setup:
 - name: openvpn | Add the OS specific varibles
-  ansible.builtin.include_vars: "{{
-    hostvars[inventory_hostname]['ansible_os_family'] ~ '.yml' }}"
+  ansible.builtin.include_vars:
+    file: "{{ hostvars[inventory_hostname]['ansible_os_family'] ~ '.yml' }}"
 - name: openvpn | Check facter facts
   ansible.builtin.assert:
     that:
@@ -32,4 +32,5 @@
   rescue:
     - name: openvpn |
         Tries to install packages because system user doesn't exists
-      import_tasks: "packages.d/main.yml"
+      ansible.builtin.import_tasks:
+        file: "packages.d/main.yml"

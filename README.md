@@ -113,6 +113,14 @@ openvpn:
       root_path: '/srv/ca'
       root_crt: 'rootCA.crt'
       root_key: 'rootCA.key'
+  systemd_settings:
+  - restart_on_failure: 'true'
+# How much burst in interval, seconds.
+    start_limit_interval: '30'
+# How much times to restart in interval.    
+    start_limit_burst: '3'
+# Configures the time to sleep before restarting a service, seconds.
+    restart_timeout: '10'
   global_settings:
   - email:
     - host: 'localhost'

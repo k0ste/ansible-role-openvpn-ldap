@@ -5,21 +5,28 @@
   loop_control:
     loop_var: "outer_item"
   when:
-    - "outer_item.name != None"
+    - "outer_item['name'] != None"
 - ansible.builtin.include_tasks:
     file: "deploy.d/openvpn_deploy_configuration.yml"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
     loop_var: "outer_item"
   when:
-    - "outer_item.name != None"
+    - "outer_item['name'] != None"
+- ansible.builtin.include_tasks:
+    file: "deploy.d/openvpn_deploy_systemd.yml"
+  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop_control:
+    loop_var: "outer_item"
+  when:
+    - "outer_item['name'] != None"
 - ansible.builtin.include_tasks:
     file: "deploy.d/openvpn_deploy_copy_files.yml"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
     loop_var: "outer_item"
   when:
-    - "outer_item.name != None"
+    - "outer_item['name'] != None"
 - ansible.builtin.include_tasks:
     file: "plugins.d/openvpn_deploy_plugin_auth_ldap.yml"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
@@ -28,4 +35,4 @@
   when:
     - "outer_item.type == 'server'"
     - "outer_item.plugin_auth_ldap == 'true'"
-    - "outer_item.name != None"
+    - "outer_item['name'] != None"

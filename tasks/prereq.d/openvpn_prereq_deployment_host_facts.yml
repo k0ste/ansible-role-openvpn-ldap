@@ -2,5 +2,5 @@
 - name: openvpn | Gather deployment host facts
   ansible.builtin.setup:
 - name: openvpn | Add the OS specific varibles
-  ansible.builtin.include_vars: "{{
-    hostvars[inventory_hostname]['ansible_os_family'] ~ '.yml' }}"
+  ansible.builtin.include_vars:
+    file: "{{ hostvars[inventory_hostname]['ansible_os_family'] + '.yml' }}"

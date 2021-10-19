@@ -31,6 +31,10 @@
   when:
     - "vars['openvpn_instances'] is defined"
     - "vars['openvpn_instances'] != []"
+- name: openvpn | Set facts about sysmted service settings
+  ansible.builtin.set_fact:
+    openvpn_systemd_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
+      community.general.json_query('[].systemd_settings[]') }}"
 - name: openvpn | Set facts about CA storage
   ansible.builtin.set_fact:
     openvpn_ca_storage_type: "{{ hostvars[inventory_hostname]['openvpn'] |
@@ -51,3 +55,6 @@
       community.general.json_query('[].global_settings[].csr[] | [0]') }}"
     openvpn_ldap_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
       community.general.json_query('[].global_settings[].ldap[] | [0]') }}"
+    openvpn_systemd_override: "{{ hostvars[inventory_hostname]['openvpn'] |
+      community.general.json_query('[].systemd_settings[].restart_on_failure |
+      [0]') }}"

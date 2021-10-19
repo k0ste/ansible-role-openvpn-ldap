@@ -1,0 +1,25 @@
+{{ '## openvpn-' + item.type + '@' ~ item.name ~ '.conf' }}
+{{ '# ' + ansible_managed }}
+{{ '# Do not edit manually' }}
+
+{{ '[Unit]' }}
+{% for s in vars['openvpn_systemd_settings'] %}
+{% if s.restart_on_failure is defined and s.restart_on_failure == 'true' %}
+{% if s.start_limit_interval is defined and s.start_limit_interval %}
+{{ 'StartLimitIntervalSec=' ~ s.start_limit_interval }}
+{% endif %}
+{% if s.start_limit_burst is defined and s.start_limit_burst %}
+{{ 'StartLimitBurst=' ~ s.start_limit_burst }}
+{% endif %}
+{% endif %}
+{% endfor %}
+{{ ''}}
+{{ '[Service]' }}
+{% for s in vars['openvpn_systemd_settings'] %}
+{% if s.restart_on_failure is defined and s.restart_on_failure == 'true' %}
+{{ 'Restart=on-failure' }}
+{% if s.restart_timeout is defined and s.restart_timeout %}
+{{ 'RestartSec=' ~ s.restart_timeout }}
+{% endif %}
+{% endif %}
+{% endfor %}

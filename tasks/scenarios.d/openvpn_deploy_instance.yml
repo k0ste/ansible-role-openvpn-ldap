@@ -1,5 +1,9 @@
 ---
-- import_tasks: "prereq.d/main.yml"
-- import_tasks: "packages.d/main.yml"
-- import_tasks: "ca.d/main.yml"
-- import_tasks: "deploy.d/main.yml"
+- ansible.builtin.import_tasks:
+    file: "prereq.d/main.yml"
+- ansible.builtin.import_tasks:
+    file: "packages.d/main.yml"
+- ansible.builtin.import_tasks:
+    file: "ca.d/main.yml"
+- ansible.builtin.import_tasks:
+    file: "deploy.d/main.yml"
