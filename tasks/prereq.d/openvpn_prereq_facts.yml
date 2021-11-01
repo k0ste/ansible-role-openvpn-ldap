@@ -56,5 +56,5 @@
     openvpn_ldap_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
       community.general.json_query('[].global_settings[].ldap[] | [0]') }}"
     openvpn_systemd_override: "{{ hostvars[inventory_hostname]['openvpn'] |
-      community.general.json_query('[].systemd_settings[].restart_on_failure |
+      community.general.json_query('[].systemd_settings[].restart |
       [0]') }}"
