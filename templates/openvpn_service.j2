@@ -16,8 +16,8 @@
 {{ ''}}
 {{ '[Service]' }}
 {% for s in vars['openvpn_systemd_settings'] %}
-{% if s.restart_on_failure is defined and s.restart_on_failure == 'true' %}
-{{ 'Restart=on-failure' }}
+{% if s.restart is defined and s.restart in ['on-success', 'on-failure', 'on-abnormal', 'on-watchdog', 'on-abort', 'always'] %}
+{{ 'Restart=' + s.restart }}
 {% if s.restart_timeout is defined and s.restart_timeout %}
 {{ 'RestartSec=' ~ s.restart_timeout }}
 {% endif %}

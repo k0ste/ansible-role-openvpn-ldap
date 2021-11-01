@@ -114,7 +114,8 @@ openvpn:
       root_crt: 'rootCA.crt'
       root_key: 'rootCA.key'
   systemd_settings:
-  - restart_on_failure: 'true'
+# Takes one of no, on-success, on-failure, on-abnormal, on-watchdog, on-abort, or always. If set to no (the default), the service will not be restarted.
+  - restart: 'always'
 # How much burst in interval, seconds.
     start_limit_interval: '30'
 # How much times to restart in interval.    
