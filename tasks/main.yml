@@ -12,7 +12,8 @@
       - "hostvars[inventory_hostname]['openvpn'] != []"
     msg: "'openvpn' settings is not defined or empty."
     quiet: "true"
-- import_tasks: "scenarios.d/openvpn_deploy_instance.yml"
+- ansible.builtin.import_tasks:
+    file: "scenarios.d/openvpn_deploy_instance.yml"
   when:
     - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_instance'"
     - "vars['openvpn_revoke_target'] is not defined"

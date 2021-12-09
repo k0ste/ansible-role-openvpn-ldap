@@ -3,7 +3,7 @@
   ansible.builtin.setup:
 - name: openvpn | Add the OS specific varibles
   ansible.builtin.include_vars:
-    file: "{{ hostvars[inventory_hostname]['ansible_os_family'] ~ '.yml' }}"
+    file: "{{ hostvars[inventory_hostname]['ansible_os_family'] + '.yml' }}"
 - name: openvpn | Check facter facts
   ansible.builtin.assert:
     that:
@@ -18,8 +18,8 @@
     hostvars[inventory_hostname]['facter_facterversion'].split('.')[0] <= '2'"
 - name: openvpn | Set facts about client/server instance [Facter 3]
   ansible.builtin.set_fact:
-    openvpn_instance_name: "{{
-      hostvars[inventory_hostname]['facter_networking']['fqdn'] }}"
+    openvpn_instance_name:
+      "{{ hostvars[inventory_hostname]['facter_networking']['fqdn'] }}"
   when:
     - "hostvars[inventory_hostname]['facter_facterversion'].split('.')[0] > '2'"
 - name: openvpn |
