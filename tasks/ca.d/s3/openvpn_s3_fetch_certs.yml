@@ -1,5 +1,5 @@
 ---
-- name: openvpn | Fetch instance key from CA (S3)
+- name: "openvpn | Fetch instance key from CA (S3)"
   amazon.aws.aws_s3:
     aws_access_key: "{{
       vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"
@@ -20,7 +20,7 @@
     mode: "get"
     object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.key' }}"
-- name: openvpn | Fetch instance cert from CA (S3)
+- name: "openvpn | Fetch instance cert from CA (S3)"
   amazon.aws.aws_s3:
     aws_access_key: "{{
       vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"

@@ -1,16 +1,18 @@
-{{ 'port' ~ ' ' ~ item.port }}
-{{ 'server' ~ ' ' ~ item.server }}
-{% if vars['openvpn_inline_profile'] is defined and vars['openvpn_inline_profile'] == 'true' %}
+{{ 'port ' ~ item.port }}
+{{ 'server ' ~ item.server }}
+{% if vars['openvpn_inline_profile'] is defined and
+  vars['openvpn_inline_profile'] == 'true' %}
 {{ '<dh>' }}
 {{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
   vars['openvpn_instance_name'] ~ '/' ~ item.dh) }}
 {{ '</dh>' }}
 {% else %}
-{{ 'dh' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
+{{ 'dh ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
     item.name ~ '/tls/' ~ item.dh }}
 {% endif %}
 {% if item.crl_verify is defined and item.crl_verify != '' %}
-{% if vars['openvpn_inline_profile'] is defined and vars['openvpn_inline_profile'] == 'true' %}
+{% if vars['openvpn_inline_profile'] is defined and
+  vars['openvpn_inline_profile'] == 'true' %}
 {{ '<crl-verify>' }}
 {{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
   vars['openvpn_instance_name'] ~ '/' ~ item.crl_verify) }}
@@ -23,7 +25,7 @@
 {% endif %}
 {% if item.verify_client_cert is defined and
       item.verify_client_cert in ['none', 'optional', 'require'] %}
-{{ 'verify-client-cert' + ' ' + item.verify_client_cert }}
+{{ 'verify-client-cert ' + item.verify_client_cert }}
 {% endif %}
 {% if item.duplicate_cn is defined and item.duplicate_cn == 'true' %}
 {{ 'duplicate-cn' }}
@@ -32,16 +34,16 @@
 {{ 'multihome' }}
 {% endif %}
 {% if item.management is defined and item.management != '' %}
-{{ 'management' + ' ' + item.management }}
+{{ 'management ' + item.management }}
 {% endif %}
 {% if item.username_as_common_name and item.username_as_common_name == 'true' %}
 {{ 'username-as-common-name' }}
 {% endif %}
 {% if item.max_clients is defined and item.max_clients != '' %}
-{{ 'max-clients' ~ ' ' ~ item.max_clients }}
+{{ 'max-clients ' ~ item.max_clients }}
 {% endif %}
 {% if item.replay_window is defined and item.replay_window != '' %}
-{{ 'replay-window' ~ ' ' ~ item.replay_window }}
+{{ 'replay-window ' ~ item.replay_window }}
 {% endif %}
 {% if item.client_to_client is defined and item.client_to_client == 'true' %}
 {{ 'client-to-client' }}
@@ -51,14 +53,14 @@
 {{ 'mute-replay-warnings' }}
 {% endif %}
 {% if item.ifconfig_pool_persist is defined and
-      item.ifconfig_pool_persist == 'true' %}
-{{ 'ifconfig-pool-persist' ~ ' ' ~
-    hostvars[inventory_hostname]['openvpn_pool_dest'] ~ '/' ~ item.name ~
-    '.pool' }}
+  item.ifconfig_pool_persist == 'true' %}
+{{ 'ifconfig-pool-persist ' ~
+  hostvars[inventory_hostname]['openvpn_pool_dest'] ~ '/' ~ item.name ~
+  '.pool' }}
 {% endif %}
 {% if item.status is defined and item.status != '' %}
-{{ 'status' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_status_dest'] ~ '/' ~
-    item.name ~ '.status' }}
+{{ 'status ' ~ hostvars[inventory_hostname]['openvpn_status_dest'] ~ '/' ~
+  item.name ~ '.status' }}
 {% endif %}
 {% if item.client_config_dir is defined and item.client_config_dir != '' %}
 {{ 'client-config-dir ' + hostvars[inventory_hostname]['openvpn_' + item.type +
@@ -70,42 +72,42 @@
 {% if item.tls_server is defined and item.tls_server == 'true' %}
 {{ 'tls-server' }}
 {% if item.tls_version_min is defined and item.tls_version_min != '' %}
-{{ 'tls-version-min' ~ ' ' ~ item.tls_version_min }}
+{{ 'tls-version-min ' ~ item.tls_version_min }}
 {% endif %}
 {% if item.cipher is defined and item.cipher != '' %}
-{{ 'cipher' ~ ' ' ~ item.cipher }}
+{{ 'cipher ' ~ item.cipher }}
 {% endif %}
 {% if item.keysize is defined and item.keysize != '' %}
-{{ 'keysize' ~ ' ' ~ item.keysize }}
+{{ 'keysize ' ~ item.keysize }}
 {% endif %}
 {% if item.auth is defined and item.auth != '' %}
-{{ 'auth' ~ ' ' ~ item.auth }}
+{{ 'auth ' ~ item.auth }}
 {% endif %}
 {% endif %}
 {% if vars['outer_item'].plugin_auth_ldap is defined and
       vars['outer_item'].plugin_auth_ldap == 'true' %}
-{{ 'plugin' ~ ' \"' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~
+{{ 'plugin \"' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~
     '/' ~ hostvars[inventory_hostname]['openvpn_plugin_auth_ldap_name'] ~
     '\" \"' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
     item.name ~ '/' ~ 'auth_ldap.conf\"' }}
 {% endif %}
 {% if vars['outer_item'].plugin_otp is defined and
-      vars['outer_item'].plugin_otp == 'true' %}
+  vars['outer_item'].plugin_otp == 'true' %}
 {% include 'openvpn_plugin_otp.j2' %}
 {% endif %}
 {% if item.push is defined and item.push != '' %}
 {% for p in item.push %}
 {% if p.action is defined and p.action in [
-      'route', 'route-gateway', 'route-delay', 'redirect-gateway', 'ip-win32',
-      'dhcp-option', 'inactive', 'ping', 'ping-exit', 'ping-restart', 'setenv',
-      'auth-token', 'persist-key', 'persist-tun', 'echo', 'compress',
-      'socket-flags', 'sndbuf', 'rcvbuf'] %}
+  'route', 'route-gateway', 'route-delay', 'redirect-gateway', 'ip-win32',
+  'dhcp-option', 'inactive', 'ping', 'ping-exit', 'ping-restart', 'setenv',
+  'auth-token', 'persist-key', 'persist-tun', 'echo', 'compress',
+  'socket-flags', 'sndbuf', 'rcvbuf'] %}
 {% if p.data in ['true', 'false'] %}
 {% if p.data == 'true' %}
-{{ 'push' ~ ' \"' ~ p.action ~ '\"' }}
+{{ 'push \"' ~ p.action ~ '\"' }}
 {% endif %}
 {% else %}
-{{ 'push' ~ ' \"' ~ p.action ~ ' ' ~ p.data ~ '\"' }}
+{{ 'push \"' ~ p.action ~ ' ' ~ p.data ~ '\"' }}
 {% endif %}
 {% endif %}
 {% endfor %}

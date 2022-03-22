@@ -1,5 +1,5 @@
 ---
-- name: openvpn | Create OpenVPN configuration dir
+- name: "openvpn | Create OpenVPN configuration dir"
   ansible.builtin.file:
     path: "{{ hostvars[inventory_hostname]['openvpn_' + item + '_conf_dest'] }}"
     state: "directory"
@@ -10,7 +10,7 @@
   loop_control:
     label: "{{ hostvars[inventory_hostname]['openvpn_' + item +
       '_conf_dest'] }}"
-- name: openvpn | Create OpenVPN static pool dir
+- name: "openvpn | Create OpenVPN static pool dir"
   ansible.builtin.file:
     path: "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
     state: "directory"
@@ -23,7 +23,7 @@
       '_conf_dest'] }}"
   when:
     - "item == 'server'"
-- name: openvpn | Create OpenVPN status dir
+- name: "openvpn | Create OpenVPN status dir"
   ansible.builtin.file:
     path: "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
     state: "directory"
@@ -36,7 +36,7 @@
       '_conf_dest'] }}"
   when:
     - "item == 'server'"
-- name: openvpn | Create OpenVPN OTP counters dir
+- name: "openvpn | Create OpenVPN OTP counters dir"
   ansible.builtin.file:
     path: "{{ hostvars[inventory_hostname]['openvpn_plugin_otp_dest'] }}"
     state: "directory"

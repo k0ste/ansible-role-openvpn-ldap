@@ -1,19 +1,21 @@
 ---
-- name: "openvpn | Deploy openvpn-auth-ldap plugin configuration"
-  ansible.builtin.template:
-    src: "openvpn_plugin_auth_ldap.j2"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] + '/'
-      ~ item['name'] ~ '/auth_ldap.conf' }}"
+- name: "openvpn | Deploy OpenVPN up script"
+  ansible.builtin.copy:
+    dest: "{{ hostvars[inventory_hostname]['openvpn_' + item['type'] +
+      '_conf_dest'] + '/' + item['name'] + '/' + item['name'] + '_up.sh' }}"
     group: "{{ item['group'] |
       default(hostvars[inventory_hostname]['openvpn_group']) }}"
     owner: "{{ item['user'] |
       default(hostvars[inventory_hostname]['openvpn_user']) }}"
-    mode: "0400"
+    mode: "0755"
+    content: "{{ item['up'] }}"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   when:
-    - "vars['outer_item']['plugin_auth_ldap'] is defined"
-    - "vars['outer_item']['plugin_auth_ldap'] == 'true'"
+    - "item['up'] is defined"
+    - "item['up'] != ''"
+  notify:
+    - "Restart OpenVPN"

@@ -1,4 +1,4 @@
-{{ '## openvpn-' + item.type + '@' ~ item.name ~ '.conf' }}
+{{ '## openvpn-' + item['type'] + '@' ~ item['name'] ~ '.conf' }}
 {{ '# ' + ansible_managed }}
 {{ '# Do not edit manually' }}
 

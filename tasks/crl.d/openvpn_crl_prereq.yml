@@ -1,11 +1,11 @@
 ---
-- name: openvpn | Assert that revoke target is defined
+- name: "openvpn | Assert that revoke target is defined"
   ansible.builtin.assert:
     that:
       - "vars['openvpn_revoke_target'] != ''"
     msg: "Revoke target is not defined"
     quiet: "true"
-- name: openvpn | Set facts about OpenVPN environment
+- name: "openvpn | Set facts about OpenVPN environment"
   ansible.builtin.set_fact:
     openvpn_csr_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
       community.general.json_query('[].global_settings[].csr[] | [0]') }}"

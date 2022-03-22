@@ -1,5 +1,5 @@
 ---
-- name: openvpn | Fetch instance takey from CA (S3)
+- name: "openvpn | Fetch instance takey from CA (S3)"
   amazon.aws.aws_s3:
     aws_access_key: "{{
       vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"
@@ -7,7 +7,7 @@
       vars['openvpn_ca_storage_source']['aws_secret_key'] | default(omit) }}"
     bucket: "{{ vars['openvpn_ca_storage_source']['bucket'] | default(omit) }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ item.tls_auth }}"
+      vars['openvpn_instance_name'] ~ '/' ~ item['tls_auth'] }}"
     ignore_nonexistent_bucket: "true"
     rgw: "{{ vars['openvpn_ca_storage_source']['rgw'] | default(omit) }}"
     s3_url: "{{ vars['openvpn_ca_storage_source']['s3_url'] | default(omit) }}"
@@ -19,16 +19,16 @@
     mode: "get"
     object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_ca_storage_source']['openvpn_path'] ~ '/' ~
-      item.tls_auth }}"
+      item['tls_auth'] }}"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item.type + ': ' ~ item.name }}"
+    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   when:
-    - "item.tls_auth is defined"
-    - "item.tls_auth != ''"
-- name: openvpn | Fetch CRL from CA (S3)
+    - "item['tls_auth'] is defined"
+    - "item['tls_auth'] != ''"
+- name: "openvpn | Fetch CRL from CA (S3)"
   amazon.aws.aws_s3:
     aws_access_key: "{{
       vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"
@@ -36,7 +36,7 @@
       vars['openvpn_ca_storage_source']['aws_secret_key'] | default(omit) }}"
     bucket: "{{ vars['openvpn_ca_storage_source']['bucket'] | default(omit) }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ item.crl_verify }}"
+      vars['openvpn_instance_name'] ~ '/' ~ item['crl_verify'] }}"
     ignore_nonexistent_bucket: "true"
     rgw: "{{ vars['openvpn_ca_storage_source']['rgw'] | default(omit) }}"
     s3_url: "{{ vars['openvpn_ca_storage_source']['s3_url'] | default(omit) }}"
@@ -47,17 +47,17 @@
       vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"
     mode: "get"
     object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
-      vars['openvpn_ca_storage_source']['crl_path'] ~ '/' ~ item.crl_verify }}"
+      vars['openvpn_ca_storage_source']['crl_path'] ~ '/' ~ item['crl_verify'] }}"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item.type + ': ' ~ item.name }}"
+    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   when:
-    - "item.type == 'server'"
-    - "item.crl_verify is defined"
-    - "item.crl_verify != ''"
-- name: openvpn | Fetch DHPARAM from CA (S3)
+    - "item['type'] == 'server'"
+    - "item['crl_verify'] is defined"
+    - "item['crl_verify'] != ''"
+- name: "openvpn | Fetch DHPARAM from CA (S3)"
   amazon.aws.aws_s3:
     aws_access_key: "{{
       vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"
@@ -65,7 +65,7 @@
       vars['openvpn_ca_storage_source']['aws_secret_key'] | default(omit) }}"
     bucket: "{{ vars['openvpn_ca_storage_source']['bucket'] | default(omit) }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ item.dh }}"
+      vars['openvpn_instance_name'] ~ '/' ~ item['dh'] }}"
     ignore_nonexistent_bucket: "true"
     rgw: "{{ vars['openvpn_ca_storage_source']['rgw'] | default(omit) }}"
     s3_url: "{{ vars['openvpn_ca_storage_source']['s3_url'] | default(omit) }}"
@@ -76,13 +76,13 @@
       vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"
     mode: "get"
     object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
-      vars['openvpn_ca_storage_source']['openvpn_path'] ~ '/' ~ item.dh }}"
+      vars['openvpn_ca_storage_source']['openvpn_path'] ~ '/' ~ item['dh'] }}"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item.type + ': ' ~ item.name }}"
+    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   when:
-    - "item.type == 'server'"
-    - "item.dh is defined"
-    - "item.dh != ''"
+    - "item['type'] == 'server'"
+    - "item['dh'] is defined"
+    - "item['dh'] != ''"

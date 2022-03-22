@@ -1,5 +1,5 @@
 ---
-- name: openvpn | Put instance cert to CA (S3)
+- name: "openvpn | Put instance cert to CA (S3)"
   amazon.aws.aws_s3:
     aws_access_key: "{{
       vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"
@@ -22,7 +22,7 @@
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
       '.crt' }}"
-- name: openvpn | Put instance key to CA (S3)
+- name: "openvpn | Put instance key to CA (S3)"
   amazon.aws.aws_s3:
     aws_access_key: "{{
       vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"

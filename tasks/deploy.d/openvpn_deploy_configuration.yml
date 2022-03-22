@@ -1,29 +1,29 @@
 ---
-- name: openvpn | Deploy OpenVPN configuration
+- name: "openvpn | Deploy OpenVPN configuration"
   ansible.builtin.template:
     src: "openvpn_conf.j2"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' + item.type +
-      '_conf_dest'] + '/' + item.name + '.conf' }}"
-    group: "{{ item.group |
+    dest: "{{ hostvars[inventory_hostname]['openvpn_' + item['type'] +
+      '_conf_dest'] + '/' + item['name'] + '.conf' }}"
+    group: "{{ item['group'] |
       default(hostvars[inventory_hostname]['openvpn_group']) }}"
-    owner: "{{ item.user |
+    owner: "{{ item['user'] |
       default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0644"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item.type + ': ' ~ item.name }}"
+    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   notify:
     - "Restart OpenVPN"
-- name: openvpn | Deploy clients configuration
+- name: "openvpn | Deploy clients configuration"
   ansible.builtin.template:
     src: "client_config_dir.j2"
     dest: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] + '/' ~
-      vars['outer_item'].name ~ '/' ~ item.cn }}"
-    group: "{{ item.group |
+      vars['outer_item'].name ~ '/' ~ item['cn'] }}"
+    group: "{{ item['group'] |
       default(hostvars[inventory_hostname]['openvpn_group']) }}"
-    owner: "{{ item.user |
+    owner: "{{ item['user'] |
       default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0400"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
@@ -31,8 +31,8 @@
     vars['outer_item'].name ~ \"'].ccd_settings[]\") | flatten(levels=1) }}"
   loop_control:
     label: "{{ 'openvpn-' ~ vars['outer_item'].type ~ ': ' ~
-      vars['outer_item'].name ~ ': ' ~ item.cn }}"
+      vars['outer_item']['name'] ~ ': ' ~ item['cn'] }}"
   when:
-    - "vars['outer_item'].type == 'server'"
-    - "vars['outer_item'].ccd is defined"
-    - "vars['outer_item'].ccd == 'true'"
+    - "vars['outer_item']['type'] == 'server'"
+    - "vars['outer_item']['ccd'] is defined"
+    - "vars['outer_item']['ccd'] == 'true'"

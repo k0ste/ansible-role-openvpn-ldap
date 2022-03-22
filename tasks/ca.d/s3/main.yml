@@ -1,5 +1,5 @@
 ---
-- name: openvpn | Check availability cert on CA (S3)
+- name: "openvpn | Check availability cert on CA (S3)"
   amazon.aws.aws_s3:
     aws_access_key: "{{
       vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"

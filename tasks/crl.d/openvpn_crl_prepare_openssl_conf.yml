@@ -1,5 +1,5 @@
 ---
-- name: openvpn | Deploy temp openssl.conf
+- name: "openvpn | Deploy temp openssl.conf"
   ansible.builtin.template:
     src: "openssl_conf.j2"
     dest: "/tmp/openssl.conf"

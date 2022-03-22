@@ -1,5 +1,5 @@
 ---
-- name: openvpn | Deploy OpenVPN user configuration
+- name: "openvpn | Deploy OpenVPN user configuration"
   ansible.builtin.template:
     src: "openvpn_conf.j2"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
@@ -10,8 +10,8 @@
     community.general.json_query('[].openvpn_settings[]') |
     flatten(levels=1) }}"
   loop_control:
-    label: "{{ item.name }}"
-- name: openvpn | Deploy OpenVPN user configuration (OVPN Profile)
+    label: "{{ item['name'] }}"
+- name: "openvpn | Deploy OpenVPN user configuration (OVPN Profile)"
   ansible.builtin.template:
     src: "openvpn_conf.j2"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
@@ -22,6 +22,6 @@
     community.general.json_query('[].openvpn_settings[]') |
     flatten(levels=1) }}"
   loop_control:
-    label: "{{ item.name }}"
+    label: "{{ item['name'] }}"
   vars:
     openvpn_inline_profile: "true"

@@ -1,6 +1,6 @@
 {{ '## openvpn-' + item['type'] + '@' ~ item['name'] -}}
 {% if vars['openvpn_inline_profile'] is defined and
-vars['openvpn_inline_profile'] == 'true' %}{{ '.ovpn' }}
+  vars['openvpn_inline_profile'] == 'true' %}{{ '.ovpn' }}
 {% else %}{{ '.conf' }}
 {% endif %}
 {{ '# ' + ansible_managed }}

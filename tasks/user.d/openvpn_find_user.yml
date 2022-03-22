@@ -1,5 +1,5 @@
 ---
-- name: openvpn | Get user mail address from LDAP
+- name: "openvpn | Get user mail address from LDAP"
   community.general.ldap_search:
     attrs:
       - "{{ vars['openvpn_ldap_settings']['mail_field'] }}"
@@ -14,24 +14,24 @@
     validate_certs: "{{ vars['openvpn_ldap_settings']['tls_reqcert'] |
       default(omit) }}"
   register: "openvpn_ldap_user_result"
-- name: openvpn | Check user is present on LDAP
+- name: "openvpn | Check user is present on LDAP"
   ansible.builtin.assert:
     that:
       - "vars['openvpn_ldap_user_result']['results'] |
-        ansible.builtin.json_query('[].dn[] | [0]') is defined"
+      ansible.builtin.json_query('[].dn[] | [0]') is defined"
     msg: "{{ 'User ' ~ vars['openvpn_instance_name'] ~ ' not found' }}"
     quiet: "true"
-- name: Debug
+- name: "openvpn | Set fact about user e-mail"
   ansible.builtin.set_fact:
     openvpn_ldap_user_mail: "{{ vars['openvpn_ldap_user_result']['results'] |
       ansible.builtin.json_query(\"[].\" +
       vars['openvpn_ldap_settings']['mail_field'] + \" | [0]\") }}"
-- name: openvpn | Check user mail is valid e-mail address
+- name: "openvpn | Check user mail is valid e-mail address"
   ansible.builtin.assert:
     that:
       - "vars['openvpn_ldap_user_mail'] is match(vars['regex'])"
-    msg: "{{ 'User ' ~ vars['openvpn_instance_name'] ~ ' mail address not found'
-      }}"
+    msg: "{{ 'User ' ~ vars['openvpn_instance_name'] ~
+      ' mail address not found' }}"
     quiet: "true"
   vars:
     regex:

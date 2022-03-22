@@ -208,6 +208,8 @@ openvpn:
 # applications, it is possible to telnet to the port, using a telnet client in
 # "raw" mode. Once connected, type "help" for a list of commands.
     management: '127.0.0.1 7505'
+# Set the TOS field of the tunnel packet to what the payload's TOS is
+    pass_tos: 'true'
     persist_key: 'true'
     persist_tun: 'true'
 # A helper directive designed to simplify the expression of 'ping' and
@@ -635,6 +637,19 @@ openvpn:
 # This option solves the problem by persisting keys across SIGUSR1 resets, so
 # they don't need to be re-read.
     persist_key: 'true'
+# This directive offers policy-level control over OpenVPN's usage of external
+# programs and scripts. Lower level values are more restrictive, higher values
+# are more permissive
+# '0' - strictly no calling of external programs
+# '1' - only call built-in executables such as ifconfig, ip, route, or netsh
+# (default)
+# '2' - allow calling of built-in executables and user-defined scripts
+# '3' - allow passwords to be passed to scripts via environmental variables
+# (potentially unsafe)
+    script_security: '2'
+# Run command cmd after successful TUN/TAP device open (pre --user UID change)
+# The content of this option will be placed as script in /etc/openvpn dir
+    up: ''
 # Enable static challenge/response protocol using challenge text.
     static_challenge: 'Enter Google Authenticator Token'
 ```

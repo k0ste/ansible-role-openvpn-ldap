@@ -7,7 +7,7 @@
   when:
     - "vars['openvpn_revoke_target'] is not defined"
     - "vars['openvpn_ca_storage_type'] == 'file'"
-    - "outer_item.name != None"
+    - "outer_item['name'] != None"
 - ansible.builtin.include_tasks:
     file: "ca.d/s3/main.yml"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
@@ -16,4 +16,4 @@
   when:
     - "vars['openvpn_revoke_target'] is not defined"
     - "vars['openvpn_ca_storage_type'] == 's3'"
-    - "outer_item.name != None"
+    - "outer_item['name'] != None"

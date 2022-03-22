@@ -1,12 +1,12 @@
 ---
-- name: openvpn | Assert that user is defined
+- name: "openvpn | Assert that user is defined"
   ansible.builtin.assert:
     that:
       - "vars['openvpn_target_user'] is defined"
       - "vars['openvpn_target_user'] != ''"
     msg: "User is not defined"
     quiet: "true"
-- name: openvpn | Set facts about end-user instance
+- name: "openvpn | Set facts about end-user instance"
   ansible.builtin.set_fact:
     openvpn_instance_name: "{{ vars['openvpn_target_user'] }}"
 - ansible.builtin.import_tasks:

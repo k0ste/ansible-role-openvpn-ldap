@@ -3,7 +3,7 @@
     file: "crl.d/openvpn_crl_prereq.yml"
 - ansible.builtin.import_tasks:
     file: "crl.d/openvpn_crl_check_s3_object.yml"
-- name: openvpn | Assert that
+- name: "openvpn | Assert that object exists"
   ansible.builtin.debug:
     msg: "Target certificate does not exits"
   when:

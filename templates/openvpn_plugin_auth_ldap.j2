@@ -8,66 +8,66 @@
 {% for l in pal.options %}
 {{ '<LDAP>' }}
 {% if l.uri is defined and l.uri != '' %}
-{{ '  ' + 'URL ' + l.uri }}
+{{ '  URL ' + l.uri }}
 {% endif %}
 {% if l.binddn is defined and l.binddn != '' %}
-{{ '  ' + 'BindDN \"' + l.binddn + '\"' }}
+{{ '  BindDN \"' + l.binddn + '\"' }}
 {% endif %}
 {% if l.password is defined and l.password != '' %}
-{{ '  ' ~ 'Password \"' ~ l.password ~ '\"' }}
+{{ '  Password \"' ~ l.password ~ '\"' }}
 {% endif %}
 {% if l.timeout is defined and l.timeout != '' %}
-{{ '  ' ~ 'Timeout ' ~ l.timeout }}
+{{ '  Timeout ' ~ l.timeout }}
 {% endif %}
 {% if l.follow_referals is defined and l.follow_referals in ['yes', 'no'] %}
-{{ '  ' ~ 'FollowReferrals ' ~ l.follow_referals }}
+{{ '  FollowReferrals ' + l.follow_referals }}
 {% endif %}
 {% if l.tls_enable is defined and l.tls_enable in ['yes', 'no'] %}
-{{ '  ' + 'TLSEnable ' + l.tls_enable }}
+{{ '  TLSEnable ' + l.tls_enable }}
 {% endif %}
 {% if l.tls_ca_cert_file is defined and l.tls_ca_cert_file != '' %}
-{{ '  ' + 'TLSCACertFile ' + l.tls_ca_cert_file }}
+{{ '  TLSCACertFile ' + l.tls_ca_cert_file }}
 {% endif %}
 {% if l.tls_ca_cert_dir is defined and l.tls_ca_cert_dir != '' %}
-{{ '  ' + 'TLSCACertDir ' + l.tls_ca_cert_dir }}
+{{ '  TLSCACertDir ' + l.tls_ca_cert_dir }}
 {% endif %}
 {% if l.tls_cert_file is defined and l.tls_cert_file != '' %}
-{{ '  ' + 'TLSCertFile ' + l.tls_cert_file }}
+{{ '  TLSCertFile ' + l.tls_cert_file }}
 {% endif %}
 {% if l.tls_key_file is defined and l.tls_key_file != '' %}
-{{ '  ' + 'TLSKeyFile ' + l.tls_key_file }}
+{{ '  TLSKeyFile ' + l.tls_key_file }}
 {% endif %}
 {% if l.tls_ciphers is defined and l.tls_ciphers != '' %}
-{{ '  ' + 'TLSCipherSuite ' + l.tls_ciphers }}
+{{ '  TLSCipherSuite ' + l.tls_ciphers }}
 {% endif %}
 {% if l.tls_require_cert is defined and l.tls_require_cert in ['yes', 'no'] %}
-{{ '  ' + 'TLSRequireCert ' + l.tls_require_cert }}
+{{ '  TLSRequireCert ' + l.tls_require_cert }}
 {% endif %}
 {{ '</LDAP>' }}
 {{ '<Authorization>' }}
 {% if l.base is defined and l.base != '' %}
-{{ '  ' + 'BaseDN \"' + l.base + '\"' }}
+{{ '  BaseDN \"' + l.base + '\"' }}
 {% endif %}
 {% if l.filter is defined and l.filter != '' %}
 {{ '  ' ~ 'SearchFilter \"' ~ l.filter ~ '\"' }}
 {% endif %}
 {% if l.password_is_cr is defined and l.password_is_cr in ['true', 'false'] %}
-{{ '  ' + 'PasswordIsCR ' + l.password_is_cr }}
+{{ '  PasswordIsCR ' + l.password_is_cr }}
 {% endif %}
 {% if l.require_group is defined and l.require_group in ['true', 'false'] %}
-{{ '  ' + 'RequireGroup ' + l.require_group }}
+{{ '  RequireGroup ' + l.require_group }}
 {{ '    <Group>' }}
 {% if l.rfc2307 is defined and l.rfc2307 in ['true', 'false'] %}
-{{ '      ' ~ 'RFC2307bis ' ~ l.rfc2307 }}
+{{ '      RFC2307bis ' + l.rfc2307 }}
 {% endif %}
 {% if l.group_base is defined and l.group_base != '' %}
-{{ '      ' + 'BaseDN \"' + l.group_base ~ '\"' }}
+{{ '      BaseDN \"' + l.group_base ~ '\"' }}
 {% endif %}
 {% if l.group_filter is defined and l.group_filter != '' %}
-{{ '      ' ~ 'SearchFilter \"' ~ l.group_filter ~ '\"' }}
+{{ '      SearchFilter \"' ~ l.group_filter ~ '\"' }}
 {% endif %}
 {% if l.group_attr is defined and l.group_attr != '' %}
-{{ '      ' ~ 'MemberAttribute \"' ~ l.group_attr ~ '\"' }}
+{{ '      MemberAttribute \"' ~ l.group_attr ~ '\"' }}
 {% endif %}
 {{ '    </Group>' }}
 {% endif %}
