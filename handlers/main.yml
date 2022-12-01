@@ -1,7 +1,8 @@
 ---
 - name: Delete fetched files
   ansible.builtin.file:
-    path: "{{ vars['openvpn_local_fetch_dir'] }}"
+    path: "{{ vars['openvpn_local_fetch_dir'] + '/' +
+      vars['openvpn_instance_name'] }}"
     state: "absent"
   become: "false"
   delegate_to: "localhost"
