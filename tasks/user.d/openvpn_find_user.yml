@@ -18,7 +18,7 @@
   ansible.builtin.assert:
     that:
       - "vars['openvpn_ldap_user_result']['results'] |
-      ansible.builtin.json_query('[].dn[] | [0]') is defined"
+        ansible.builtin.json_query('[].dn[] | [0]') is defined"
     msg: "{{ 'User ' ~ vars['openvpn_instance_name'] ~ ' not found' }}"
     quiet: "true"
 - name: "openvpn | Set fact about user e-mail"

@@ -1,10 +1,14 @@
 ---
 - name: "openvpn | Generate private key for CA (S3)"
   community.crypto.openssl_privatekey:
-    type: "RSA"
+    type: "{{ vars['openvpn_ca_storage_source']['crypto_type'] |
+      default(omit) }}"
+    curve: "{{ vars['openvpn_ca_storage_source']['crypto_curve'] |
+      default(omit) }}"
     path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
       '.key' }}"
+  diff: "false"
 - name: "openvpn | Generate certificate signing request for CA (S3)"
   community.crypto.openssl_csr:
     common_name: "{{ vars['openvpn_instance_name'] }}"
@@ -24,6 +28,7 @@
     privatekey_path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
       '.key' }}"
+  diff: "false"
 - name: "openvpn | Generate certificate for CA (S3)"
   community.crypto.x509_certificate:
     csr_path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
@@ -42,3 +47,4 @@
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
       '.key' }}"
     provider: "ownca"
+  diff: "false"

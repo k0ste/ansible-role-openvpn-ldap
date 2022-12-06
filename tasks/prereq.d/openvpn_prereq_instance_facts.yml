@@ -14,8 +14,8 @@
   ansible.builtin.set_fact:
     openvpn_instance_name: "{{ hostvars[inventory_hostname]['facter_fqdn'] }}"
   when:
-    - "
-    hostvars[inventory_hostname]['facter_facterversion'].split('.')[0] <= '2'"
+    - "hostvars[inventory_hostname]['facter_facterversion'].split('.')[0] <=
+      '2'"
 - name: "openvpn | Set facts about client/server instance [Facter 3]"
   ansible.builtin.set_fact:
     openvpn_instance_name:
@@ -23,7 +23,7 @@
   when:
     - "hostvars[inventory_hostname]['facter_facterversion'].split('.')[0] > '2'"
 - name: "openvpn | Check users exists on target, otherwise try to install
-  packages"
+    packages"
   block:
     - name: "openvpn | Check OpenVPN user exists"
       ansible.builtin.getent:
@@ -31,6 +31,6 @@
         database: "passwd"
   rescue:
     - name: "openvpn | Tries to install packages because system user doesn't
-      exists"
+        exists"
       ansible.builtin.import_tasks:
         file: "packages.d/main.yml"

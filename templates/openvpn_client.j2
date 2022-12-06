@@ -1,29 +1,29 @@
 {{ 'client' }}
-{{ 'remote ' ~ item.remote }}
-{% if item.resolv_retry is defined and item.resolv_retry != '' %}
-{{ 'resolv-retry ' ~ item.resolv_retry }}
+{{ 'remote ' ~ item['remote'] }}
+{% if item['resolv_retry'] is defined and item['resolv_retry'] != '' %}
+{{ 'resolv-retry ' ~ item['resolv_retry'] }}
 {% endif %}
-{% if item.remote_random and item.remote_random == 'true' %}
+{% if item['remote_random'] is defined and item['remote_random'] == 'true' %}
 {{ 'remote-random' }}
 {% endif %}
-{% if item.auth_nocache is defined and item.auth_nocache == 'true' %}
+{% if item['auth_nocache'] is defined and item['auth_nocache'] == 'true' %}
 {{ 'auth-nocache' }}
 {% endif %}
-{% if item.static_challenge is defined and item.static_challenge != '' %}
-{{ 'static-challenge \"' ~ item.static_challenge ~ '\" 1' }}
+{% if item['static_challenge'] is defined and item['static_challenge'] != '' %}
+{{ 'static-challenge \"' ~ item['static_challenge'] ~ '\" 1' }}
 {% endif %}
-{% if item.tls_client is defined and item.tls_client == 'true' %}
+{% if item['tls_client'] is defined and item['tls_client'] == 'true' %}
 {{ 'tls-client' }}
-{% if item.tls_version_min is defined and item.tls_version_min != '' %}
-{{ 'tls-version-min ' ~ item.tls_version_min }}
+{% if item['tls_version_min'] is defined and item['tls_version_min'] != '' %}
+{{ 'tls-version-min ' ~ item['tls_version_min'] }}
 {% endif %}
-{% if item.cipher is defined and item.cipher != '' %}
-{{ 'cipher ' ~ item.cipher }}
+{% if item['cipher'] is defined and item['cipher'] != '' %}
+{{ 'cipher ' ~ item['cipher'] }}
 {% endif %}
-{% if item.keysize is defined and item.keysize != '' %}
-{{ 'keysize ' ~ item.keysize }}
+{% if item['keysize'] is defined and item['keysize'] != '' %}
+{{ 'keysize ' ~ item['keysize'] }}
 {% endif %}
-{% if item.auth is defined and item.auth != '' %}
-{{ 'auth ' ~ item.auth }}
+{% if item['auth'] is defined and item['auth'] != '' %}
+{{ 'auth ' ~ item['auth'] }}
 {% endif %}
 {% endif %}
