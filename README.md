@@ -82,7 +82,7 @@ openvpn:
 # Enable fakeS3.
       rgw: "{{ aws_s3_rgw }}"
 # S3 URL endpoint for usage with fakeS3. Otherwise assumes AWS.
-      s3_url: "{{ aws_s3_url }}"
+      endpoint_url: "{{ endpoint_url }}"
 # When set to 'no', SSL certificates will not be validated.
       validate_certs: "{{ omit }}"
 # S3 region.
@@ -120,7 +120,7 @@ openvpn:
     restart_mode: 'always'
 # How much burst in interval, seconds.
     start_limit_interval: '30'
-# How much times to restart in interval.    
+# How much times to restart in interval.
     start_limit_burst: '3'
 # Configures the time to sleep before restarting a service, seconds
     restart_timeout: '10'

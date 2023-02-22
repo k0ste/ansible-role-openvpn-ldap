@@ -8,7 +8,8 @@
     bucket: "{{ vars['openvpn_ca_storage_source']['bucket'] | default(omit) }}"
     ignore_nonexistent_bucket: "true"
     rgw: "{{ vars['openvpn_ca_storage_source']['rgw'] | default(omit) }}"
-    s3_url: "{{ vars['openvpn_ca_storage_source']['s3_url'] | default(omit) }}"
+    endpoint_url: "{{ vars['openvpn_ca_storage_source']['endpoint_url'] |
+      default(omit) }}"
     validate_certs: "{{ vars['openvpn_ca_storage_source']['validate_certs'] |
       default(omit) }}"
     region: "{{ vars['openvpn_ca_storage_source']['region'] | default(omit) }}"
@@ -26,7 +27,8 @@
     bucket: "{{ vars['openvpn_ca_storage_source']['bucket'] | default(omit) }}"
     ignore_nonexistent_bucket: "true"
     rgw: "{{ vars['openvpn_ca_storage_source']['rgw'] | default(omit) }}"
-    s3_url: "{{ vars['openvpn_ca_storage_source']['s3_url'] | default(omit) }}"
+    endpoint_url: "{{ vars['openvpn_ca_storage_source']['endpoint_url'] |
+      default(omit) }}"
     validate_certs: "{{ vars['openvpn_ca_storage_source']['validate_certs'] |
       default(omit) }}"
     region: "{{ vars['openvpn_ca_storage_source']['region'] | default(omit) }}"
