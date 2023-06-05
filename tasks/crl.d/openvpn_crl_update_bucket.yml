@@ -19,10 +19,10 @@
       default(omit) }}"
     mode: "put"
     object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
-      vars['openvpn_ca_storage_source']['crl_path'] ~  '/' ~ 'index' }}"
-    overwrite: "true"
+      vars['openvpn_ca_storage_source']['crl_path'] + '/index' }}"
+    overwrite: "different"
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ 'index' }}"
+      vars['openvpn_instance_name'] ~ '/index' }}"
 - name: "openvpn | Put crl number to CA (S3)"
   amazon.aws.aws_s3:
     aws_access_key: "{{ vars['openvpn_ca_storage_source']['aws_access_key'] |
@@ -43,10 +43,10 @@
       default(omit) }}"
     mode: "put"
     object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
-      vars['openvpn_ca_storage_source']['crl_path'] ~  '/' ~ 'crlnumber' }}"
-    overwrite: "true"
-    src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ 'crlnumber' }}"
+      vars['openvpn_ca_storage_source']['crl_path'] + '/crlnumber' }}"
+    overwrite: "different"
+    src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
+      vars['openvpn_instance_name'] ~ '/crlnumber' }}"
 - name: "openvpn | Put crl cert to CA (S3)"
   amazon.aws.aws_s3:
     aws_access_key: "{{ vars['openvpn_ca_storage_source']['aws_access_key'] |
@@ -67,7 +67,7 @@
       default(omit) }}"
     mode: "put"
     object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
-      vars['openvpn_ca_storage_source']['crl_path'] ~  '/' ~ 'crl.pem' }}"
-    overwrite: "true"
+      vars['openvpn_ca_storage_source']['crl_path'] + '/crl.pem' }}"
+    overwrite: "different"
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ 'crl.pem' }}"
+      vars['openvpn_instance_name'] ~ '/crl.pem' }}"
