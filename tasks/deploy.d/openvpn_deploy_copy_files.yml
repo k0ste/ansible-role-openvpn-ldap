@@ -16,7 +16,7 @@
     vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
-  diff: "false"
+  diff: false
 - name: "openvpn | Copy instance key"
   ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
@@ -34,7 +34,7 @@
     vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
-  diff: "false"
+  diff: false
 - name: "openvpn | Copy root certificate to instance"
   ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
@@ -52,7 +52,7 @@
     vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
-  diff: "false"
+  diff: false
 - name: "openvpn | Copy takey to instance"
   ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
@@ -69,7 +69,7 @@
     vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
-  diff: "false"
+  diff: false
   when:
     - "item['tls_auth'] is defined"
 - name: "openvpn | Copy DH to instance"
@@ -88,7 +88,7 @@
     vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
-  diff: "false"
+  diff: false
   when:
     - "vars['outer_item']['type'] == 'server'"
     - "item['dh'] is defined"
@@ -109,7 +109,7 @@
     vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
-  diff: "false"
+  diff: false
   when:
     - "vars['outer_item']['type'] == 'server'"
     - "item['crl_verify'] is defined"

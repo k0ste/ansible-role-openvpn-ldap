@@ -6,8 +6,8 @@
   vars['openvpn_ca_storage_source']['root_crt']) }}
 {{ '</ca>' }}
 {% else %}
-{{ 'ca ' ~ hostvars[inventory_hostname]['openvpn_' + item.type +
-   '_conf_dest'] + '/' ~ item.name ~ '/tls/' ~
+{{ 'ca ' ~ hostvars[inventory_hostname]['openvpn_' + item['type'] +
+   '_conf_dest'] + '/' ~ item['name'] ~ '/tls/' ~
    vars['openvpn_ca_storage_source']['root_crt'] }}
 {% endif %}
 {% if vars['openvpn_inline_profile'] is defined and
@@ -18,9 +18,9 @@
   '.crt') }}
 {{ '</cert>' }}
 {% else %}
-{{ 'cert ' ~ hostvars[inventory_hostname]['openvpn_' + item.type +
-   '_conf_dest'] + '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~
-   '.crt' }}
+{{ 'cert ' ~ hostvars[inventory_hostname]['openvpn_' + item['type'] +
+   '_conf_dest'] + '/' ~ item['name'] ~ '/tls/' ~
+   vars['openvpn_instance_name'] ~ '.crt' }}
 {% endif %}
 {% if vars['openvpn_inline_profile'] is defined and
   vars['openvpn_inline_profile'] == 'true' %}
@@ -30,93 +30,100 @@
   '.key') }}
 {{ '</key>' }}
 {% else %}
-{{ 'key ' ~ hostvars[inventory_hostname]['openvpn_' + item.type +
-   '_conf_dest'] + '/' ~ item.name ~ '/tls/' ~ vars['openvpn_instance_name'] ~
+{{ 'key ' ~ hostvars[inventory_hostname]['openvpn_' + item['type'] +
+   '_conf_dest'] + '/' ~ item['name'] ~ '/tls/' ~ vars['openvpn_instance_name'] ~
    '.key' }}
 {% endif %}
-{% if item.up is defined and item.up != '' %}
-{{ 'up ' ~ hostvars[inventory_hostname]['openvpn_' + item.type + '_conf_dest'] +
-  '/' ~ item.name ~ '/' ~ item.name ~ '_up.sh' }}
+{% if item['up'] is defined and item['up'] != '' %}
+{{ 'up ' ~ hostvars[inventory_hostname]['openvpn_' + item['type'] +
+  '_conf_dest'] + '/' ~ item['name'] ~ '/' ~ item['name'] ~ '_up.sh' }}
 {% endif %}
-{% if item.proto is defined and item.proto in ['tcp', 'udp'] %}
-{{ 'proto ' + item.proto }}
+{% if item['proto'] is defined and item['proto'] in ['tcp', 'udp'] %}
+{{ 'proto ' + item['proto'] }}
 {% endif %}
-{% if item.dev is defined and item.dev != '' %}
-{{ 'dev ' ~ item.dev }}
+{% if item['dev'] is defined and item['dev'] != '' %}
+{{ 'dev ' ~ item['dev'] }}
 {% endif %}
-{% if item.tls_auth is defined and item.tls_auth != '' %}
-{% if item.type == 'client' %}
+{% if item['tls_auth'] is defined and item['tls_auth'] != '' %}
+{% if item['type'] == 'client' %}
 {% if vars['openvpn_inline_profile'] is defined and
   vars['openvpn_inline_profile'] == 'true' %}
 {{ 'key-direction 1' }}
 {{ '<tls-auth>' }}
 {{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
-   vars['openvpn_instance_name'] ~ '/' ~ item.tls_auth) }}
+  vars['openvpn_instance_name'] ~ '/' ~ item['tls_auth']) }}
 {{ '</tls-auth>' }}
 {% else %}
 {{ 'tls-auth ' +  hostvars[inventory_hostname]['openvpn_client_conf_dest'] +
-    '/' ~ item.name ~ '/tls/' ~ item.tls_auth ~ ' 1' }}
+  '/' ~ item['name'] ~ '/tls/' ~ item['tls_auth'] ~ ' 1' }}
 {% endif %}
-{% elif item.type == 'server' %}
+{% elif item['type'] == 'server' %}
 {% if vars['openvpn_inline_profile'] is defined and
   vars['openvpn_inline_profile'] == 'true' %}
 {{ 'key-direction 0' }}
 {{ '<tls-auth>' }}
 {{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
-   vars['openvpn_instance_name'] ~ '/' ~ item.tls_auth) }}
+   vars['openvpn_instance_name'] ~ '/' ~ item['tls_auth']) }}
 {{ '</tls-auth>' }}
 {% else %}
 {{ 'tls-auth' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~
-    '/' ~ item.name ~ '/tls/' ~ item.tls_auth ~ ' 0' }}
+    '/' ~ item['name'] ~ '/tls/' ~ item['tls_auth'] ~ ' 0' }}
 {% endif %}
 {% endif %}
 {% endif %}
-{% if item.user is defined and item.user != '' %}
-{{ 'user ' ~ item.user }}
+{% if item['user'] is defined and item['user'] != '' %}
+{{ 'user ' ~ item['user'] }}
 {% endif %}
-{% if item.group is defined and item.group != '' %}
-{{ 'group ' ~ item.group }}
+{% if item['group'] is defined and item['group'] != '' %}
+{{ 'group ' ~ item['group'] }}
 {% endif %}
-{% if item.persist_key is defined and item.persist_key == 'true' %}
+{% if item['persist_key'] is defined and item['persist_key'] == 'true' %}
 {{ 'persist-key' }}
 {% endif %}
-{% if item.persist_tun is defined and item.persist_tun == 'true' %}
+{% if item['persist_tun'] is defined and item['persist_tun'] == 'true' %}
 {{ 'persist-tun' }}
 {% endif %}
-{% if item.explicit_exit_notify is defined and
-      item.explicit_exit_notify != '' %}
-{{ 'explicit-exit-notify ' ~ item.explicit_exit_notify }}
+{% if item['sndbuf'] is defined and item['sndbuf'] != '' %}
+{{ 'sndbuf ' ~ item['sndbuf'] }}
 {% endif %}
-{% if item.nobind is defined and item.nobind == 'true' %}
+{% if item['rcvbuf'] is defined and item['rcvbuf'] != '' %}
+{{ 'rcvbuf ' ~ item['rcvbuf'] }}
+{% endif %}
+{% if item['explicit_exit_notify'] is defined and
+  item['explicit_exit_notify'] != '' %}
+{{ 'explicit-exit-notify ' ~ item['explicit_exit_notify'] }}
+{% endif %}
+{% if item['nobind'] is defined and item['nobind'] == 'true' %}
 {{ 'nobind' }}
 {% endif %}
-{% if item.pass_tos is defined and item.pass_tos == 'true' %}
+{% if item['pass_tos'] is defined and item['pass_tos'] == 'true' %}
 {{ 'passtos' }}
 {% endif %}
-{% if item.reneg_sec is defined and item.reneg_sec != '' %}
-{{ 'reneg-sec ' ~ item.reneg_sec }}
+{% if item['reneg_sec'] is defined and item['reneg_sec'] != '' %}
+{{ 'reneg-sec ' ~ item['reneg_sec'] }}
 {% endif %}
-{% if item.compress is defined and item.compress in ['lzo', 'lz4'] %}
-{{ 'compress ' + item.compress }}
+{% if item['compress'] is defined and item['compress'] in ['lzo', 'lz4'] %}
+{{ 'compress ' + item['compress'] }}
 {% endif %}
-{% if item.verbosity is defined and item.verbosity != '' %}
-{{ 'verb ' ~ item.verbosity }}
+{% if item['verbosity'] is defined and item['verbosity'] != '' %}
+{{ 'verb ' ~ item['verbosity'] }}
 {% endif %}
-{% if item.script_security is defined and item.script_security >= '0' <= '3' %}
-{{ 'script-security ' ~ item.script_security }}
+{% if item['script_security'] is defined and
+  item['script_security'] >= '0' <= '3' %}
+{{ 'script-security ' ~ item['script_security'] }}
 {% endif %}
-{% if item.mute is defined and item.mute != '' %}
-{{ 'mute ' ~ item.mute }}
+{% if item['mute'] is defined and item['mute'] != '' %}
+{{ 'mute ' ~ item['mute'] }}
 {% endif %}
-{% if item.log is defined and item.log != '' %}
-{% if item.log_append is defined and item.log_append == 'true' %}
+{% if item['log'] is defined and item['log'] != '' %}
+{% if item['log_append'] is defined and item['log_append'] == 'true' %}
 {{ 'log-append' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~
-    '/' ~ item.log }}
+    '/' ~ item['log'] }}
 {% else %}
 {{ 'log' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~
-    item.log }}
+  item['log'] }}
 {% endif %}
 {% endif %}
-{% if item.keepalive is defined and item.keepalive != '' %}
-{{ 'keepalive' ~ ' ' ~ item.keepalive }}
+{% if item['keepalive'] is defined and item['keepalive'] != '' %}
+{{ 'keepalive' ~ ' ' ~ item['keepalive'] }}
 {% endif %}

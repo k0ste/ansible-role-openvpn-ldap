@@ -1,6 +1,6 @@
 ---
 - name: "openvpn | Put crl index to CA (S3)"
-  amazon.aws.aws_s3:
+  amazon.aws.s3_object:
     aws_access_key: "{{ vars['openvpn_ca_storage_source']['aws_access_key'] |
       default(omit) }}"
     aws_secret_key: "{{ vars['openvpn_ca_storage_source']['aws_secret_key'] |
@@ -24,7 +24,7 @@
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/index' }}"
 - name: "openvpn | Put crl number to CA (S3)"
-  amazon.aws.aws_s3:
+  amazon.aws.s3_object:
     aws_access_key: "{{ vars['openvpn_ca_storage_source']['aws_access_key'] |
       default(omit) }}"
     aws_secret_key: "{{ vars['openvpn_ca_storage_source']['aws_secret_key'] |
@@ -48,7 +48,7 @@
     src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
       vars['openvpn_instance_name'] ~ '/crlnumber' }}"
 - name: "openvpn | Put crl cert to CA (S3)"
-  amazon.aws.aws_s3:
+  amazon.aws.s3_object:
     aws_access_key: "{{ vars['openvpn_ca_storage_source']['aws_access_key'] |
       default(omit) }}"
     aws_secret_key: "{{ vars['openvpn_ca_storage_source']['aws_secret_key'] |

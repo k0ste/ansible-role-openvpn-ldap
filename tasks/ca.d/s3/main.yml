@@ -1,6 +1,6 @@
 ---
 - name: "openvpn | Check availability cert on CA (S3)"
-  amazon.aws.aws_s3:
+  amazon.aws.s3_object:
     aws_access_key: "{{
       vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"
     aws_secret_key: "{{
@@ -18,34 +18,34 @@
     profile: "{{
       vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"
     mode: "geturl"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.crt' }}"
   register: "openvpn_master_result"
   # Ignore because aws_s3 have not any "check object exists in bucket" mode
-  ignore_errors: "true"
-  become: "false"
+  ignore_errors: true
+  become: false
   delegate_to: "localhost"
 - ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_get_root.yml"
-  become: "false"
+  become: false
   delegate_to: "localhost"
 - ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_generate_certs.yml"
   when:
-    - "vars['openvpn_master_result']['failed'] == True"
-  become: "false"
+    - "vars['openvpn_master_result']['failed']"
+  become: false
   delegate_to: "localhost"
 - ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_put_ca.yml"
   when:
-    - "vars['openvpn_master_result']['failed'] == True"
-  become: "false"
+    - "vars['openvpn_master_result']['failed']"
+  become: false
   delegate_to: "localhost"
 - ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_fetch_certs.yml"
-  become: "false"
+  become: false
   delegate_to: "localhost"
 - ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_fetch_openvpn_files.yml"
-  become: "false"
+  become: false
   delegate_to: "localhost"

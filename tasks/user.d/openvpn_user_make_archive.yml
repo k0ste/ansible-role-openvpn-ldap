@@ -7,5 +7,6 @@
       vars['openvpn_instance_name'] ~ '.zip' }}"
     format: "zip"
     exclude_path: "*.ovpn"
+    mode: "0644"
   notify:
     - "Delete user archive"

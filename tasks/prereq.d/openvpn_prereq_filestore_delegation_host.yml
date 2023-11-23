@@ -2,7 +2,7 @@
 - name: "openvpn | Gather facts about CA master"
   ansible.builtin.setup:
   delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
-  delegate_facts: "false"
+  delegate_facts: false
   remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
 - name: "openvpn | Check CA master facts"
   ansible.builtin.assert:
@@ -24,4 +24,4 @@
       hostvars[inventory_hostname]['openvpn_packages_master'] }}"
   delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
-- meta: "clear_facts"
+- ansible.builtin.meta: "clear_facts"

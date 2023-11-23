@@ -6,7 +6,7 @@
   when:
     - "vars['openvpn_ca_storage_type'] is defined"
     - "vars['openvpn_ca_storage_type'] == 'file'"
-  run_once: "true"
+  run_once: true
 - ansible.builtin.include_tasks:
     file: "prereq.d/openvpn_prereq_instance_facts.yml"
   when:

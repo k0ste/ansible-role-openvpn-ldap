@@ -1,0 +1,6 @@
+---
+skip_list:
+  - 'name[template]'
+  - 'jinja[spacing]'
+  - 'name[casing]'
+  - 'package-latest'

@@ -7,7 +7,7 @@
       default(omit) }}"
     path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.key' }}"
-  diff: "false"
+  diff: false
 - name: "openvpn | Generate certificate signing request on CA (filestore)"
   community.crypto.openssl_csr:
     common_name: "{{ vars['openvpn_instance_name'] }}"
@@ -25,7 +25,7 @@
       vars['openvpn_instance_name'] ~ '.csr' }}"
     privatekey_path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.key' }}"
-  diff: "false"
+  diff: false
 - name: "openvpn | Generate certificate on CA (filestore)"
   community.crypto.x509_certificate:
     csr_path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
@@ -39,4 +39,4 @@
     privatekey_path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.key' }}"
     provider: "ownca"
-  diff: "false"
+  diff: false
