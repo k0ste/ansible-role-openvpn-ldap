@@ -89,6 +89,9 @@
 {% if item['rcvbuf'] is defined and item['rcvbuf'] != '' %}
 {{ 'rcvbuf ' ~ item['rcvbuf'] }}
 {% endif %}
+{% if item['txqueuelen'] is defined and item['txqueuelen'] != '' %}
+{{ 'txqueuelen ' ~ item['txqueuelen'] }}
+{% endif %}
 {% if item['explicit_exit_notify'] is defined and
   item['explicit_exit_notify'] != '' %}
 {{ 'explicit-exit-notify ' ~ item['explicit_exit_notify'] }}

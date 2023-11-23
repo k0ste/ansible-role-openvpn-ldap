@@ -18,7 +18,7 @@
     profile: "{{ vars['openvpn_ca_storage_source']['profile'] |
       default(omit) }}"
     mode: "put"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_ca_storage_source']['crl_path'] + '/index' }}"
     overwrite: "different"
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
@@ -42,7 +42,7 @@
     profile: "{{ vars['openvpn_ca_storage_source']['profile'] |
       default(omit) }}"
     mode: "put"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_ca_storage_source']['crl_path'] + '/crlnumber' }}"
     overwrite: "different"
     src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
@@ -66,7 +66,7 @@
     profile: "{{ vars['openvpn_ca_storage_source']['profile'] |
       default(omit) }}"
     mode: "put"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_ca_storage_source']['crl_path'] + '/crl.pem' }}"
     overwrite: "different"
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~

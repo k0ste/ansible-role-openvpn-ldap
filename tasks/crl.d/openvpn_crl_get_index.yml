@@ -18,7 +18,7 @@
     profile: "{{ vars['openvpn_ca_storage_source']['profile'] |
       default(omit) }}"
     mode: "get"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_ca_storage_source']['crl_path'] ~  '/' ~ 'index' }}"
 - name: "openvpn | Fetch crl number from CA (S3)"
   amazon.aws.s3_object:
@@ -39,5 +39,5 @@
     profile: "{{
       vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"
     mode: "get"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_ca_storage_source']['crl_path'] ~  '/' ~ 'crlnumber' }}"

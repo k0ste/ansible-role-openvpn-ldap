@@ -18,7 +18,7 @@
     profile: "{{ vars['openvpn_ca_storage_source']['profile'] |
       default(omit) }}"
     mode: "geturl"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.crt' }}"
   register: "openvpn_revoke_target_s3_object"
   # Ignore because aws_s3 have not any "check object exists in bucket" mode

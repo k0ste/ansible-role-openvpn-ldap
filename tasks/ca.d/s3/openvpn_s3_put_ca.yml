@@ -18,7 +18,7 @@
     profile: "{{
       vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"
     mode: "put"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.crt' }}"
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
@@ -42,7 +42,7 @@
     profile: "{{
       vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"
     mode: "put"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.key' }}"
     src: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~

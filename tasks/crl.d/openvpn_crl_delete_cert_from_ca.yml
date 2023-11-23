@@ -16,7 +16,7 @@
     profile: "{{ vars['openvpn_ca_storage_source']['profile'] |
       default(omit) }}"
     mode: "delobj"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.key' }}"
 - name: "openvpn | Delete instance cert from CA (S3)"
   amazon.aws.s3_object:
@@ -35,5 +35,5 @@
     profile: "{{ vars['openvpn_ca_storage_source']['profile'] |
       default(omit) }}"
     mode: "delobj"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.crt' }}"

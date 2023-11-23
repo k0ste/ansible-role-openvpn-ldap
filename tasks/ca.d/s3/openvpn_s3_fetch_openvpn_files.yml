@@ -18,7 +18,7 @@
     profile: "{{
       vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"
     mode: "get"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_ca_storage_source']['openvpn_path'] ~ '/' ~
       item['tls_auth'] }}"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
@@ -48,7 +48,7 @@
     profile: "{{
       vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"
     mode: "get"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_ca_storage_source']['crl_path'] ~ '/' ~ item['crl_verify'] }}"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
@@ -78,7 +78,7 @@
     profile: "{{
       vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"
     mode: "get"
-    object: "{{ '/' ~ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
+    object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_ca_storage_source']['openvpn_path'] ~ '/' ~ item['dh'] }}"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
