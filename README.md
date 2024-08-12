@@ -528,6 +528,8 @@ openvpn:
     tls_version_min: '1.2'
     resolv_retry: 'infinite'
     nobind: 'true'
+    ping_exit: '60'
+    ping_restart: '60'
     persist_tun: 'true'
     persist_key: 'true'
     remote_random: 'false'

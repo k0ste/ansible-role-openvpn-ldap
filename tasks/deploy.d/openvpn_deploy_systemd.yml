@@ -17,7 +17,7 @@
     - "Daemon reload"
   when:
     - "vars['openvpn_systemd_override'] is defined"
-    - "vars['openvpn_systemd_override'] == true"
+    - "vars['openvpn_systemd_override']"
 - name: "openvpn | Enable OpenVPN service"
   ansible.builtin.systemd:
     name: "{{ hostvars[inventory_hostname]['openvpn_' + item['type'] +

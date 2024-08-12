@@ -17,6 +17,7 @@
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   diff: false
+  ignore_errors: "{{ ansible_check_mode }}"
 - name: "openvpn | Copy instance key"
   ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
@@ -35,6 +36,7 @@
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   diff: false
+  ignore_errors: "{{ ansible_check_mode }}"
 - name: "openvpn | Copy root certificate to instance"
   ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
@@ -53,6 +55,7 @@
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   diff: false
+  ignore_errors: "{{ ansible_check_mode }}"
 - name: "openvpn | Copy takey to instance"
   ansible.builtin.copy:
     src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
@@ -70,6 +73,7 @@
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   diff: false
+  ignore_errors: "{{ ansible_check_mode }}"
   when:
     - "item['tls_auth'] is defined"
 - name: "openvpn | Copy DH to instance"
@@ -89,6 +93,7 @@
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   diff: false
+  ignore_errors: "{{ ansible_check_mode }}"
   when:
     - "vars['outer_item']['type'] == 'server'"
     - "item['dh'] is defined"
@@ -110,6 +115,7 @@
   loop_control:
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   diff: false
+  ignore_errors: "{{ ansible_check_mode }}"
   when:
     - "vars['outer_item']['type'] == 'server'"
     - "item['crl_verify'] is defined"

@@ -102,6 +102,12 @@
 {% if item['pass_tos'] is defined and item['pass_tos'] == 'true' %}
 {{ 'passtos' }}
 {% endif %}
+{% if item['ping_exit'] is defined and item['ping_exit'] != '' %}
+{{ 'ping-exit ' ~ item['ping_exit'] }}
+{% endif %}
+{% if item['ping_restart'] is defined and item['ping_restart'] != '' %}
+{{ 'ping-restart ' ~ item['ping_restart'] }}
+{% endif %}
 {% if item['reneg_sec'] is defined and item['reneg_sec'] != '' %}
 {{ 'reneg-sec ' ~ item['reneg_sec'] }}
 {% endif %}
@@ -120,13 +126,13 @@
 {% endif %}
 {% if item['log'] is defined and item['log'] != '' %}
 {% if item['log_append'] is defined and item['log_append'] == 'true' %}
-{{ 'log-append' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~
+{{ 'log-append ' + hostvars[inventory_hostname]['openvpn_log_dest'] +
     '/' ~ item['log'] }}
 {% else %}
-{{ 'log' ~ ' ' ~ hostvars[inventory_hostname]['openvpn_log_dest'] ~ '/' ~
+{{ 'log ' + hostvars[inventory_hostname]['openvpn_log_dest'] + '/' ~
   item['log'] }}
 {% endif %}
 {% endif %}
 {% if item['keepalive'] is defined and item['keepalive'] != '' %}
-{{ 'keepalive' ~ ' ' ~ item['keepalive'] }}
+{{ 'keepalive ' ~ item['keepalive'] }}
 {% endif %}

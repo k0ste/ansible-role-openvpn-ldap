@@ -24,4 +24,5 @@
       hostvars[inventory_hostname]['openvpn_packages_master'] }}"
   delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
-- ansible.builtin.meta: "clear_facts"
+- name: "openvpn | Clear facts"
+  ansible.builtin.meta: "clear_facts"
