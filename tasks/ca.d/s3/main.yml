@@ -25,27 +25,32 @@
   ignore_errors: true
   become: false
   delegate_to: "localhost"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import fetch root cert from S3 tasks"
+  ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_get_root.yml"
   become: false
   delegate_to: "localhost"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import generate certs S3 tasks"
+  ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_generate_certs.yml"
   when:
     - "vars['openvpn_master_result']['failed']"
   become: false
   delegate_to: "localhost"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import upload certs to S3 tasks"
+  ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_put_ca.yml"
   when:
     - "vars['openvpn_master_result']['failed']"
   become: false
   delegate_to: "localhost"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import fetch certs from S3 tasks"
+  ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_fetch_certs.yml"
   become: false
   delegate_to: "localhost"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import fetch OpenVPN files from S3"
+  ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_fetch_openvpn_files.yml"
   become: false
   delegate_to: "localhost"

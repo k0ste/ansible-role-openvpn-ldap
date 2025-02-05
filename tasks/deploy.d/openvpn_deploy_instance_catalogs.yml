@@ -44,4 +44,4 @@
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   when:
     - "vars['openvpn_systemd_override'] is defined"
-    - "vars['openvpn_systemd_override'] == true"
+    - "vars['openvpn_systemd_override'] == 'true'"

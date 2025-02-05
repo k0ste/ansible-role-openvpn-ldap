@@ -9,13 +9,18 @@
 - name: "openvpn | Set facts about end-user instance"
   ansible.builtin.set_fact:
     openvpn_instance_name: "{{ vars['openvpn_target_user'] }}"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import pre requisite tasks"
+  ansible.builtin.import_tasks:
     file: "prereq.d/main.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import find user tasks"
+  ansible.builtin.import_tasks:
     file: "user.d/openvpn_find_user.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import packages tasks"
+  ansible.builtin.import_tasks:
     file: "packages.d/main.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import CA tasks"
+  ansible.builtin.import_tasks:
     file: "ca.d/main.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import user tasks"
+  ansible.builtin.import_tasks:
     file: "user.d/main.yml"

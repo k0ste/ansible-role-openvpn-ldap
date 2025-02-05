@@ -8,7 +8,7 @@
   ansible.builtin.assert:
     that:
       - "hostvars[inventory_hostname]['ansible_os_family'] is defined"
-    msg: "Can't gather facts from CA master."
+    fail_msg: "Can't gather facts from CA master."
     quiet: "true"
 - name: "openvpn | Add the OS specific varibles"
   ansible.builtin.include_vars:
@@ -16,12 +16,12 @@
       "{{ hostvars[inventory_hostname]['ansible_os_family'] + '.yml' }}"
 - name: "openvpn | Set facts about CA master"
   ansible.builtin.set_fact:
-    local_ca_master_os: "{{
-      hostvars[inventory_hostname]['ansible_os_family'] }}"
-    local_ca_master_pkg_mgr: "{{
-      hostvars[inventory_hostname]['ansible_pkg_mgr'] }}"
-    local_packages_master: "{{
-      hostvars[inventory_hostname]['openvpn_packages_master'] }}"
+    local_ca_master_os:
+      "{{ hostvars[inventory_hostname]['ansible_os_family'] }}"
+    local_ca_master_pkg_mgr:
+      "{{ hostvars[inventory_hostname]['ansible_pkg_mgr'] }}"
+    local_packages_master:
+      "{{ hostvars[inventory_hostname]['openvpn_packages_master'] }}"
   delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
 - name: "openvpn | Clear facts"

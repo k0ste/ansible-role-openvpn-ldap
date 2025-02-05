@@ -1,9 +1,13 @@
 ---
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import pre requisite tasks"
+  ansible.builtin.import_tasks:
     file: "prereq.d/main.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import packages tasks"
+  ansible.builtin.import_tasks:
     file: "packages.d/main.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import CA tasks"
+  ansible.builtin.import_tasks:
     file: "ca.d/main.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import deployment tasks"
+  ansible.builtin.import_tasks:
     file: "deploy.d/main.yml"

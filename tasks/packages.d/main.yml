@@ -1,5 +1,6 @@
 ---
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import filestore packages tasks [master]"
+  ansible.builtin.import_tasks:
     file: "packages.d/openvpn_packages_filestore_master.yml"
   when:
     - "vars['openvpn_revoke_target'] is not defined"
@@ -7,7 +8,8 @@
   delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
   remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
   become: true
-- ansible.builtin.include_tasks:
+- name: "openvpn | Import filestore packages tasks [host]"
+  ansible.builtin.include_tasks:
     file: "packages.d/openvpn_packages_host.yml"
   when:
     - "hostvars[inventory_hostname]['openvpn'] is defined"

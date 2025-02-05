@@ -1,29 +1,40 @@
 ---
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import CRL pre requisite tasks"
+  ansible.builtin.import_tasks:
     file: "crl.d/openvpn_crl_prereq.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import CRL check S3 object tasks"
+  ansible.builtin.import_tasks:
     file: "crl.d/openvpn_crl_check_s3_object.yml"
 - name: "openvpn | Assert that object exists"
   ansible.builtin.debug:
     msg: "Target certificate does not exits"
   when:
     - "vars['openvpn_revoke_target_s3_object']['failed']"
-- ansible.builtin.meta: "end_play"
+- name: "openvpn | End play when CRL is not exists"
+  ansible.builtin.meta: "end_play"
   when:
     - "vars['openvpn_revoke_target_s3_object']['failed']"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import pre requisite for deployment host tasks"
+  ansible.builtin.import_tasks:
     file: "prereq.d/openvpn_prereq_create_deployment_host_catalogs.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import S3 fetch certs tasks"
+  ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_fetch_certs.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import S3 fetch root certs tasks"
+  ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_get_root.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import S3 fetch index file tasks"
+  ansible.builtin.import_tasks:
     file: "crl.d/openvpn_crl_get_index.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import CRL prepare OpenSSL tasks"
+  ansible.builtin.import_tasks:
     file: "crl.d/openvpn_crl_prepare_openssl_conf.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import CRL revoke tasks"
+  ansible.builtin.import_tasks:
     file: "crl.d/openvpn_crl_revoke_target.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import CRL update bucket tasks"
+  ansible.builtin.import_tasks:
     file: "crl.d/openvpn_crl_update_bucket.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import CRL delete cert from CA tasks"
+  ansible.builtin.import_tasks:
     file: "crl.d/openvpn_crl_delete_cert_from_ca.yml"

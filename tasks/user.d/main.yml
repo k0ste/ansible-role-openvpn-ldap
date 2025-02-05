@@ -1,7 +1,10 @@
 ---
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import deploy user configuration tasks"
+  ansible.builtin.import_tasks:
     file: "openvpn_user_deploy.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import make user archive tasks"
+  ansible.builtin.import_tasks:
     file: "openvpn_user_make_archive.yml"
-- ansible.builtin.import_tasks:
+- name: "openvpn | Import send user e-mail tasks"
+  ansible.builtin.import_tasks:
     file: "openvpn_user_send_mail.yml"
