@@ -4,24 +4,20 @@
 - name: "openvpn | Add the OS specific varibles"
   ansible.builtin.include_vars:
     file: "{{ hostvars[inventory_hostname]['ansible_os_family'] + '.yml' }}"
-- name: "openvpn | Check facter facts"
+- name: "openvpn | Assert FQDN fact"
   ansible.builtin.assert:
     that:
-      - "hostvars[inventory_hostname]['facter_facterversion'] is defined"
-    fail_msg: "Facter facts not found. Please install facter."
+      - "hostvars[inventory_hostname]['ansible_nodename'] is defined"
+      - "hostvars[inventory_hostname]['ansible_nodename'] is
+          community.general.fqdn_valid(min_labels=2)"
+    fail_msg: "Ansible FQDN variable not found"
+    success_msg: "{{ 'FQDN is: ' +
+      hostvars[inventory_hostname]['ansible_nodename'] }}"
     quiet: "true"
-- name: "openvpn | Set facts about client/server instance [Facter 2]"
-  ansible.builtin.set_fact:
-    openvpn_instance_name: "{{ hostvars[inventory_hostname]['facter_fqdn'] }}"
-  when:
-    - "hostvars[inventory_hostname]['facter_facterversion'].split('.')[0] <=
-      '2'"
 - name: "openvpn | Set facts about client/server instance [Facter 3]"
   ansible.builtin.set_fact:
     openvpn_instance_name:
-      "{{ hostvars[inventory_hostname]['facter_networking']['fqdn'] }}"
-  when:
-    - "hostvars[inventory_hostname]['facter_facterversion'].split('.')[0] > '2'"
+      "{{ hostvars[inventory_hostname]['ansible_nodename'] }}"
 - name: "openvpn | Check users exists on target, otherwise try to install
     packages"
   block:
