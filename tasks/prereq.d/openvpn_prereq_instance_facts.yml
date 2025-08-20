@@ -14,6 +14,7 @@
     success_msg: "{{ 'FQDN is: ' +
       hostvars[inventory_hostname]['ansible_nodename'] }}"
     quiet: "true"
+  delegate_to: "localhost"
 - name: "openvpn | Set facts about client/server instance [Facter 3]"
   ansible.builtin.set_fact:
     openvpn_instance_name:
