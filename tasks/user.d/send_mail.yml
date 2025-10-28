@@ -14,6 +14,7 @@
     host: "{{ vars['openvpn_email_settings']['host'] | default(omit) }}"
     password: "{{ vars['openvpn_email_settings']['password'] | default(omit) }}"
     port: "{{ vars['openvpn_email_settings']['port'] | default(omit) }}"
+    secure: "{{ vars['openvpn_email_settings']['secure'] | default(omit) }}"
     subject: "{{ vars['openvpn_email_settings']['subject'] | default(omit) }}"
     timeout: "{{ vars['openvpn_email_settings']['timeout'] | default(omit) }}"
     to: "{{ vars['openvpn_ldap_user_mail'] }}"

@@ -10,6 +10,9 @@ galaxy_info:
   license: "GPL"
   min_ansible_version: "3.0.0"
   platforms:
+    - name: "ArchLinux"
+      versions:
+        - 'all'
     - name: "EL"
       versions:
         - 'all'

@@ -1,10 +1,10 @@
 ---
 - name: "openvpn | Fetch instance key from CA (S3)"
   amazon.aws.s3_object:
-    aws_access_key: "{{
-      vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"
-    aws_secret_key: "{{
-      vars['openvpn_ca_storage_source']['aws_secret_key'] | default(omit) }}"
+    aws_access_key: "{{ vars['openvpn_ca_storage_source']['aws_access_key'] |
+        default(omit) }}"
+    aws_secret_key: "{{ vars['openvpn_ca_storage_source']['aws_secret_key'] |
+      default(omit) }}"
     bucket: "{{ vars['openvpn_ca_storage_source']['bucket'] | default(omit) }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
@@ -13,20 +13,20 @@
     rgw: "{{ vars['openvpn_ca_storage_source']['rgw'] | default(omit) }}"
     endpoint_url: "{{ vars['openvpn_ca_storage_source']['endpoint_url'] |
       default(omit) }}"
-    validate_certs: "{{
-      vars['openvpn_ca_storage_source']['validate_certs'] | default(omit) }}"
+    validate_certs: "{{ vars['openvpn_ca_storage_source']['validate_certs'] |
+      default(omit) }}"
     region: "{{ vars['openvpn_ca_storage_source']['region'] | default(omit) }}"
-    profile: "{{
-      vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"
+    profile: "{{ vars['openvpn_ca_storage_source']['profile'] |
+      default(omit) }}"
     mode: "get"
     object: "{{ vars['openvpn_ca_storage_source']['object_prefix'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.key' }}"
 - name: "openvpn | Fetch instance cert from CA (S3)"
   amazon.aws.s3_object:
-    aws_access_key: "{{
-      vars['openvpn_ca_storage_source']['aws_access_key'] | default(omit) }}"
-    aws_secret_key: "{{
-      vars['openvpn_ca_storage_source']['aws_secret_key'] | default(omit) }}"
+    aws_access_key: "{{ vars['openvpn_ca_storage_source']['aws_access_key'] |
+      default(omit) }}"
+    aws_secret_key: "{{ vars['openvpn_ca_storage_source']['aws_secret_key'] |
+      default(omit) }}"
     bucket: "{{ vars['openvpn_ca_storage_source']['bucket'] | default(omit) }}"
     dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
@@ -35,8 +35,9 @@
     rgw: "{{ vars['openvpn_ca_storage_source']['rgw'] | default(omit) }}"
     endpoint_url: "{{ vars['openvpn_ca_storage_source']['endpoint_url'] |
       default(omit) }}"
-    validate_certs: "{{
-      vars['openvpn_ca_storage_source']['validate_certs'] | default(omit) }}"
+    validate_certs:
+      "{{ vars['openvpn_ca_storage_source']['validate_certs'] |
+      default(omit) }}"
     region: "{{ vars['openvpn_ca_storage_source']['region'] | default(omit) }}"
     profile: "{{
       vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"

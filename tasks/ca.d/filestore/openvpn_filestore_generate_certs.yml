@@ -13,14 +13,14 @@
     common_name: "{{ vars['openvpn_instance_name'] }}"
     country_name: "{{ vars['openvpn_csr_settings']['country_name'] |
       default(omit) }}"
-    state_or_province_name: "{{
-      vars['openvpn_csr_settings']['openvpn_csr_state'] | default(omit) }}"
+    state_or_province_name:
+      "{{ vars['openvpn_csr_settings']['openvpn_csr_state'] | default(omit) }}"
     locality_name: "{{ vars['openvpn_csr_settings']['locality_name'] |
       default(omit) }}"
     organization_name: "{{ vars['openvpn_csr_settings']['organization_name'] |
       default(omit) }}"
-    organizational_unit_name: "{{
-      vars['openvpn_csr_settings']['organization_unit'] | default(omit) }}"
+    organizational_unit_name:
+      "{{ vars['openvpn_csr_settings']['organization_unit'] | default(omit) }}"
     path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
       vars['openvpn_instance_name'] ~ '.csr' }}"
     privatekey_path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~

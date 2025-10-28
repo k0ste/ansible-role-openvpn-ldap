@@ -1,51 +1,51 @@
 ---
 - name: "openvpn | Import deploy instance catalogs tasks"
   ansible.builtin.include_tasks:
-    file: "deploy.d/openvpn_deploy_instance_catalogs.yml"
+    file: "deploy.d/instance_catalogs.yml"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
     loop_var: "outer_item"
   when:
-    - "outer_item['name'] != None"
+    - "outer_item['name'] not in ['', [], None]"
 - name: "openvpn | Import deploy instance configuration tasks"
   ansible.builtin.include_tasks:
-    file: "deploy.d/openvpn_deploy_configuration.yml"
+    file: "deploy.d/configuration.yml"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
     loop_var: "outer_item"
   when:
-    - "outer_item['name'] != None"
+    - "outer_item['name'] not in ['', [], None]"
 - name: "openvpn | Import deploy instance up script tasks"
   ansible.builtin.include_tasks:
-    file: "deploy.d/openvpn_deploy_up_script.yml"
+    file: "deploy.d/up_script.yml"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
     loop_var: "outer_item"
   when:
-    - "outer_item['name'] != None"
+    - "outer_item['name'] not in ['', [], None]"
 - name: "openvpn | Import deploy systemd tasks"
   ansible.builtin.include_tasks:
-    file: "deploy.d/openvpn_deploy_systemd.yml"
+    file: "deploy.d/systemd.yml"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
     loop_var: "outer_item"
   when:
-    - "outer_item['name'] != None"
+    - "outer_item['name'] not in ['', [], None]"
 - name: "openvpn | Import deploy cert files tasks"
   ansible.builtin.include_tasks:
-    file: "deploy.d/openvpn_deploy_copy_files.yml"
+    file: "deploy.d/copy_files.yml"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
     loop_var: "outer_item"
   when:
-    - "outer_item['name'] != None"
+    - "outer_item['name'] not in ['', [], None]"
 - name: "openvpn | Import deploy instance auth-ldap plugin tasks"
   ansible.builtin.include_tasks:
-    file: "plugins.d/openvpn_deploy_plugin_auth_ldap.yml"
+    file: "plugins.d/plugin_auth_ldap.yml"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
     loop_var: "outer_item"
   when:
     - "outer_item['type'] == 'server'"
     - "outer_item['plugin_auth_ldap'] == 'true'"
-    - "outer_item['name'] != None"
+    - "outer_item['name'] not in ['', [], None]"

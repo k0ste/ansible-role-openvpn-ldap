@@ -1,0 +1,43 @@
+---
+- name: "openvpn | Install the required packages in Redhat derivatives"
+  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
+  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
+  become: true
+  when:
+    - "vars['local_ca_master_os'] == 'RedHat'"
+  block:
+    - name: "openvpn | Update dnf cache"
+      ansible.builtin.dnf:
+        update_cache: "yes"
+    - name: "openvpn | Install package with dnf"
+      ansible.builtin.dnf:
+        name: "{{ vars['local_packages_master'] }}"
+        state: "present"
+- name: "openvpn | Install the required packages in Debian derivatives"
+  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
+  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
+  become: true
+  when:
+    - "vars['local_ca_master_os'] == 'Debian'"
+  block:
+    - name: "openvpn | Update apt cache"
+      ansible.builtin.apt:
+        update_cache: "yes"
+    - name: "openvpn | Install package with apt"
+      ansible.builtin.apt:
+        name: "{{ vars['local_packages_master'] }}"
+        state: "present"
+- name: "openvpn | Install the required packages in ArchLinux derivatives"
+  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
+  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
+  become: true
+  when:
+    - "vars['local_ca_master_os'] == 'Archlinux'"
+  block:
+    - name: "openvpn | Update pacman cache"
+      community.general.pacman:
+        update_cache: "yes"
+    - name: "openvpn | Install package with pacman"
+      community.general.pacman:
+        name: "{{ vars['local_packages_master'] }}"
+        state: "present"

@@ -20,6 +20,8 @@
       - "vars['openvpn_ldap_user_result']['results'] |
         ansible.builtin.json_query('[].dn[] | [0]') is defined"
     fail_msg: "{{ 'User ' ~ vars['openvpn_instance_name'] ~ ' not found' }}"
+    success_msg: "{{ 'User ' ~ vars['openvpn_instance_name'] ~
+      ' is present on LDAP' }}"
     quiet: "true"
 - name: "openvpn | Set fact about user e-mail"
   ansible.builtin.set_fact:

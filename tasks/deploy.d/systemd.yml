@@ -3,8 +3,8 @@
   ansible.builtin.template:
     src: "openvpn_service.j2"
     dest: "{{ '/etc/systemd/system/' +
-      hostvars[inventory_hostname]['openvpn_' + item['type'] + '_service'] +
-      item['name'] + '.service.d/' + item['name'] + '.conf' }}"
+      hostvars[inventory_hostname]['openvpn_' + ovpn['type'] + '_service'] +
+      ovpn['name'] + '.service.d/' + ovpn['name'] + '.conf' }}"
     owner: "root"
     group: "root"
     mode: "0644"
@@ -12,25 +12,27 @@
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   notify:
     - "Daemon reload"
   when:
     - "vars['openvpn_systemd_override'] is defined"
-    - "vars['openvpn_systemd_override']"
+    - "vars['openvpn_systemd_override'] == 'true'"
 - name: "openvpn | Enable OpenVPN service"
   ansible.builtin.systemd:
-    name: "{{ hostvars[inventory_hostname]['openvpn_' + item['type'] +
-      '_service'] ~ item['name'] }}"
+    name: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn['type'] +
+      '_service'] ~ ovpn['name'] }}"
     enabled: "yes"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+    vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   when:
     - "hostvars[inventory_hostname]['openvpn'] is defined"
-    - "hostvars[inventory_hostname]['openvpn'] != ''"
+    - "hostvars[inventory_hostname]['openvpn'] not in ['', [], None]"
     - "hostvars[inventory_hostname]['openvpn'] |
        community.general.json_query(vars['openvpn_enable']) is defined"
     - "hostvars[inventory_hostname]['openvpn'] |

@@ -1,21 +1,22 @@
 ---
 - name: "openvpn | Deploy OpenVPN up script"
   ansible.builtin.copy:
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' + item['type'] +
-      '_conf_dest'] + '/' + item['name'] + '/' + item['name'] + '_up.sh' }}"
-    group: "{{ item['group'] |
+    dest: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn['type'] +
+      '_conf_dest'] + '/' + ovpn['name'] + '/' + ovpn['name'] + '_up.sh' }}"
+    group: "{{ ovpn['group'] |
       default(hostvars[inventory_hostname]['openvpn_group']) }}"
-    owner: "{{ item['user'] |
+    owner: "{{ ovpn['user'] |
       default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0755"
-    content: "{{ item['up'] }}"
+    content: "{{ ovpn['up'] }}"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   when:
-    - "item['up'] is defined"
-    - "item['up'] != ''"
+    - "ovpn['up'] is defined"
+    - "ovpn['up'] not in ['', [], None]"
   notify:
     - "Restart OpenVPN"

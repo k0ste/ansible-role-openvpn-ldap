@@ -1,10 +1,10 @@
 ---
 - name: "openvpn | Import CRL pre requisite tasks"
   ansible.builtin.import_tasks:
-    file: "crl.d/openvpn_crl_prereq.yml"
+    file: "crl.d/prereq.yml"
 - name: "openvpn | Import CRL check S3 object tasks"
   ansible.builtin.import_tasks:
-    file: "crl.d/openvpn_crl_check_s3_object.yml"
+    file: "crl.d/check_s3_object.yml"
 - name: "openvpn | Assert that object exists"
   ansible.builtin.debug:
     msg: "Target certificate does not exits"
@@ -16,7 +16,7 @@
     - "vars['openvpn_revoke_target_s3_object']['failed']"
 - name: "openvpn | Import pre requisite for deployment host tasks"
   ansible.builtin.import_tasks:
-    file: "prereq.d/openvpn_prereq_create_deployment_host_catalogs.yml"
+    file: "prereq.d/create_deployment_host_catalogs.yml"
 - name: "openvpn | Import S3 fetch certs tasks"
   ansible.builtin.import_tasks:
     file: "ca.d/s3/openvpn_s3_fetch_certs.yml"
@@ -25,16 +25,16 @@
     file: "ca.d/s3/openvpn_s3_get_root.yml"
 - name: "openvpn | Import S3 fetch index file tasks"
   ansible.builtin.import_tasks:
-    file: "crl.d/openvpn_crl_get_index.yml"
+    file: "crl.d/get_index.yml"
 - name: "openvpn | Import CRL prepare OpenSSL tasks"
   ansible.builtin.import_tasks:
-    file: "crl.d/openvpn_crl_prepare_openssl_conf.yml"
+    file: "crl.d/prepare_openssl_conf.yml"
 - name: "openvpn | Import CRL revoke tasks"
   ansible.builtin.import_tasks:
-    file: "crl.d/openvpn_crl_revoke_target.yml"
+    file: "crl.d/revoke_target.yml"
 - name: "openvpn | Import CRL update bucket tasks"
   ansible.builtin.import_tasks:
-    file: "crl.d/openvpn_crl_update_bucket.yml"
+    file: "crl.d/update_bucket.yml"
 - name: "openvpn | Import CRL delete cert from CA tasks"
   ansible.builtin.import_tasks:
-    file: "crl.d/openvpn_crl_delete_cert_from_ca.yml"
+    file: "crl.d/delete_cert_from_ca.yml"

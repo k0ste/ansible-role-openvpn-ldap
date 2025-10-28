@@ -4,9 +4,9 @@
     path: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] + '/' ~
       vars['outer_item']['name'] }}"
     state: "directory"
-    group: "{{ item['group'] |
+    group: "{{ outer_item['group'] |
       default(hostvars[inventory_hostname]['openvpn_group']) }}"
-    owner: "{{ item['user'] |
+    owner: "{{ outer_item['user'] |
       default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0750"
   when:
@@ -15,24 +15,25 @@
     - "vars['outer_item']['ccd'] == 'true'"
 - name: "openvpn | Create tls catalogs"
   ansible.builtin.file:
-    path: "{{ hostvars[inventory_hostname]['openvpn_' + item['type'] +
-      '_conf_dest'] ~ '/' ~ item['name'] ~ '/tls' }}"
+    path: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn['type'] +
+      '_conf_dest'] ~ '/' ~ ovpn['name'] ~ '/tls' }}"
     state: "directory"
-    group: "{{ item['group'] |
+    group: "{{ ovpn['group'] |
       default(hostvars[inventory_hostname]['openvpn_group']) }}"
-    owner: "{{ item['user'] |
+    owner: "{{ ovpn['user'] |
       default(hostvars[inventory_hostname]['openvpn_user']) }}"
     mode: "0750"
   loop: "{{ hostvars[inventory_hostname]['openvpn'] |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
 - name: "openvpn | Create systemd service override catalogs"
   ansible.builtin.file:
     path: "{{ '/etc/systemd/system/' +
-      hostvars[inventory_hostname]['openvpn_' + item['type'] + '_service'] +
-      item['name'] + '.service.d' }}"
+      hostvars[inventory_hostname]['openvpn_' + ovpn['type'] + '_service'] +
+      ovpn['name'] + '.service.d' }}"
     state: "directory"
     owner: "root"
     group: "root"
@@ -41,7 +42,8 @@
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
     vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   when:
     - "vars['openvpn_systemd_override'] is defined"
     - "vars['openvpn_systemd_override'] == 'true'"

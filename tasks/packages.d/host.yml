@@ -1,0 +1,34 @@
+---
+- name: "openvpn | Install the required packages in Redhat derivatives"
+  when:
+    - "hostvars[inventory_hostname]['ansible_os_family'] == 'RedHat'"
+  block:
+    - name: "openvpn | Update dnf cache"
+      ansible.builtin.dnf:
+        update_cache: "yes"
+    - name: "openvpn | Install package with dnf"
+      ansible.builtin.dnf:
+        name: "{{ hostvars[inventory_hostname]['openvpn_packages_client'] }}"
+        state: "present"
+- name: "openvpn | Install the required packages in Debian derivatives"
+  when:
+    - "hostvars[inventory_hostname]['ansible_os_family'] == 'Debian'"
+  block:
+    - name: "openvpn | Update apt cache"
+      ansible.builtin.apt:
+        update_cache: "yes"
+    - name: "openvpn | Install package with apt"
+      ansible.builtin.apt:
+        name: "{{ hostvars[inventory_hostname]['openvpn_packages_client'] }}"
+        state: "present"
+- name: "openvpn | Install the required packages in ArchLinux derivatives"
+  when:
+    - "hostvars[inventory_hostname]['ansible_os_family'] == 'Archlinux'"
+  block:
+    - name: "openvpn | Update pacman cache"
+      community.general.pacman:
+        update_cache: "yes"
+    - name: "openvpn | Install package with pacman"
+      community.general.pacman:
+        name: "{{ hostvars[inventory_hostname]['openvpn_packages_client'] }}"
+        state: "present"

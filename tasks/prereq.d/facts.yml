@@ -11,9 +11,10 @@
 - name: "openvpn | Assert that every OpenVPN instance have not null values"
   ansible.builtin.assert:
     that:
-      - "item['name'] != ''"
+      - "item['name'] not in ['', [], None]"
       - "item['type'] in ['client', 'server']"
-    fail_msg: "Some instance have not defined 'name' or 'type' fields."
+    fail_msg: "Some instance have not defined 'name' or 'type' fields"
+    success_msg: "{{ 'name: ' ~ item['name'] ~ ' | type: ' + item['type'] }}"
     quiet: "true"
   loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
   loop_control:
@@ -21,14 +22,14 @@
       item['type'] }}"
   when:
     - "vars['openvpn_instances'] is defined"
-    - "vars['openvpn_instances'] != []"
+    - "vars['openvpn_instances'] not in ['', [], None]"
 - name: "openvpn | Set facts about OpenVPN instances types"
   ansible.builtin.set_fact:
     openvpn_instances_types: "{{ hostvars[inventory_hostname]['openvpn'] |
       community.general.json_query('[].openvpn_settings[].type[]') | unique }}"
   when:
     - "vars['openvpn_instances'] is defined"
-    - "vars['openvpn_instances'] != []"
+    - "vars['openvpn_instances'] not in ['', [], None]"
 - name: "openvpn | Set facts about sysmted service settings"
   ansible.builtin.set_fact:
     openvpn_systemd_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
@@ -45,15 +46,13 @@
       - "vars['openvpn_ca_storage_type'] in ['file', 's3']"
     fail_msg: "'ca_storage.storage_type' have unknown value. Should be 'file' or
       's3'"
+    success_msg: "{{ 'ca_storage.storage_type is: ' +
+      vars['openvpn_ca_storage_type'] }}"
     quiet: "true"
 - name: "openvpn | Set facts about OpenVPN environment"
   ansible.builtin.set_fact:
-    openvpn_email_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
-      community.general.json_query('[].global_settings[].email[] | [0]') }}"
     openvpn_csr_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
       community.general.json_query('[].global_settings[].csr[] | [0]') }}"
-    openvpn_ldap_settings: "{{ hostvars[inventory_hostname]['openvpn'] |
-      community.general.json_query('[].global_settings[].ldap[] | [0]') }}"
     openvpn_systemd_override: "{{ hostvars[inventory_hostname]['openvpn'] |
       community.general.json_query('[].systemd_settings[].restart_on_failure |
       [0]') }}"

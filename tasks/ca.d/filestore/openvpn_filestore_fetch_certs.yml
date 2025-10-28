@@ -34,7 +34,7 @@
     label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
   when:
     - "item['tls_auth'] is defined"
-    - "item['tls_auth'] != ''"
+    - "item['tls_auth'] not in ['', [], None]"
 - name: "openvpn | Fetch CRL from CA (filestore)"
   ansible.builtin.fetch:
     src: "{{ vars['openvpn_ca_storage_source']['crl_path'] ~ '/' ~
@@ -50,7 +50,7 @@
   when:
     - "item['type'] == 'server'"
     - "item['crl_verify'] is defined"
-    - "item['crl_verify'] != ''"
+    - "item['crl_verify'] not in ['', [], None]"
 - name: "openvpn | Fetch DHPARAM from CA (filestore)"
   ansible.builtin.fetch:
     src: "{{ vars['openvpn_ca_storage_source']['openvpn_path'] ~ '/' ~
@@ -66,4 +66,4 @@
   when:
     - "item['type'] == 'server'"
     - "item['dh'] is defined"
-    - "item['dh'] != ''"
+    - "item['dh'] not in ['', [], None]"

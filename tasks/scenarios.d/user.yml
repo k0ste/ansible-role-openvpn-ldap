@@ -1,20 +1,13 @@
 ---
-- name: "openvpn | Assert that user is defined"
-  ansible.builtin.assert:
-    that:
-      - "vars['openvpn_target_user'] is defined"
-      - "vars['openvpn_target_user'] != ''"
-    fail_msg: "User is not defined"
-    quiet: "true"
-- name: "openvpn | Set facts about end-user instance"
-  ansible.builtin.set_fact:
-    openvpn_instance_name: "{{ vars['openvpn_target_user'] }}"
+- name: "openvpn | Import pre requisite tasks"
+  ansible.builtin.import_tasks:
+    file: "user.d/prereq.yml"
 - name: "openvpn | Import pre requisite tasks"
   ansible.builtin.import_tasks:
     file: "prereq.d/main.yml"
 - name: "openvpn | Import find user tasks"
   ansible.builtin.import_tasks:
-    file: "user.d/openvpn_find_user.yml"
+    file: "user.d/find_user.yml"
 - name: "openvpn | Import packages tasks"
   ansible.builtin.import_tasks:
     file: "packages.d/main.yml"

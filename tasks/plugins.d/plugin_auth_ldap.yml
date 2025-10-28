@@ -1,7 +1,7 @@
 ---
 - name: "openvpn | Deploy openvpn-auth-ldap plugin configuration"
   ansible.builtin.template:
-    src: "openvpn_plugin_auth_ldap.j2"
+    src: "plugin.d/auth_ldap.j2"
     dest: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] + '/'
       ~ item['name'] ~ '/auth_ldap.conf' }}"
     group: "{{ item['group'] |

@@ -35,8 +35,8 @@
     rgw: "{{ vars['openvpn_ca_storage_source']['rgw'] | default(omit) }}"
     endpoint_url: "{{ vars['openvpn_ca_storage_source']['endpoint_url'] |
       default(omit) }}"
-    validate_certs: "{{
-      vars['openvpn_ca_storage_source']['validate_certs'] | default(omit) }}"
+    validate_certs: "{{ vars['openvpn_ca_storage_source']['validate_certs'] |
+      default(omit) }}"
     region: "{{ vars['openvpn_ca_storage_source']['region'] | default(omit) }}"
     profile: "{{
       vars['openvpn_ca_storage_source']['profile'] | default(omit) }}"

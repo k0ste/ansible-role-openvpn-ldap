@@ -1,15 +1,15 @@
-{{ '## client_config_dir@' + outer_item['name'] + ': ' + item['cn'] }}
+{{ '## client_config_dir@' + outer_item['name'] + ': ' + ovpn['cn'] }}
 {{ '# ' + ansible_managed }}
 {{ '# Do not edit manually' }}
 
-{% if item.options is defined and item.options != '' %}
-{% if item.options is string %}
-{{ item.options }}
-{% elif item.options is sequence %}
-{% for o in item.options %}
-{% if (o.action is defined and o.action != '') and
-      (o.data is defined and o.data != '') %}
-{{ o.action ~ ' \"' ~ o.data ~ '\"' }}
+{% if ovpn['options'] is defined and ovpn['options'] not in ['', [], None] %}
+{% if ovpn['options'] is string %}
+{{ ovpn['options'] }}
+{% elif ovpn['options'] is sequence %}
+{% for o in ovpn['options'] %}
+{% if (o['action'] is defined and o['action'] not in ['', [], None]) and
+  (o['data'] is defined and o['data'] != '') %}
+{{ o['action'] ~ ' \"' ~ o['data'] ~ '\"' }}
 {% endif %}
 {% endfor %}
 {% endif %}

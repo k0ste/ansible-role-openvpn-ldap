@@ -128,6 +128,15 @@ openvpn:
   - email:
     - host: 'localhost'
       port: '25'
+# 'always' - the connection only sends email if the connection is Encrypted. If
+# the server does not accept the encrypted connection it fails.
+# 'try' - the connection attempts to setup a secure SSL/TLS session, before
+# trying to send
+# 'never' - the connection does not attempt to setup a secure SSL/TLS session,
+# before sending
+# 'starttls' - the connection tries to upgrade to a secure SSL/TLS connection,
+# before sending. If it is unable to do so it fails
+      secure: 'try'
       username: 'user'
       password: 'secret'
       from: 'noc@localhost'
