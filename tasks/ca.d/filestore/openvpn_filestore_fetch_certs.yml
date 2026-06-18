@@ -1,69 +1,78 @@
 ---
 - name: "openvpn | Fetch instance key from CA (filestore)"
   ansible.builtin.fetch:
-    src: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '.key' }}"
-    dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' }}"
+    src: "{{ lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['root_path'] ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.key' }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' }}"
     flat: "yes"
 - name: "openvpn | Fetch instance cert from CA (filestore)"
   ansible.builtin.fetch:
-    src: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '.crt' }}"
-    dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' }}"
+    src: "{{ lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['root_path'] ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.crt' }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' }}"
     flat: "yes"
 - name: "openvpn | Fetch instance root from CA (filestore)"
   ansible.builtin.fetch:
-    src: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
-      vars['openvpn_ca_storage_source']['root_crt'] }}"
-    dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' }}"
+    src: "{{ lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['root_path'] ~ '/' ~
+      lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['root_crt'] }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' }}"
     flat: "yes"
 - name: "openvpn | Fetch instance takey from CA (filestore)"
   ansible.builtin.fetch:
-    src: "{{ vars['openvpn_ca_storage_source']['openvpn_path'] ~ '/' ~
-      item['tls_auth'] }}"
-    dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' }}"
+    src: "{{ lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['openvpn_path'] ~ '/' ~ ovpn['tls_auth'] }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' }}"
     flat: "yes"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   when:
-    - "item['tls_auth'] is defined"
-    - "item['tls_auth'] not in ['', [], None]"
+    - "ovpn['tls_auth'] is defined"
+    - "ovpn['tls_auth'] not in ['', [], '[]', None]"
 - name: "openvpn | Fetch CRL from CA (filestore)"
   ansible.builtin.fetch:
-    src: "{{ vars['openvpn_ca_storage_source']['crl_path'] ~ '/' ~
-      item['crl_verify'] }}"
-    dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' }}"
+    src: "{{ lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['crl_path'] ~ '/' ~ ovpn['crl_verify'] }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' }}"
     flat: "yes"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   when:
-    - "item['type'] == 'server'"
-    - "item['crl_verify'] is defined"
-    - "item['crl_verify'] not in ['', [], None]"
+    - "ovpn['type'] == 'server'"
+    - "ovpn['crl_verify'] is defined"
+    - "ovpn['crl_verify'] not in ['', [], '[]', None]"
 - name: "openvpn | Fetch DHPARAM from CA (filestore)"
   ansible.builtin.fetch:
-    src: "{{ vars['openvpn_ca_storage_source']['openvpn_path'] ~ '/' ~
-      item['dh'] }}"
-    dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' }}"
+    src: "{{ lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['openvpn_path'] ~ '/' ~ ovpn['dh'] }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' }}"
     flat: "yes"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item'].name ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   when:
-    - "item['type'] == 'server'"
-    - "item['dh'] is defined"
-    - "item['dh'] not in ['', [], None]"
+    - "ovpn['type'] == 'server'"
+    - "ovpn['dh'] is defined and ovpn['dh'] not in ['', [], '[]', None]"

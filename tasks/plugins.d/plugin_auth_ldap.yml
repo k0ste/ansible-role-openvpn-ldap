@@ -2,18 +2,20 @@
 - name: "openvpn | Deploy openvpn-auth-ldap plugin configuration"
   ansible.builtin.template:
     src: "plugin.d/auth_ldap.j2"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] + '/'
-      ~ item['name'] ~ '/auth_ldap.conf' }}"
-    group: "{{ item['group'] |
-      default(hostvars[inventory_hostname]['openvpn_group']) }}"
-    owner: "{{ item['user'] |
-      default(hostvars[inventory_hostname]['openvpn_user']) }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_server_conf_dest') + '/'
+      ~ ovpn['name'] ~ '/auth_ldap.conf' }}"
+    group: "{{ ovpn['group'] |
+      default(lookup('ansible.builtin.vars', 'openvpn_group')) }}"
+    owner: "{{ ovpn['user'] |
+      default(lookup('ansible.builtin.vars', 'openvpn_user')) }}"
     mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   when:
-    - "vars['outer_item']['plugin_auth_ldap'] is defined"
-    - "vars['outer_item']['plugin_auth_ldap'] == 'true'"
+    - "lookup('ansible.builtin.vars', 'outer_item',
+      default='')['plugin_auth_ldap'] == 'true'"

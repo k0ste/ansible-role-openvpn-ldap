@@ -2,26 +2,28 @@
 - name: "openvpn | Deploy OpenVPN user configuration"
   ansible.builtin.template:
     src: "openvpn_conf.j2"
-    dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.conf' }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.conf' }}"
     mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query('[].openvpn_settings[]') |
-    flatten(levels=1) }}"
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
-    label: "{{ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ ovpn['name'] }}"
 - name: "openvpn | Deploy OpenVPN user configuration (OVPN Profile)"
   ansible.builtin.template:
     src: "openvpn_conf.j2"
-    dest: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.ovpn' }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.ovpn' }}"
     mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query('[].openvpn_settings[]') |
-    flatten(levels=1) }}"
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
-    label: "{{ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ ovpn['name'] }}"
   vars:
     openvpn_inline_profile: "true"

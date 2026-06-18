@@ -3,7 +3,7 @@
 {{ '# Do not edit manually' }}
 
 {{ '[Unit]' }}
-{% for s in vars['openvpn_systemd_settings'] %}
+{% for s in lookup('ansible.builtin.vars', 'openvpn_systemd_settings') %}
 {% if s['restart_on_failure'] is defined and
   s['restart_on_failure'] == 'true' %}
 {% if s['start_limit_interval'] is defined and s['start_limit_interval'] %}
@@ -16,7 +16,7 @@
 {% endfor %}
 {{ '' }}
 {{ '[Service]' }}
-{% for s in vars['openvpn_systemd_settings'] %}
+{% for s in lookup('ansible.builtin.vars', 'openvpn_systemd_settings') %}
 {% if s['restart_on_failure'] is defined and
   s['restart_on_failure'] == 'true' %}
 {% if s['restart_mode'] is defined and s['restart_mode'] in ['on-success',

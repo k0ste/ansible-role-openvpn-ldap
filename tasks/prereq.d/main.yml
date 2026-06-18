@@ -6,24 +6,27 @@
   ansible.builtin.include_tasks:
     file: "prereq.d/filestore_delegation_host.yml"
   when:
-    - "vars['openvpn_ca_storage_type'] is defined"
-    - "vars['openvpn_ca_storage_type'] == 'file'"
+    - "lookup('ansible.builtin.vars', 'openvpn_ca_storage_type',
+      default='') == 'file'"
   run_once: true
 - name: "openvpn | Import pre requisite filestore instance tasks"
   ansible.builtin.include_tasks:
     file: "prereq.d/instance_facts.yml"
   when:
-    - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_instance'"
+    - "lookup('ansible.builtin.vars', 'openvpn_scenario', default='') ==
+      'deploy_instance'"
 - name: "openvpn | Import pre requisite create catalogs tasks"
   ansible.builtin.include_tasks:
     file: "prereq.d/create_catalogs.yml"
   when:
-    - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_instance'"
+    - "lookup('ansible.builtin.vars', 'openvpn_scenario', default='') ==
+      'deploy_instance'"
 - name: "openvpn | Import pre requisite deoloyment host tasks"
   ansible.builtin.include_tasks:
     file: "prereq.d/deployment_host_facts.yml"
   when:
-    - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_user'"
+    - "lookup('ansible.builtin.vars', 'openvpn_scenario', default='') ==
+      'deploy_user'"
 - name: "openvpn | Import pre requisite deplyment host catalogs tasks"
   ansible.builtin.include_tasks:
     file: "prereq.d/create_deployment_host_catalogs.yml"

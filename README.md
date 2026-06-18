@@ -1,10 +1,10 @@
 # ansible-role-openvpn-ldap
 
-Role for deploy OpenVPN server with AD/LDAP and/or OTP plugins support.
+Role for deploy OpenVPN server with AD/LDAP and/or OTP plugins support
 
 ## Requirements
 
-* Ansible 3.0.0;
+* Ansible 9.0.0;
 * OpenVPN 2.4+ with builtin `openvpn-client`/`openvpn-server` systemd services;
 * SMTP server for send to end-users configuration;
 * CA storage, is two options:

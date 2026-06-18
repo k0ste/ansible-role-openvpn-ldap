@@ -1,28 +1,32 @@
 ---
 - name: "openvpn | Gather facts about CA master"
   ansible.builtin.setup:
-  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
   delegate_facts: false
-  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
+  delegate_to: "{{ lookup('ansible.builtin.vars',
+    'openvpn_ca_storage_source')['delegate_host'] }}"
+  remote_user: "{{ lookup('ansible.builtin.vars',
+    'openvpn_ca_storage_source')['delegate_user'] }}"
 - name: "openvpn | Check CA master facts"
   ansible.builtin.assert:
     that:
-      - "hostvars[inventory_hostname]['ansible_os_family'] is defined"
+      - "hostvars[inventory_hostname]['ansible_facts']['os_family'] is defined"
     fail_msg: "Can't gather facts from CA master"
     quiet: "true"
 - name: "openvpn | Add the OS specific varibles"
   ansible.builtin.include_vars:
-    file:
-      "{{ hostvars[inventory_hostname]['ansible_os_family'] + '.yml' }}"
+    file: "{{ hostvars[inventory_hostname]['ansible_facts']['os_family'] +
+      '.yml' }}"
 - name: "openvpn | Set facts about CA master"
   ansible.builtin.set_fact:
     local_ca_master_os:
-      "{{ hostvars[inventory_hostname]['ansible_os_family'] }}"
+      "{{ hostvars[inventory_hostname]['ansible_facts']['os_family'] }}"
     local_ca_master_pkg_mgr:
-      "{{ hostvars[inventory_hostname]['ansible_pkg_mgr'] }}"
-    local_packages_master:
-      "{{ hostvars[inventory_hostname]['openvpn_packages_master'] }}"
-  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
+      "{{ hostvars[inventory_hostname]['ansible_facts']['pkg_mgr'] }}"
+    local_packages_master: "{{ lookup('ansible.builtin.vars',
+      'openvpn_packages_master') }}"
+  delegate_to: "{{ lookup('ansible.builtin.vars',
+    'openvpn_ca_storage_source')['delegate_host'] }}"
+  remote_user: "{{ lookup('ansible.builtin.vars',
+    'openvpn_ca_storage_source')['delegate_user'] }}"
 - name: "openvpn | Clear facts"
   ansible.builtin.meta: "clear_facts"

@@ -2,36 +2,42 @@
 - name: "openvpn | Assert that OpenVPN deployment scenario is defined"
   ansible.builtin.assert:
     that:
-      - "hostvars[inventory_hostname]['openvpn_scenario'] is defined"
-      - "hostvars[inventory_hostname]['openvpn_scenario'] in ['deploy_user',
-        'deploy_instance']"
+      - "lookup('ansible.builtin.vars', 'openvpn_scenario', default='') in
+        ['deploy_user', 'deploy_instance']"
     fail_msg: "'openvpn_scenario' is undefined or have unknown value"
-    success_msg: "{{ 'openvpn_scenario is: ' +
-      hostvars[inventory_hostname]['openvpn_scenario'] }}"
+    success_msg: "{{ 'openvpn_scenario is: ' + lookup('ansible.builtin.vars',
+      'openvpn_scenario', default='Unknown') }}"
     quiet: "true"
   when:
-    - "vars['openvpn_revoke_target'] is not defined"
+    - "lookup('ansible.builtin.vars', 'openvpn_revoke_target', default='')
+      not in ['', [], '[]', None]"
 - name: "openvpn | Assert that OpenVPN settings"
   ansible.builtin.assert:
     that:
-      - "hostvars[inventory_hostname]['openvpn'] is defined"
-      - "hostvars[inventory_hostname]['openvpn'] not in ['', [], None]"
-    fail_msg: "'openvpn' settings is not defined or empty."
+      - "lookup('ansible.builtin.vars', 'openvpn', default='')
+        not in ['', [], '[]', None]"
+    fail_msg: "'openvpn' settings is not defined or empty"
+    success_msg: "'openvpn' settings dictonary exists"
     quiet: "true"
 - name: "openvpn | Import instance deployment tasks"
   ansible.builtin.include_tasks:
     file: "scenarios.d/instance.yml"
   when:
-    - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_instance'"
-    - "vars['openvpn_revoke_target'] is not defined"
+    - "lookup('ansible.builtin.vars', 'openvpn_scenario',
+      default='') == 'deploy_instance'"
+    - "lookup('ansible.builtin.vars', 'openvpn_revoke_target', default='')
+      in ['', [], '[]', None]"
 - name: "openvpn | Import user deployment tasks"
   ansible.builtin.include_tasks:
     file: "scenarios.d/user.yml"
   when:
-    - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_user'"
-    - "vars['openvpn_revoke_target'] is not defined"
+    - "lookup('ansible.builtin.vars', 'openvpn_scenario',
+      default='') == 'deploy_user'"
+    - "lookup('ansible.builtin.vars', 'openvpn_revoke_target', default='')
+      in ['', [], '[]', None]"
 - name: "openvpn | Import CRL deployment tasks"
   ansible.builtin.include_tasks:
     file: "scenarios.d/crl.yml"
   when:
-    - "vars['openvpn_revoke_target'] is defined"
+    - "lookup('ansible.builtin.vars', 'openvpn_revoke_target', default='')
+      not in ['', [], '[]', None]"

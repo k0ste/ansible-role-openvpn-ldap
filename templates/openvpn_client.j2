@@ -1,29 +1,34 @@
 {{ 'client' }}
-{{ 'remote ' ~ item['remote'] }}
-{% if item['resolv_retry'] is defined and item['resolv_retry'] != '' %}
-{{ 'resolv-retry ' ~ item['resolv_retry'] }}
+{{ 'remote ' ~ ovpn['remote'] }}
+{% if ovpn['resolv_retry'] is defined and ovpn['resolv_retry']
+  not in ['', [], '[]', None] %}
+{{ 'resolv-retry ' ~ ovpn['resolv_retry'] }}
 {% endif %}
-{% if item['remote_random'] is defined and item['remote_random'] == 'true' %}
+{% if ovpn['remote_random'] is defined and ovpn['remote_random'] == 'true' %}
 {{ 'remote-random' }}
 {% endif %}
-{% if item['auth_nocache'] is defined and item['auth_nocache'] == 'true' %}
+{% if ovpn['auth_nocache'] is defined and ovpn['auth_nocache'] == 'true' %}
 {{ 'auth-nocache' }}
 {% endif %}
-{% if item['static_challenge'] is defined and item['static_challenge'] != '' %}
-{{ 'static-challenge \"' ~ item['static_challenge'] ~ '\" 1' }}
+{% if ovpn['static_challenge'] is defined and ovpn['static_challenge']
+  not in ['', [], '[]', None] %}
+{{ 'static-challenge \"' ~ ovpn['static_challenge'] ~ '\" 1' }}
 {% endif %}
-{% if item['tls_client'] is defined and item['tls_client'] == 'true' %}
+{% if ovpn['tls_client'] is defined and ovpn['tls_client'] == 'true' %}
 {{ 'tls-client' }}
-{% if item['tls_version_min'] is defined and item['tls_version_min'] != '' %}
-{{ 'tls-version-min ' ~ item['tls_version_min'] }}
+{% if ovpn['tls_version_min'] is defined and ovpn['tls_version_min']
+  not in ['', [], '[]', None] %}
+{{ 'tls-version-min ' ~ ovpn['tls_version_min'] }}
 {% endif %}
-{% if item['cipher'] is defined and item['cipher'] != '' %}
-{{ 'cipher ' ~ item['cipher'] }}
+{% if ovpn['cipher'] is defined and ovpn['cipher']
+  not in ['', [], '[]', None] %}
+{{ 'cipher ' ~ ovpn['cipher'] }}
 {% endif %}
-{% if item['keysize'] is defined and item['keysize'] != '' %}
-{{ 'keysize ' ~ item['keysize'] }}
+{% if ovpn['keysize'] is defined and ovpn['keysize']
+  not in ['', [], '[]', None] %}
+{{ 'keysize ' ~ ovpn['keysize'] }}
 {% endif %}
-{% if item['auth'] is defined and item['auth'] != '' %}
-{{ 'auth ' ~ item['auth'] }}
+{% if ovpn['auth'] is defined and ovpn['auth'] not in ['', [], '[]', None] %}
+{{ 'auth ' ~ ovpn['auth'] }}
 {% endif %}
 {% endif %}

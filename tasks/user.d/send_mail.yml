@@ -2,20 +2,31 @@
 - name: "openvpn | Send mail to client"
   community.general.mail:
     attach:
-      - "{{ vars['openvpn_local_fetch_dir'] + '/' ~
-            vars['openvpn_instance_name'] ~ '.zip' }}"
-      - "{{ vars['openvpn_local_fetch_dir'] + '/' ~
-            vars['openvpn_instance_name'] ~ '/' ~
-            vars['openvpn_instance_name'] ~ '.ovpn' }}"
-    body: "{{ vars['openvpn_email_settings']['body'] | default(omit) }}"
-    charset: "{{ vars['openvpn_email_settings']['charset'] | default(omit) }}"
-    from: "{{ vars['openvpn_email_settings']['from'] | default(omit) }}"
-    headers: "{{ vars['openvpn_email_settings']['headers'] | default(omit) }}"
-    host: "{{ vars['openvpn_email_settings']['host'] | default(omit) }}"
-    password: "{{ vars['openvpn_email_settings']['password'] | default(omit) }}"
-    port: "{{ vars['openvpn_email_settings']['port'] | default(omit) }}"
-    secure: "{{ vars['openvpn_email_settings']['secure'] | default(omit) }}"
-    subject: "{{ vars['openvpn_email_settings']['subject'] | default(omit) }}"
-    timeout: "{{ vars['openvpn_email_settings']['timeout'] | default(omit) }}"
-    to: "{{ vars['openvpn_ldap_user_mail'] }}"
-    username: "{{ vars['openvpn_email_settings']['username'] | default(omit) }}"
+      - "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' ~
+        lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.zip' }}"
+      - "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' ~
+        lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+        lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.ovpn' }}"
+    body: "{{ lookup('ansible.builtin.vars', 'openvpn_email_settings')['body'] |
+      default(omit) }}"
+    charset: "{{ lookup('ansible.builtin.vars',
+      'openvpn_email_settings')['charset'] | default(omit) }}"
+    from: "{{ lookup('ansible.builtin.vars',
+      'openvpn_email_settings')['from'] | default(omit) }}"
+    headers: "{{ lookup('ansible.builtin.vars',
+      'openvpn_email_settings')['headers'] | default(omit) }}"
+    host: "{{ lookup('ansible.builtin.vars',
+      'openvpn_email_settings')['host'] | default(omit) }}"
+    password: "{{ lookup('ansible.builtin.vars',
+      'openvpn_email_settings')['password'] | default(omit) }}"
+    port: "{{ lookup('ansible.builtin.vars',
+      'openvpn_email_settings')['port'] | default(omit) }}"
+    secure: "{{ lookup('ansible.builtin.vars',
+      'openvpn_email_settings')['secure'] | default(omit) }}"
+    subject: "{{ lookup('ansible.builtin.vars',
+      'openvpn_email_settings')['subject'] | default(omit) }}"
+    timeout: "{{ lookup('ansible.builtin.vars',
+      'openvpn_email_settings')['timeout'] | default(omit) }}"
+    to: "{{ lookup('ansible.builtin.vars', 'openvpn_ldap_user_mail') }}"
+    username: "{{ lookup('ansible.builtin.vars',
+      'openvpn_email_settings')['username'] | default(omit) }}"

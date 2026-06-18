@@ -1,19 +1,20 @@
 ---
 - name: "openvpn | Copy instance cert"
   ansible.builtin.copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.crt' }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn['type'] +
-      '_conf_dest'] ~ '/' ~ ovpn['name'] ~ '/tls' }}"
+    src: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.crt' }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn['type'] +
+      '_conf_dest') ~ '/' ~ ovpn['name'] ~ '/tls' }}"
     group: "{{ ovpn['group'] |
-      default(hostvars[inventory_hostname]['openvpn_group']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_group')) }}"
     owner: "{{ ovpn['user'] |
-      default(hostvars[inventory_hostname]['openvpn_user']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_user')) }}"
     mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
     label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
@@ -21,19 +22,20 @@
   ignore_errors: "{{ ansible_check_mode }}"
 - name: "openvpn | Copy instance key"
   ansible.builtin.copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.key' }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn['type'] +
-      '_conf_dest'] ~ '/' ~ ovpn['name'] ~ '/tls' }}"
+    src: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.key' }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn['type'] +
+      '_conf_dest') ~ '/' ~ ovpn['name'] ~ '/tls' }}"
     group: "{{ ovpn['group'] |
-      default(hostvars[inventory_hostname]['openvpn_group']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_group')) }}"
     owner: "{{ ovpn['user'] |
-      default(hostvars[inventory_hostname]['openvpn_user']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_user')) }}"
     mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
     label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
@@ -41,19 +43,21 @@
   ignore_errors: "{{ ansible_check_mode }}"
 - name: "openvpn | Copy root certificate to instance"
   ansible.builtin.copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~
-      vars['openvpn_ca_storage_source']['root_crt'] }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn['type'] +
-      '_conf_dest'] ~ '/' ~ ovpn['name'] ~ '/tls' }}"
+    src: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['root_crt'] }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn['type'] +
+      '_conf_dest') ~ '/' ~ ovpn['name'] ~ '/tls' }}"
     group: "{{ ovpn['group'] |
-      default(hostvars[inventory_hostname]['openvpn_group']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_group')) }}"
     owner: "{{ ovpn['user'] |
-      default(hostvars[inventory_hostname]['openvpn_user']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_user')) }}"
     mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
     label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
@@ -61,18 +65,20 @@
   ignore_errors: "{{ ansible_check_mode }}"
 - name: "openvpn | Copy takey to instance"
   ansible.builtin.copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ ovpn['tls_auth'] }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn['type'] +
-      '_conf_dest'] ~ '/' ~ ovpn['name'] ~ '/tls' }}"
+    src: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      ovpn['tls_auth'] }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn['type'] +
+      '_conf_dest') ~ '/' ~ ovpn['name'] ~ '/tls' }}"
     group: "{{ ovpn['group'] |
-      default(hostvars[inventory_hostname]['openvpn_group']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_group')) }}"
     owner: "{{ ovpn['user'] |
-      default(hostvars[inventory_hostname]['openvpn_user']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_user')) }}"
     mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
     label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
@@ -82,47 +88,51 @@
     - "ovpn['tls_auth'] is defined"
 - name: "openvpn | Copy DH to instance"
   ansible.builtin.copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ ovpn['dh'] }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn['type'] +
-      '_conf_dest'] + '/' ~ ovpn['name'] ~ '/tls' }}"
+    src: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      ovpn['dh'] }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn['type'] +
+      '_conf_dest') + '/' ~ ovpn['name'] ~ '/tls' }}"
     group: "{{ ovpn['group'] |
-      default(hostvars[inventory_hostname]['openvpn_group']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_group')) }}"
     owner: "{{ ovpn['user'] |
-      default(hostvars[inventory_hostname]['openvpn_user']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_user')) }}"
     mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
     label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   diff: false
   ignore_errors: "{{ ansible_check_mode }}"
   when:
-    - "vars['outer_item']['type'] == 'server'"
+    - "lookup('ansible.builtin.vars', 'outer_item')['type'] == 'server'"
     - "ovpn['dh'] is defined"
-    - "ovpn['dh'] not in ['', [], None]"
+    - "ovpn['dh'] not in ['', [], '[]', None]"
 - name: "openvpn | Copy TLS files for server instance"
   ansible.builtin.copy:
-    src: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ ovpn['crl_verify'] }}"
-    dest: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn['type'] +
-      '_conf_dest'] ~ '/' ~ ovpn['name'] ~ '/tls' }}"
+    src: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      ovpn['crl_verify'] }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn['type'] +
+      '_conf_dest') ~ '/' ~ ovpn['name'] ~ '/tls' }}"
     group: "{{ ovpn['group'] |
-      default(hostvars[inventory_hostname]['openvpn_group']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_group')) }}"
     owner: "{{ ovpn['user'] |
-      default(hostvars[inventory_hostname]['openvpn_user']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_user')) }}"
     mode: "0400"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
     label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   diff: false
   ignore_errors: "{{ ansible_check_mode }}"
   when:
-    - "vars['outer_item']['type'] == 'server'"
+    - "lookup('ansible.builtin.vars', 'outer_item')['type'] == 'server'"
     - "ovpn['crl_verify'] is defined"
-    - "ovpn['crl_verify'] not in ['', [], None]"
+    - "ovpn['crl_verify'] not in ['', [], '[]', None]"

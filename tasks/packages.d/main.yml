@@ -3,20 +3,23 @@
   ansible.builtin.include_tasks:
     file: "packages.d/filestore_master.yml"
   when:
-    - "vars['openvpn_revoke_target'] is not defined"
-    - "vars['openvpn_ca_storage_type'] == 'file'"
-    - "vars['openvpn_ca_storage_source']['delegate_host'] is defined"
-    - "vars['openvpn_ca_storage_source']['delegate_user'] is defined"
+    - "lookup('ansible.builtin.vars', 'openvpn_ca_storage_type',
+      default='') == 'file'"
+    - "lookup('ansible.builtin.vars', 'openvpn_revoke_target', default='') in
+      ['', [], '[]', None]"
+    - "lookup('ansible.builtin.vars', 'openvpn_ca_storage_source',
+      default='')['delegate_host'] not in ['', [], '[]', None]"
+    - "lookup('ansible.builtin.vars', 'openvpn_ca_storage_source',
+      default='')['delegate_user'] not in ['', [], '[]', None]"
 - name: "openvpn | Import filestore packages tasks [host]"
   ansible.builtin.include_tasks:
     file: "packages.d/host.yml"
   when:
-    - "hostvars[inventory_hostname]['openvpn'] is defined"
-    - "hostvars[inventory_hostname]['openvpn'] not in ['', [], None]"
-    - "hostvars[inventory_hostname]['openvpn'] |
-       community.general.json_query(vars['openvpn_install_package']) is defined"
-    - "hostvars[inventory_hostname]['openvpn'] |
-       community.general.json_query(vars['openvpn_install_package']) == 'true'"
-    - "hostvars[inventory_hostname]['openvpn_scenario'] == 'deploy_instance'"
+    - "lookup('ansible.builtin.vars', 'openvpn', default='') not in
+      ['', [], '[]', None]"
+    - "lookup('ansible.builtin.vars', 'openvpn') |
+       community.general.json_query(lookup('ansible.builtin.vars',
+      'openvpn_install_package', default='')) == 'true'"
+    - "lookup('ansible.builtin.vars', 'openvpn_scenario') == 'deploy_instance'"
   vars:
     openvpn_install_package: "[] | map(&install_package || 'false', @) | [0]"

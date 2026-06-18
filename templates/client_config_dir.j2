@@ -2,13 +2,14 @@
 {{ '# ' + ansible_managed }}
 {{ '# Do not edit manually' }}
 
-{% if ovpn['options'] is defined and ovpn['options'] not in ['', [], None] %}
+{% if ovpn['options'] is defined and ovpn['options']
+  not in ['', [], '[]', None] %}
 {% if ovpn['options'] is string %}
 {{ ovpn['options'] }}
 {% elif ovpn['options'] is sequence %}
 {% for o in ovpn['options'] %}
-{% if (o['action'] is defined and o['action'] not in ['', [], None]) and
-  (o['data'] is defined and o['data'] != '') %}
+{% if (o['action'] is defined and o['action'] not in ['', [], '[]', None]) and
+  (o['data'] is defined and o['data'] not in ['', [], '[]', None]) %}
 {{ o['action'] ~ ' \"' ~ o['data'] ~ '\"' }}
 {% endif %}
 {% endfor %}

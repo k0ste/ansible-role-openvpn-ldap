@@ -1,14 +1,14 @@
-{{ '## openvpn-' + item['type'] + '@' ~ item['name'] -}}
-{% if vars['openvpn_inline_profile'] is defined and
-  vars['openvpn_inline_profile'] == 'true' %}{{ '.ovpn' }}
+{{ '## openvpn-' + ovpn['type'] + '@' ~ ovpn['name'] -}}
+{% if lookup('ansible.builtin.vars', 'openvpn_inline_profile',
+  default='')  == 'true' %}{{ '.ovpn' }}
 {% else %}{{ '.conf' }}
 {% endif %}
 {{ '# ' + ansible_managed }}
 {{ '# Do not edit manually' }}
 
 {% include 'openvpn_global.j2' %}
-{% if item['type'] == 'client' %}
+{% if ovpn['type'] == 'client' %}
 {% include 'openvpn_client.j2' %}
-{% elif item['type'] == 'server' %}
+{% elif ovpn['type'] == 'server' %}
 {% include 'openvpn_server.j2' %}
 {% endif %}

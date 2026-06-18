@@ -3,28 +3,29 @@
   ansible.builtin.setup:
 - name: "openvpn | Add the OS specific varibles"
   ansible.builtin.include_vars:
-    file: "{{ hostvars[inventory_hostname]['ansible_os_family'] + '.yml' }}"
+    file: "{{ hostvars[inventory_hostname]['ansible_facts']['os_family'] +
+      '.yml' }}"
 - name: "openvpn | Assert FQDN fact"
   ansible.builtin.assert:
     that:
-      - "hostvars[inventory_hostname]['ansible_nodename'] is defined"
-      - "hostvars[inventory_hostname]['ansible_nodename'] is
+      - "hostvars[inventory_hostname]['ansible_facts']['nodename'] is defined"
+      - "hostvars[inventory_hostname]['ansible_facts']['nodename'] is
           community.general.fqdn_valid(min_labels=2)"
     fail_msg: "Ansible FQDN variable not found"
     success_msg: "{{ 'FQDN is: ' +
-      hostvars[inventory_hostname]['ansible_nodename'] }}"
+      hostvars[inventory_hostname]['ansible_facts']['nodename'] }}"
     quiet: "true"
   delegate_to: "localhost"
 - name: "openvpn | Set facts about client/server instance [Facter 3]"
   ansible.builtin.set_fact:
     openvpn_instance_name:
-      "{{ hostvars[inventory_hostname]['ansible_nodename'] }}"
+      "{{ hostvars[inventory_hostname]['ansible_facts']['nodename'] }}"
 - name: "openvpn | Check users exists on target, otherwise try to install
     packages"
   block:
     - name: "openvpn | Check OpenVPN user exists"
       ansible.builtin.getent:
-        key: "{{ hostvars[inventory_hostname]['openvpn_user'] }}"
+        key: "{{ lookup('ansible.builtin.vars', 'openvpn_user') }}"
         database: "passwd"
   rescue:
     - name: "openvpn | Tries to install packages because system user doesn't

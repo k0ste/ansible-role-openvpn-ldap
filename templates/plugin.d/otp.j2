@@ -1,48 +1,54 @@
-{% for p in item.plugins %}
-{% for potp in p.otp %}
-{% if potp.options is defined and potp.options != '' %}
-{% for po in potp.options %}
-{% if loop.first %}
-{{ 'plugin \"' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~
-  '/' ~ hostvars[inventory_hostname]['openvpn_plugin_otp_name'] ~
-  '\" \"otp_secrets=' ~
-  hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
-  item.name ~ '/otp_secrets' -}}
+{% for p in ovpn['plugins'] %}
+{% for potp in p['otp'] %}
+{% if potp['options'] is defined and potp['options']
+  not in ['', [], '[]', None] %}
+{% for po in potp['options'] %}
+{% if loop['first'] %}
+{{ 'plugin \"' ~ lookup('ansible.builtin.vars', 'openvpn_plugin_path') ~
+  '/' ~ lookup('ansible.builtin.vars', 'openvpn_plugin_otp_name') ~
+  '\" \"otp_secrets=' ~ lookup('ansible.builtin.vars',
+  'openvpn_server_conf_dest') + '/' ~ ovpn['name'] ~ '/otp_secrets' -}}
 {% endif %}
-{% if po.otp_slop is defined and po.otp_slop != '' %}
-{{ ' otp_slop=' ~ po.otp_slop -}}
+{% if po['otp_slop'] is defined and po['otp_slop']
+  not in ['', [], '[]', None] %}
+{{ ' otp_slop=' ~ po['otp_slop'] -}}
 {% endif %}
-{% if po.totp_t0 is defined and po.totp_t0 != '' %}
-{{ ' totp_t0=' ~ po.totp_t0 -}}
+{% if po['totp_t0'] is defined and po['totp_t0']
+  not in ['', [], '[]', None] %}
+{{ ' totp_t0=' ~ po['totp_t0'] -}}
 {% endif %}
-{% if po.totp_step is defined and po.totp_step != '' %}
-{{ ' totp_step=' ~ po.totp_step -}}
+{% if po['totp_step'] is defined and po['totp_step']
+  not in ['', [], '[]', None] %}
+{{ ' totp_step=' ~ po['totp_step'] -}}
 {% endif %}
-{% if po.totp_digits is defined and po.totp_digits != '' %}
-{{ ' totp_digits=' ~ po.totp_digits -}}
+{% if po['totp_digits'] is defined and po['totp_digits']
+  not in ['', [], '[]', None] %}
+{{ ' totp_digits=' ~ po['totp_digits'] -}}
 {% endif %}
-{% if po.motp_step is defined and po.motp_step != '' %}
-{{ ' motp_step=' ~ po.motp_step -}}
+{% if po['motp_step'] is defined and po['motp_step']
+  not in ['', [], '[]', None] %}
+{{ ' motp_step=' ~ po['motp_step'] -}}
 {% endif %}
-{% if po.hotp_syncwindow is defined and po.hotp_syncwindow != '' %}
-{{ ' hotp_syncwindow=' ~ po.hotp_syncwindow -}}
+{% if po['hotp_syncwindow'] is defined and po['hotp_syncwindow']
+  not in ['', [], '[]', None] %}
+{{ ' hotp_syncwindow=' ~ po['hotp_syncwindow'] -}}
 {% endif %}
-{% if po.debug is defined and po.debug in ['true', 'false', 1, 0] %}
-{% if po.debug in ['true', 1] %}
+{% if po['debug'] is defined and po['debug'] in ['true', 'false', 1, 0] %}
+{% if po['debug'] in ['true', 1] %}
 {{ ' ' ~ 'debug=1' -}}
-{% elif po.debug in ['false', 0] %}
+{% elif po['debug'] in ['false', 0] %}
 {{ ' ' ~ 'debug=0' -}}
 {% endif %}
 {% endif %}
-{% if po.password_is_cr is defined and po.password_is_cr in
+{% if po['password_is_cr'] is defined and po['password_is_cr'] in
   ['true', 'false', 1, 0] %}
-{% if po.password_is_cr in ['true', 1] %}
+{% if po['password_is_cr'] in ['true', 1] %}
 {{ ' password_is_cr=1' -}}
-{% elif po.password_is_cr in ['false', 0] %}
+{% elif po['password_is_cr'] in ['false', 0] %}
 {{ ' password_is_cr=0' -}}
 {% endif %}
 {% endif %}
-{% if loop.last %}
+{% if loop['last'] %}
 {{ '\"' }}
 {% endif %}
 {% endfor %}

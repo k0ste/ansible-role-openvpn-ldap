@@ -1,22 +1,22 @@
 ---
-- name: "openvpn | Delete fetched files"
-  ansible.builtin.file:
-    path: "{{ vars['openvpn_local_fetch_dir'] + '/' +
-      vars['openvpn_instance_name'] }}"
-    state: "absent"
-  listen: "Delete fetched files"
-  become: "false"
-  delegate_to: "localhost"
-  run_once: "true"
 - name: "openvpn | Delete user archive"
   ansible.builtin.file:
-    path: "{{ vars['openvpn_local_fetch_dir'] + '/' +
-      vars['openvpn_instance_name'] ~ '.zip' }}"
+    path: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' +
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.zip' }}"
     state: "absent"
   listen: "Delete user archive"
-  become: "false"
   delegate_to: "localhost"
-  run_once: "true"
+  become: false
+  run_once: true
+- name: "openvpn | Delete fetched files"
+  ansible.builtin.file:
+    path: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' +
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') }}"
+    state: "absent"
+  listen: "Delete fetched files"
+  delegate_to: "localhost"
+  become: false
+  run_once: true
 - name: "openvpn | Delete temp openssl.conf"
   ansible.builtin.file:
     path: "/tmp/openssl.conf"
@@ -28,20 +28,21 @@
   listen: "Daemon reload"
 - name: "openvpn | Restart OpenVPN"
   ansible.builtin.systemd:
-    name: "{{ hostvars[inventory_hostname]['openvpn_' + item['type'] +
-      '_service'] ~ item['name'] }}"
+    name: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn['type'] +
+      '_service') ~ ovpn['name'] }}"
     state: "restarted"
   listen: "Restart OpenVPN"
-  loop: "{{ vars['openvpn_instances'] | flatten(levels=1) }}"
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn_instances') |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
-    label: "{{ 'openvpn-' + item['type'] + ': ' ~ item['name'] }}"
+    loop_var: "ovpn"
+    label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   when:
-    - "hostvars[inventory_hostname]['openvpn'] is defined"
-    - "hostvars[inventory_hostname]['openvpn'] not in ['', [], None]"
-    - "hostvars[inventory_hostname]['openvpn'] |
-       community.general.json_query(vars['openvpn_restart']) is defined"
-    - "hostvars[inventory_hostname]['openvpn'] |
-       community.general.json_query(vars['openvpn_restart']) == 'true'"
-    - "item['name'] not in ['', [], None]"
+    - "lookup('ansible.builtin.vars', 'openvpn', default='')
+      not in ['', [], '[]', None]"
+    - "lookup('ansible.builtin.vars', 'openvpn') |
+       community.general.json_query(lookup('ansible.builtin.vars',
+      'openvpn_restart', default='')) == 'true'"
+    - "ovpn['name'] not in ['', [], '[]', None]"
   vars:
     openvpn_restart: "[] | map(&restart || 'false', @) | [0]"

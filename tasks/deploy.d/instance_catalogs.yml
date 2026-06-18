@@ -1,49 +1,51 @@
 ---
 - name: "openvpn | Create client config catalogs"
   ansible.builtin.file:
-    path: "{{ hostvars[inventory_hostname]['openvpn_server_conf_dest'] + '/' ~
-      vars['outer_item']['name'] }}"
+    path: "{{ lookup('ansible.builtin.vars', 'openvpn_server_conf_dest') + '/' ~
+      lookup('ansible.builtin.vars', 'outer_item')['name'] }}"
     state: "directory"
-    group: "{{ outer_item['group'] |
-      default(hostvars[inventory_hostname]['openvpn_group']) }}"
-    owner: "{{ outer_item['user'] |
-      default(hostvars[inventory_hostname]['openvpn_user']) }}"
+    group: "{{ lookup('ansible.builtin.vars', 'outer_item')['group'] |
+      default(lookup('ansible.builtin.vars', 'openvpn_group')) }}"
+    owner: "{{ lookup('ansible.builtin.vars', 'outer_item')['user'] |
+      default(lookup('ansible.builtin.vars', 'openvpn_user')) }}"
     mode: "0750"
   when:
-    - "vars['outer_item']['type'] == 'server'"
-    - "vars['outer_item']['ccd'] is defined"
-    - "vars['outer_item']['ccd'] == 'true'"
+    - "lookup('ansible.builtin.vars', 'outer_item')['type'] == 'server'"
+    - "lookup('ansible.builtin.vars', 'outer_item')['ccd'] is defined"
+    - "lookup('ansible.builtin.vars', 'outer_item')['ccd'] == 'true'"
 - name: "openvpn | Create tls catalogs"
   ansible.builtin.file:
-    path: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn['type'] +
-      '_conf_dest'] ~ '/' ~ ovpn['name'] ~ '/tls' }}"
+    path: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn['type'] +
+      '_conf_dest') ~ '/' ~ ovpn['name'] ~ '/tls' }}"
     state: "directory"
     group: "{{ ovpn['group'] |
-      default(hostvars[inventory_hostname]['openvpn_group']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_group')) }}"
     owner: "{{ ovpn['user'] |
-      default(hostvars[inventory_hostname]['openvpn_user']) }}"
+      default(lookup('ansible.builtin.vars', 'openvpn_user')) }}"
     mode: "0750"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
     label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
 - name: "openvpn | Create systemd service override catalogs"
   ansible.builtin.file:
     path: "{{ '/etc/systemd/system/' +
-      hostvars[inventory_hostname]['openvpn_' + ovpn['type'] + '_service'] +
+      lookup('ansible.builtin.vars', 'openvpn_' + ovpn['type'] + '_service') +
       ovpn['name'] + '.service.d' }}"
     state: "directory"
     owner: "root"
     group: "root"
     mode: "0644"
-  loop: "{{ hostvars[inventory_hostname]['openvpn'] |
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn') |
     community.general.json_query(\"[].openvpn_settings[?name=='\" ~
-    vars['outer_item']['name'] ~ \"']\") | flatten(levels=1) }}"
+    lookup('ansible.builtin.vars', 'outer_item')['name'] ~ \"']\") |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
     label: "{{ 'openvpn-' + ovpn['type'] + ': ' ~ ovpn['name'] }}"
   when:
-    - "vars['openvpn_systemd_override'] is defined"
-    - "vars['openvpn_systemd_override'] == 'true'"
+    - "lookup('ansible.builtin.vars', 'openvpn_systemd_override', default='')
+      == 'true'"

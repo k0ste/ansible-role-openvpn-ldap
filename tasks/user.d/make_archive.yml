@@ -1,12 +1,13 @@
 ---
 - name: "openvpn | Make archive for mail message"
   community.general.archive:
-    path: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
-      vars['openvpn_instance_name'] }}"
-    dest: "{{ vars['openvpn_local_fetch_dir'] + '/' ~
-      vars['openvpn_instance_name'] ~ '.zip' }}"
+    path: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') }}"
+    dest: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') + '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.zip' }}"
     format: "zip"
     exclude_path: "*.ovpn"
     mode: "0644"
   notify:
     - "Delete user archive"
+    - "Delete fetched files"

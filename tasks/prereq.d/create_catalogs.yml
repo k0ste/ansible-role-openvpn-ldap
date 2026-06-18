@@ -1,55 +1,60 @@
 ---
 - name: "openvpn | Create OpenVPN configuration dir"
   ansible.builtin.file:
-    path: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn + '_conf_dest'] }}"
+    path: "{{ lookup('ansible.builtin.vars',
+      'openvpn_' + ovpn + '_conf_dest') }}"
     state: "directory"
-    owner: "{{ hostvars[inventory_hostname]['openvpn_user'] }}"
-    group: "{{ hostvars[inventory_hostname]['openvpn_group'] }}"
+    owner: "{{ lookup('ansible.builtin.vars', 'openvpn_user') }}"
+    group: "{{ lookup('ansible.builtin.vars', 'openvpn_group') }}"
     mode: "0755"
-  loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn_instances_types') |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
-    label: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn +
-      '_conf_dest'] }}"
+    label: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn +
+      '_conf_dest') }}"
 - name: "openvpn | Create OpenVPN static pool dir"
   ansible.builtin.file:
-    path: "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
+    path: "{{ lookup('ansible.builtin.vars', 'openvpn_pool_dest') }}"
     state: "directory"
-    owner: "{{ hostvars[inventory_hostname]['openvpn_user'] }}"
-    group: "{{ hostvars[inventory_hostname]['openvpn_group'] }}"
+    owner: "{{ lookup('ansible.builtin.vars', 'openvpn_user') }}"
+    group: "{{ lookup('ansible.builtin.vars', 'openvpn_group') }}"
     mode: "0755"
-  loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn_instances_types') |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
-    label: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn +
-      '_conf_dest'] }}"
+    label: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn +
+      '_conf_dest') }}"
   when:
     - "ovpn == 'server'"
 - name: "openvpn | Create OpenVPN status dir"
   ansible.builtin.file:
-    path: "{{ hostvars[inventory_hostname]['openvpn_pool_dest'] }}"
+    path: "{{ lookup('ansible.builtin.vars', 'openvpn_pool_dest') }}"
     state: "directory"
-    owner: "{{ hostvars[inventory_hostname]['openvpn_user'] }}"
-    group: "{{ hostvars[inventory_hostname]['openvpn_group'] }}"
+    owner: "{{ lookup('ansible.builtin.vars', 'openvpn_user') }}"
+    group: "{{ lookup('ansible.builtin.vars', 'openvpn_group') }}"
     mode: "0755"
-  loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn_instances_types') |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
-    label: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn +
-      '_conf_dest'] }}"
+    label: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn +
+      '_conf_dest') }}"
   when:
     - "ovpn == 'server'"
 - name: "openvpn | Create OpenVPN OTP counters dir"
   ansible.builtin.file:
-    path: "{{ hostvars[inventory_hostname]['openvpn_plugin_otp_dest'] }}"
+    path: "{{ lookup('ansible.builtin.vars', 'openvpn_plugin_otp_dest') }}"
     state: "directory"
-    owner: "{{ hostvars[inventory_hostname]['openvpn_user'] }}"
-    group: "{{ hostvars[inventory_hostname]['openvpn_group'] }}"
+    owner: "{{ lookup('ansible.builtin.vars', 'openvpn_user') }}"
+    group: "{{ lookup('ansible.builtin.vars', 'openvpn_group') }}"
     mode: "0755"
-  loop: "{{ vars['openvpn_instances_types'] | flatten(levels=1) }}"
+  loop: "{{ lookup('ansible.builtin.vars', 'openvpn_instances_types') |
+    ansible.builtin.flatten(levels=1) }}"
   loop_control:
     loop_var: "ovpn"
-    label: "{{ hostvars[inventory_hostname]['openvpn_' + ovpn +
-      '_conf_dest'] }}"
+    label: "{{ lookup('ansible.builtin.vars', 'openvpn_' + ovpn +
+      '_conf_dest') }}"
   when:
     - "ovpn == 'server'"

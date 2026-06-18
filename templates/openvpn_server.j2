@@ -1,112 +1,125 @@
-{{ 'port ' ~ item['port'] }}
-{{ 'server ' ~ item['server'] }}
-{% if vars['openvpn_inline_profile'] is defined and
-  vars['openvpn_inline_profile'] == 'true' %}
+{{ 'port ' ~ ovpn['port'] }}
+{{ 'server ' ~ ovpn['server'] }}
+{% if lookup('ansible.builtin.vars', 'openvpn_inline_profile',
+  default='') == 'true' %}
 {{ '<dh>' }}
-{{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
-  vars['openvpn_instance_name'] ~ '/' ~ item['dh']) }}
+{{ lookup('file', lookup('ansible.builtin.vars',
+  'openvpn_local_fetch_dir') ~ '/' ~ lookup('ansible.builtin.vars',
+  'openvpn_instance_name') ~ '/' ~ ovpn['dh']) }}
 {{ '</dh>' }}
 {% else %}
-{{ 'dh ' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
-    item['name'] ~ '/tls/' ~ item['dh'] }}
+{{ 'dh ' ~ lookup('ansible.builtin.vars', 'openvpn_server_conf_dest') ~ '/' ~
+  ovpn['name'] ~ '/tls/' ~ ovpn['dh'] }}
 {% endif %}
-{% if item['crl_verify'] is defined and item['crl_verify'] != '' %}
-{% if vars['openvpn_inline_profile'] is defined and
-  vars['openvpn_inline_profile'] == 'true' %}
+{% if ovpn['crl_verify'] is defined and ovpn['crl_verify']
+  not in ['', [], '[]', None] %}
+{% if lookup('ansible.builtin.vars', 'openvpn_inline_profile') is defined and
+  lookup('ansible.builtin.vars', 'openvpn_inline_profile') == 'true' %}
 {{ '<crl-verify>' }}
-{{ lookup ('file', vars['openvpn_local_fetch_dir'] ~ '/' ~
-  vars['openvpn_instance_name'] ~ '/' ~ item['crl_verify']) }}
+{{ lookup('file', lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~
+  '/' ~ lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+  ovpn['crl_verify']) }}
 {{ '</crl-verify>' }}
 {% else %}
-{{ 'crl-verify' ~ ' ' ~
-    hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
-    item['name'] ~ '/tls/' ~ item['crl_verify'] }}
+{{ 'crl-verify' ~ ' ' ~ lookup('ansible.builtin.vars',
+  'openvpn_server_conf_dest') ~ '/' ~ ovpn['name'] ~ '/tls/' ~
+  ovpn['crl_verify'] }}
 {% endif %}
 {% endif %}
-{% if item['verify_client_cert'] is defined and
-      item['verify_client_cert'] in ['none', 'optional', 'require'] %}
-{{ 'verify-client-cert ' + item['verify_client_cert'] }}
+{% if ovpn['verify_client_cert'] is defined and
+  ovpn['verify_client_cert'] in ['none', 'optional', 'require'] %}
+{{ 'verify-client-cert ' + ovpn['verify_client_cert'] }}
 {% endif %}
-{% if item['duplicate_cn'] is defined and item['duplicate_cn'] == 'true' %}
+{% if ovpn['duplicate_cn'] is defined and ovpn['duplicate_cn'] == 'true' %}
 {{ 'duplicate-cn' }}
 {% endif %}
-{% if item['multihome'] is defined and item['multihome'] == 'true' %}
+{% if ovpn['multihome'] is defined and ovpn['multihome'] == 'true' %}
 {{ 'multihome' }}
 {% endif %}
-{% if item['management'] is defined and item['management'] != '' %}
-{{ 'management ' + item['management'] }}
+{% if ovpn['management'] is defined and ovpn['management']
+  not in ['', [], '[]', None] %}
+{{ 'management ' + ovpn['management'] }}
 {% endif %}
-{% if item['username_as_common_name'] and item['username_as_common_name'] == 'true' %}
+{% if ovpn['username_as_common_name'] is defined and
+  ovpn['username_as_common_name'] == 'true' %}
 {{ 'username-as-common-name' }}
 {% endif %}
-{% if item['max_clients'] is defined and item['max_clients'] != '' %}
-{{ 'max-clients ' ~ item['max_clients'] }}
+{% if ovpn['max_clients'] is defined and ovpn['max_clients']
+  not in ['', [], '[]', None] %}
+{{ 'max-clients ' ~ ovpn['max_clients'] }}
 {% endif %}
-{% if item['replay_window'] is defined and item['replay_window'] != '' %}
-{{ 'replay-window ' ~ item['replay_window'] }}
+{% if ovpn['replay_window'] is defined and ovpn['replay_window']
+  not in ['', [], '[]', None] %}
+{{ 'replay-window ' ~ ovpn['replay_window'] }}
 {% endif %}
-{% if item['client_to_client'] is defined and item['client_to_client'] == 'true' %}
+{% if ovpn['client_to_client'] is defined and
+  ovpn['client_to_client'] == 'true' %}
 {{ 'client-to-client' }}
 {% endif %}
-{% if item['mute_replay_warnings'] is defined and
-      item['mute_replay_warnings'] == 'true' %}
+{% if ovpn['mute_replay_warnings'] is defined and
+  ovpn['mute_replay_warnings'] == 'true' %}
 {{ 'mute-replay-warnings' }}
 {% endif %}
-{% if item['ifconfig_pool_persist'] is defined and
-  item['ifconfig_pool_persist'] == 'true' %}
-{{ 'ifconfig-pool-persist ' ~
-  hostvars[inventory_hostname]['openvpn_pool_dest'] ~ '/' ~ item['name'] ~
-  '.pool' }}
+{% if ovpn['ifconfig_pool_persist'] is defined and
+  ovpn['ifconfig_pool_persist'] == 'true' %}
+{{ 'ifconfig-pool-persist ' ~ lookup('ansible.builtin.vars',
+  'openvpn_pool_dest') ~ '/' ~ ovpn['name'] ~ '.pool' }}
 {% endif %}
-{% if item['status'] is defined and item['status'] != '' %}
-{{ 'status ' ~ hostvars[inventory_hostname]['openvpn_status_dest'] ~ '/' ~
-  item['name'] ~ '.status' }}
+{% if ovpn['status'] is defined and ovpn['status']
+  not in ['', [], '[]', None] %}
+{{ 'status ' ~ lookup('ansible.builtin.vars', 'openvpn_status_dest') ~ '/' ~
+  ovpn['name'] ~ '.status' }}
 {% endif %}
-{% if item['client_config_dir'] is defined and item['client_config_dir'] != '' %}
-{{ 'client-config-dir ' + hostvars[inventory_hostname]['openvpn_' + item['type'] +
-  '_conf_dest'] + '/' ~ item['name'] }}
+{% if ovpn['client_config_dir'] is defined and ovpn['client_config_dir']
+  not in ['', [], '[]', None] %}
+{{ 'client-config-dir ' + lookup('ansible.builtin.vars', 'openvpn_' +
+  ovpn['type'] + '_conf_dest') + '/' ~ ovpn['name'] }}
 {% endif %}
-{% if item['ccd_exclusive'] is defined and item['ccd_exclusive'] == 'true' %}
+{% if ovpn['ccd_exclusive'] is defined and ovpn['ccd_exclusive'] == 'true' %}
 {{ 'ccd-exclusive' }}
 {% endif %}
-{% if item['tls_server'] is defined and item['tls_server'] == 'true' %}
+{% if ovpn['tls_server'] is defined and ovpn['tls_server'] == 'true' %}
 {{ 'tls-server' }}
-{% if item['tls_version_min'] is defined and item['tls_version_min'] != '' %}
-{{ 'tls-version-min ' ~ item['tls_version_min'] }}
+{% if ovpn['tls_version_min'] is defined and ovpn['tls_version_min']
+  not in ['', [], '[]', None] %}
+{{ 'tls-version-min ' ~ ovpn['tls_version_min'] }}
 {% endif %}
-{% if item['cipher'] is defined and item['cipher'] != '' %}
-{{ 'cipher ' ~ item['cipher'] }}
+{% if ovpn['cipher'] is defined and ovpn['cipher']
+  not in ['', [], '[]', None] %}
+{{ 'cipher ' ~ ovpn['cipher'] }}
 {% endif %}
-{% if item['keysize'] is defined and item['keysize'] != '' %}
-{{ 'keysize ' ~ item['keysize'] }}
+{% if ovpn['keysize'] is defined and ovpn['keysize']
+  not in ['', [], '[]', None] %}
+{{ 'keysize ' ~ ovpn['keysize'] }}
 {% endif %}
-{% if item['auth'] is defined and item['auth'] != '' %}
-{{ 'auth ' ~ item['auth'] }}
+{% if ovpn['auth'] is defined and ovpn['auth'] not in ['', [], '[]', None] %}
+{{ 'auth ' ~ ovpn['auth'] }}
 {% endif %}
 {% endif %}
-{% if vars['outer_item'].plugin_auth_ldap is defined and
-      vars['outer_item'].plugin_auth_ldap == 'true' %}
-{{ 'plugin \"' ~ hostvars[inventory_hostname]['openvpn_plugin_path'] ~
-    '/' ~ hostvars[inventory_hostname]['openvpn_plugin_auth_ldap_name'] ~
-    '\" \"' ~ hostvars[inventory_hostname]['openvpn_server_conf_dest'] ~ '/' ~
-    item['name'] ~ '/' ~ 'auth_ldap.conf\"' }}
+{% if lookup('ansible.builtin.vars',
+  'outer_item')['plugin_auth_ldap'] is defined and
+  lookup('ansible.builtin.vars', 'outer_item')['plugin_auth_ldap'] == 'true' %}
+{{ 'plugin \"' ~ lookup('ansible.builtin.vars', 'openvpn_plugin_path') ~ '/' ~
+  lookup('ansible.builtin.vars', 'openvpn_plugin_auth_ldap_name') ~ '\" \"' ~
+  lookup('ansible.builtin.vars', 'openvpn_server_conf_dest') ~ '/' ~
+  ovpn['name'] ~ '/auth_ldap.conf\"' }}
 {% endif %}
-{% if vars['outer_item']['plugin_otp'] is defined and
-  vars['outer_item']['plugin_otp'] == 'true' %}
+{% if lookup('ansible.builtin.vars', 'outer_item')['plugin_otp'] is defined and
+  lookup('ansible.builtin.vars', 'outer_item')['plugin_otp'] == 'true' %}
 {% include 'plugin.d/otp.j2' %}
 {% endif %}
-{% if item['push'] is defined and item['push'] != '' %}
-{% for p in item['push'] %}
-{% if p.action is defined and p.action in ['route', 'route-gateway',
+{% if ovpn['push'] is defined and ovpn['push'] not in ['', [], '[]', None] %}
+{% for p in ovpn['push'] %}
+{% if p['action'] is defined and p['action'] in ['route', 'route-gateway',
   'route-delay', 'redirect-gateway', 'ip-win32', 'dhcp-option', 'inactive',
   'ping', 'ping-exit', 'ping-restart', 'setenv', 'auth-token', 'persist-key',
   'persist-tun', 'echo', 'compress', 'socket-flags', 'sndbuf', 'rcvbuf'] %}
-{% if p.data in ['true', 'false'] %}
-{% if p.data == 'true' %}
-{{ 'push \"' ~ p.action ~ '\"' }}
+{% if p['data'] in ['true', 'false'] %}
+{% if p['data'] == 'true' %}
+{{ 'push \"' ~ p['action'] ~ '\"' }}
 {% endif %}
 {% else %}
-{{ 'push \"' ~ p.action ~ ' ' ~ p.data ~ '\"' }}
+{{ 'push \"' ~ p['action'] ~ ' ' ~ p['data'] ~ '\"' }}
 {% endif %}
 {% endif %}
 {% endfor %}

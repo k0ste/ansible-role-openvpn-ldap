@@ -1,50 +1,54 @@
 ---
 - name: "openvpn | Generate private key for CA (S3)"
   community.crypto.openssl_privatekey:
-    type: "{{ vars['openvpn_ca_storage_source']['crypto_type'] |
-      default(omit) }}"
-    curve: "{{ vars['openvpn_ca_storage_source']['crypto_curve'] |
-      default(omit) }}"
-    path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.key' }}"
+    type: "{{ lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['crypto_type'] | default(omit) }}"
+    curve: "{{ lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['crypto_curve'] | default(omit) }}"
+    path: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.key' }}"
   diff: false
 - name: "openvpn | Generate certificate signing request for CA (S3)"
   community.crypto.openssl_csr:
-    common_name: "{{ vars['openvpn_instance_name'] }}"
-    country_name: "{{ vars['openvpn_csr_settings']['country_name'] |
-      default(omit) }}"
-    state_or_province_name: "{{
-      vars['openvpn_csr_settings']['openvpn_csr_state'] | default(omit) }}"
-    locality_name: "{{ vars['openvpn_csr_settings']['locality_name'] |
-      default(omit) }}"
-    organization_name: "{{ vars['openvpn_csr_settings']['organization_name'] |
-      default(omit) }}"
-    organizational_unit_name: "{{
-      vars['openvpn_csr_settings']['organization_unit'] | default(omit) }}"
-    path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.csr' }}"
-    privatekey_path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.key' }}"
+    common_name: "{{ lookup('ansible.builtin.vars', 'openvpn_instance_name') }}"
+    country_name: "{{ lookup('ansible.builtin.vars',
+      'openvpn_csr_settings')['country_name'] | default(omit) }}"
+    state_or_province_name: "{{ lookup('ansible.builtin.vars',
+      'openvpn_csr_settings')['openvpn_csr_state'] | default(omit) }}"
+    locality_name: "{{ lookup('ansible.builtin.vars',
+      'openvpn_csr_settings')['locality_name'] | default(omit) }}"
+    organization_name: "{{ lookup('ansible.builtin.vars',
+      'openvpn_csr_settings')['organization_name'] | default(omit) }}"
+    organizational_unit_name: "{{ lookup('ansible.builtin.vars',
+      'openvpn_csr_settings')['organization_unit'] | default(omit) }}"
+    path: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.csr' }}"
+    privatekey_path: "{{ lookup('ansible.builtin.vars',
+      'openvpn_local_fetch_dir') ~ '/' ~ lookup('ansible.builtin.vars',
+      'openvpn_instance_name') ~ '/' ~ lookup('ansible.builtin.vars',
+      'openvpn_instance_name') ~ '.key' }}"
   diff: false
 - name: "openvpn | Generate certificate for CA (S3)"
   community.crypto.x509_certificate:
-    csr_path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.csr' }}"
-    ownca_path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~
-      vars['openvpn_ca_storage_source']['root_crt'] }}"
-    ownca_privatekey_path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~
-      vars['openvpn_ca_storage_source']['root_key'] }}"
-    path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.crt' }}"
-    privatekey_path: "{{ vars['openvpn_local_fetch_dir'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '/' ~ vars['openvpn_instance_name'] ~
-      '.key' }}"
+    csr_path: "{{ lookup('ansible.builtin.vars',
+      'openvpn_local_fetch_dir') ~ '/' ~ lookup('ansible.builtin.vars',
+      'openvpn_instance_name') ~ '/' ~ lookup('ansible.builtin.vars',
+      'openvpn_instance_name') ~ '.csr' }}"
+    ownca_path: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~
+      '/' ~ lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_ca_storage_source')['root_crt'] }}"
+    ownca_privatekey_path: "{{ lookup('ansible.builtin.vars',
+      'openvpn_local_fetch_dir') ~ '/' ~ lookup('ansible.builtin.vars',
+      'openvpn_instance_name') ~ '/' ~ lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['root_key'] }}"
+    path: "{{ lookup('ansible.builtin.vars', 'openvpn_local_fetch_dir') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.crt' }}"
+    privatekey_path: "{{ lookup('ansible.builtin.vars',
+      'openvpn_local_fetch_dir') ~ '/' ~ lookup('ansible.builtin.vars',
+      'openvpn_instance_name') ~ '/' ~ lookup('ansible.builtin.vars',
+      'openvpn_instance_name') ~ '.key' }}"
     provider: "ownca"
   diff: false

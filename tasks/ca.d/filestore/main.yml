@@ -1,23 +1,31 @@
 ---
 - name: "openvpn | Check availability cert on CA (filestore)"
   ansible.builtin.stat:
-    path: "{{ vars['openvpn_ca_storage_source']['root_path'] ~ '/' ~
-      vars['openvpn_instance_name'] ~ '.crt' }}"
+    path: "{{ lookup('ansible.builtin.vars',
+      'openvpn_ca_storage_source')['root_path'] ~ '/' ~
+      lookup('ansible.builtin.vars', 'openvpn_instance_name') ~ '.crt' }}"
   register: "openvpn_master_result"
-  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
+  delegate_to: "{{ lookup('ansible.builtin.vars',
+    'openvpn_ca_storage_source')['delegate_host'] }}"
+  remote_user: "{{ lookup('ansible.builtin.vars',
+    'openvpn_ca_storage_source')['delegate_user'] }}"
   become: true
 - name: "openvpn | Import generate certs filestore tasks"
   ansible.builtin.import_tasks:
     file: "ca.d/filestore/openvpn_filestore_generate_certs.yml"
   when:
-    - "not openvpn_master_result['stat']['exists']"
-  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
+    - "not lookup('ansible.builtin.vars',
+      'openvpn_master_result')['stat']['exists']"
+  delegate_to: "{{ lookup('ansible.builtin.vars',
+    'openvpn_ca_storage_source')['delegate_host'] }}"
+  remote_user: "{{ lookup('ansible.builtin.vars',
+    'openvpn_ca_storage_source')['delegate_user'] }}"
   become: true
 - name: "openvpn | Import fetch certs from filestore tasks"
   ansible.builtin.import_tasks:
     file: "ca.d/filestore/openvpn_filestore_fetch_certs.yml"
-  delegate_to: "{{ vars['openvpn_ca_storage_source']['delegate_host'] }}"
-  remote_user: "{{ vars['openvpn_ca_storage_source']['delegate_user'] }}"
+  delegate_to: "{{ lookup('ansible.builtin.vars',
+    'openvpn_ca_storage_source')['delegate_host'] }}"
+  remote_user: "{{ lookup('ansible.builtin.vars',
+    'openvpn_ca_storage_source')['delegate_user'] }}"
   become: true

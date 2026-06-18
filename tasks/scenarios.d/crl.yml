@@ -9,11 +9,13 @@
   ansible.builtin.debug:
     msg: "Target certificate does not exits"
   when:
-    - "vars['openvpn_revoke_target_s3_object']['failed']"
+    - "lookup('ansible.builtin.vars',
+      'openvpn_revoke_target_s3_object')['failed']"
 - name: "openvpn | End play when CRL is not exists"
   ansible.builtin.meta: "end_play"
   when:
-    - "vars['openvpn_revoke_target_s3_object']['failed']"
+    - "lookup('ansible.builtin.vars',
+      'openvpn_revoke_target_s3_object')['failed']"
 - name: "openvpn | Import pre requisite for deployment host tasks"
   ansible.builtin.import_tasks:
     file: "prereq.d/create_deployment_host_catalogs.yml"
